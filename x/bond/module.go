@@ -99,6 +99,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 func (am AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {
+	keeper.RegisterInvariants(registry, am.keeper)
 }
 
 func (am AppModule) Route() sdk.Route {
