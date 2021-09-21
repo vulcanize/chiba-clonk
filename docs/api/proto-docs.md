@@ -149,7 +149,7 @@ Params defines the bond module parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `max_bond_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | max_bond_amount is maximum amount can deposit to bond |
+| `max_bond_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | max_bond_amount is maximum amount to bond |
 
 
 
@@ -464,7 +464,7 @@ MsgRefillBondResponse defines the Msg/RefillBond response type.
 <a name="ethermint.bond.v1.MsgWithdrawBond"></a>
 
 ### MsgWithdrawBond
-MsgRefillBond defines a SDK message for refill the amount for bond.
+MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
 
 
 | Field | Type | Label | Description |
@@ -502,9 +502,9 @@ Msg defines the bond Msg service.
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `CreateBond` | [MsgCreateBond](#ethermint.bond.v1.MsgCreateBond) | [MsgCreateBondResponse](#ethermint.bond.v1.MsgCreateBondResponse) | CreateBond defines a method for creating a new bond. | |
-| `RefillBond` | [MsgRefillBond](#ethermint.bond.v1.MsgRefillBond) | [MsgRefillBondResponse](#ethermint.bond.v1.MsgRefillBondResponse) | RefillBond defines a method for refill amount for bond. | |
-| `WithdrawBond` | [MsgWithdrawBond](#ethermint.bond.v1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#ethermint.bond.v1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdraw amount from bond. | |
-| `CancelBond` | [MsgCancelBond](#ethermint.bond.v1.MsgCancelBond) | [MsgCancelBondResponse](#ethermint.bond.v1.MsgCancelBondResponse) | CancelBond defines a method for cancel bond. | |
+| `RefillBond` | [MsgRefillBond](#ethermint.bond.v1.MsgRefillBond) | [MsgRefillBondResponse](#ethermint.bond.v1.MsgRefillBondResponse) | RefillBond defines a method for refilling amount for bond. | |
+| `WithdrawBond` | [MsgWithdrawBond](#ethermint.bond.v1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#ethermint.bond.v1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdrawing amount from bond. | |
+| `CancelBond` | [MsgCancelBond](#ethermint.bond.v1.MsgCancelBond) | [MsgCancelBondResponse](#ethermint.bond.v1.MsgCancelBondResponse) | CancelBond defines a method for cancelling a bond. | |
 
  <!-- end services -->
 

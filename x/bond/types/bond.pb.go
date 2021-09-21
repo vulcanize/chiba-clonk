@@ -27,7 +27,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Params defines the bond module parameters
 type Params struct {
-	// max_bond_amount is maximum amount can deposit to bond
+	// max_bond_amount is maximum amount to bond
 	MaxBondAmount types.Coin `protobuf:"bytes,1,opt,name=max_bond_amount,json=maxBondAmount,proto3" json:"max_bond_amount" json:"max_bond_amount" yaml:"max_bond_amount"`
 }
 

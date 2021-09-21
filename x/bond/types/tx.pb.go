@@ -226,7 +226,7 @@ func (m *MsgRefillBondResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRefillBondResponse proto.InternalMessageInfo
 
-// MsgRefillBond defines a SDK message for refill the amount for bond.
+// MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
 type MsgWithdrawBond struct {
 	Id     string                                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Signer string                                   `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -475,11 +475,11 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// CreateBond defines a method for creating a new bond.
 	CreateBond(ctx context.Context, in *MsgCreateBond, opts ...grpc.CallOption) (*MsgCreateBondResponse, error)
-	// RefillBond defines a method for refill amount for bond.
+	// RefillBond defines a method for refilling amount for bond.
 	RefillBond(ctx context.Context, in *MsgRefillBond, opts ...grpc.CallOption) (*MsgRefillBondResponse, error)
-	// WithdrawBond defines a method for withdraw amount from bond.
+	// WithdrawBond defines a method for withdrawing amount from bond.
 	WithdrawBond(ctx context.Context, in *MsgWithdrawBond, opts ...grpc.CallOption) (*MsgWithdrawBondResponse, error)
-	// CancelBond defines a method for cancel bond.
+	// CancelBond defines a method for cancelling a bond.
 	CancelBond(ctx context.Context, in *MsgCancelBond, opts ...grpc.CallOption) (*MsgCancelBondResponse, error)
 }
 
@@ -531,11 +531,11 @@ func (c *msgClient) CancelBond(ctx context.Context, in *MsgCancelBond, opts ...g
 type MsgServer interface {
 	// CreateBond defines a method for creating a new bond.
 	CreateBond(context.Context, *MsgCreateBond) (*MsgCreateBondResponse, error)
-	// RefillBond defines a method for refill amount for bond.
+	// RefillBond defines a method for refilling amount for bond.
 	RefillBond(context.Context, *MsgRefillBond) (*MsgRefillBondResponse, error)
-	// WithdrawBond defines a method for withdraw amount from bond.
+	// WithdrawBond defines a method for withdrawing amount from bond.
 	WithdrawBond(context.Context, *MsgWithdrawBond) (*MsgWithdrawBondResponse, error)
-	// CancelBond defines a method for cancel bond.
+	// CancelBond defines a method for cancelling a bond.
 	CancelBond(context.Context, *MsgCancelBond) (*MsgCancelBondResponse, error)
 }
 
