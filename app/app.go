@@ -2,6 +2,8 @@ package app
 
 import (
 	"encoding/json"
+	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
+	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"io"
 	"net/http"
 	"os"
@@ -105,6 +107,8 @@ import (
 	"github.com/tharsis/ethermint/x/feemarket"
 	feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
+
+	"github.com/tharsis/ethermint/x/nameservice"
 )
 
 func init() {
@@ -150,6 +154,8 @@ var (
 		// Ethermint modules
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
+
+		nameservice.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -162,6 +168,10 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
+
+		nameservicetypes.ModuleName:                     nil,
+		nameservicetypes.RecordRentModuleAccountName:    nil,
+		nameservicetypes.AuthorityRentModuleAccountName: nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -218,6 +228,9 @@ type EthermintApp struct {
 	EvmKeeper       *evmkeeper.Keeper
 	FeeMarketKeeper feemarketkeeper.Keeper
 
+	NameServiceKeeper       nameservicekeeper.Keeper
+	NameServiceRecordKeeper nameservicekeeper.RecordKeeper
+
 	// the module manager
 	mm *module.Manager
 
@@ -268,6 +281,8 @@ func NewEthermintApp(
 		ibchost.StoreKey, ibctransfertypes.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
+
+		nameservicetypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -343,6 +358,10 @@ func NewEthermintApp(
 		app.AccountKeeper, app.BankKeeper, app.StakingKeeper,
 		tracer, bApp.Trace(), // debug EVM based on Baseapp options
 	)
+
+	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(keys[nameservicetypes.StoreKey], appCodec)
+	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, app.AccountKeeper, app.BankKeeper, app.NameServiceRecordKeeper,
+		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName))
 
 	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
 		appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
@@ -428,6 +447,8 @@ func NewEthermintApp(
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
+
+		nameservice.NewAppModule(app.NameServiceKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -448,6 +469,7 @@ func NewEthermintApp(
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		evmtypes.ModuleName, feemarkettypes.ModuleName,
+		nameservicetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -463,6 +485,8 @@ func NewEthermintApp(
 		authz.ModuleName, feegrant.ModuleName,
 		// Ethermint modules
 		evmtypes.ModuleName, feemarkettypes.ModuleName,
+
+		nameservicetypes.ModuleName,
 
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
@@ -705,5 +729,8 @@ func initParamsKeeper(
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
+
+	paramsKeeper.Subspace(nameservicetypes.ModuleName)
+
 	return paramsKeeper
 }

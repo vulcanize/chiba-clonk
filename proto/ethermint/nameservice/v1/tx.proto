@@ -1,0 +1,52 @@
+syntax = "proto3";
+package ethermint.nameservice.v1;
+
+import "gogoproto/gogo.proto";
+import "ethermint/nameservice/v1/nameservice.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
+
+
+// Msg
+service Msg {
+  // SetRecord will records a new record with given payload and bond id
+  rpc SetRecord(MsgSetRecord) returns(MsgSetRecordResponse){}
+  // SetName will store the name with given wrn and name
+  rpc SetName(MsgSetName) returns (MsgSetNameResponse){}
+}
+
+// MsgSetRecord
+message MsgSetRecord{
+  string bond_id = 1  [
+    (gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""
+  ];
+  string signer = 2;
+  Payload payload = 3 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+// MsgSetRecordResponse
+message MsgSetRecordResponse{
+}
+
+// Payload
+message Payload {
+  Record record = 1;
+  repeated Signature signatures = 2  [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"signatures\" yaml:\"signatures\""
+  ];
+}
+
+// MsgSetName
+message MsgSetName{
+  string wrn = 1;
+  string cid = 2;
+  string signer = 3;
+}
+
+// MsgSetNameResponse
+message MsgSetNameResponse{
+
+}

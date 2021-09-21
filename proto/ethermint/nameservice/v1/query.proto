@@ -1,0 +1,125 @@
+syntax = "proto3";
+package ethermint.nameservice.v1;
+
+import "ethermint/nameservice/v1/nameservice.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
+
+// Query defines the gRPC querier service for nameservice module
+service Query {
+  // Bonds queries bonds list.
+  rpc Params(QueryParamRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/ethermint/nameservice/v1/params";
+  }
+  // List records
+  rpc ListRecords(QueryListRecordsRequest) returns (QueryListRecordsResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/records";
+  }
+  // Get record by id
+  rpc GetRecord(QueryRecordByIdRequest) returns (QueryRecordByIdResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/records/{id}";
+  }
+  // Get records by bond id
+  rpc GetRecordByBondId(QueryRecordByBondIdRequest) returns (QueryRecordByBondIdResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/records-by-bond-id/{id}";
+  }
+  // Get records by bond id
+  rpc GetNameServiceModuleBalance(GetNameServiceModuleBalanceRequest) returns (GetNameServiceModuleBalanceResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/balance";
+  }
+  // List name records
+  rpc ListNameRecords(QueryListNameRecordsRequest) returns (QueryListNameRecordsResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/names";
+  }
+}
+
+// QueryParamRequest is request type for nameservice params
+message QueryParamRequest{
+}
+// QueryParamsResponse is response type for nameservice params
+message QueryParamsResponse{
+  Params params = 1;
+}
+
+// QueryParamRequest is request type for nameservice params
+message QueryListRecordsRequest{
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryParamsResponse is response type for nameservice params
+message QueryListRecordsResponse{
+  repeated Record records = 1 [
+    (gogoproto.nullable) = false
+  ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+//QueryRecordByIdRequest is request type for nameservice records by id
+message QueryRecordByIdRequest{
+  string id = 1 ;
+}
+
+// QueryRecordByIdResponse is response type for nameservice records by id
+message QueryRecordByIdResponse{
+  Record record = 1[
+    (gogoproto.nullable) = false
+  ];
+}
+
+// QueryRecordByBondIdRequest
+message QueryRecordByBondIdRequest{
+  string id = 1;
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryRecordByBondIdResponse
+message QueryRecordByBondIdResponse{
+  repeated Record records = 1 [
+    (gogoproto.nullable) = false
+  ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// GetNameServiceModuleBalanceRequest is request type for nameservice
+message GetNameServiceModuleBalanceRequest{
+}
+
+// GetNameServiceModuleBalanceResponse is response type for nameservice module account balances
+message GetNameServiceModuleBalanceResponse{
+  repeated AccountBalance balances = 1;
+}
+
+// AccountBalance
+message AccountBalance {
+  string account_name = 1 [
+    (gogoproto.moretags) = "json:\"accountName\" yaml:\"accountName\""
+  ];
+  repeated cosmos.base.v1beta1.Coin balance = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "json:\"balance\" yaml:\"balance\""
+  ];
+}
+
+// QueryListNameRecordsRequest is request type for nameservice names records
+message QueryListNameRecordsRequest{
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryListNameRecordsResponse is response type for nameservice names records
+message QueryListNameRecordsResponse{
+  repeated NameEntry names = 1 [
+    (gogoproto.nullable) = false
+  ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

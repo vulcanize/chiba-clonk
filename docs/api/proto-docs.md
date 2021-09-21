@@ -74,6 +74,45 @@
   
     - [Query](#ethermint.feemarket.v1.Query)
   
+- [ethermint/nameservice/v1/nameservice.proto](#ethermint/nameservice/v1/nameservice.proto)
+    - [AuthorityEntry](#ethermint.nameservice.v1.AuthorityEntry)
+    - [NameAuthority](#ethermint.nameservice.v1.NameAuthority)
+    - [NameEntry](#ethermint.nameservice.v1.NameEntry)
+    - [NameRecord](#ethermint.nameservice.v1.NameRecord)
+    - [NameRecordEntry](#ethermint.nameservice.v1.NameRecordEntry)
+    - [Params](#ethermint.nameservice.v1.Params)
+    - [Record](#ethermint.nameservice.v1.Record)
+    - [Signature](#ethermint.nameservice.v1.Signature)
+  
+- [ethermint/nameservice/v1/genesis.proto](#ethermint/nameservice/v1/genesis.proto)
+    - [GenesisState](#ethermint.nameservice.v1.GenesisState)
+  
+- [ethermint/nameservice/v1/query.proto](#ethermint/nameservice/v1/query.proto)
+    - [AccountBalance](#ethermint.nameservice.v1.AccountBalance)
+    - [GetNameServiceModuleBalanceRequest](#ethermint.nameservice.v1.GetNameServiceModuleBalanceRequest)
+    - [GetNameServiceModuleBalanceResponse](#ethermint.nameservice.v1.GetNameServiceModuleBalanceResponse)
+    - [QueryListNameRecordsRequest](#ethermint.nameservice.v1.QueryListNameRecordsRequest)
+    - [QueryListNameRecordsResponse](#ethermint.nameservice.v1.QueryListNameRecordsResponse)
+    - [QueryListRecordsRequest](#ethermint.nameservice.v1.QueryListRecordsRequest)
+    - [QueryListRecordsResponse](#ethermint.nameservice.v1.QueryListRecordsResponse)
+    - [QueryParamRequest](#ethermint.nameservice.v1.QueryParamRequest)
+    - [QueryParamsResponse](#ethermint.nameservice.v1.QueryParamsResponse)
+    - [QueryRecordByBondIdRequest](#ethermint.nameservice.v1.QueryRecordByBondIdRequest)
+    - [QueryRecordByBondIdResponse](#ethermint.nameservice.v1.QueryRecordByBondIdResponse)
+    - [QueryRecordByIdRequest](#ethermint.nameservice.v1.QueryRecordByIdRequest)
+    - [QueryRecordByIdResponse](#ethermint.nameservice.v1.QueryRecordByIdResponse)
+  
+    - [Query](#ethermint.nameservice.v1.Query)
+  
+- [ethermint/nameservice/v1/tx.proto](#ethermint/nameservice/v1/tx.proto)
+    - [MsgSetName](#ethermint.nameservice.v1.MsgSetName)
+    - [MsgSetNameResponse](#ethermint.nameservice.v1.MsgSetNameResponse)
+    - [MsgSetRecord](#ethermint.nameservice.v1.MsgSetRecord)
+    - [MsgSetRecordResponse](#ethermint.nameservice.v1.MsgSetRecordResponse)
+    - [Payload](#ethermint.nameservice.v1.Payload)
+  
+    - [Msg](#ethermint.nameservice.v1.Msg)
+  
 - [ethermint/types/v1/account.proto](#ethermint/types/v1/account.proto)
     - [EthAccount](#ethermint.types.v1.EthAccount)
   
@@ -1063,6 +1102,521 @@ Query defines the gRPC querier service.
 | `Params` | [QueryParamsRequest](#ethermint.feemarket.v1.QueryParamsRequest) | [QueryParamsResponse](#ethermint.feemarket.v1.QueryParamsResponse) | Params queries the parameters of x/feemarket module. | GET|/feemarket/evm/v1/params|
 | `BaseFee` | [QueryBaseFeeRequest](#ethermint.feemarket.v1.QueryBaseFeeRequest) | [QueryBaseFeeResponse](#ethermint.feemarket.v1.QueryBaseFeeResponse) | BaseFee queries the base fee of the parent block of the current block. | GET|/feemarket/evm/v1/base_fee|
 | `BlockGas` | [QueryBlockGasRequest](#ethermint.feemarket.v1.QueryBlockGasRequest) | [QueryBlockGasResponse](#ethermint.feemarket.v1.QueryBlockGasResponse) | BlockGas queries the gas used at a given block height | GET|/feemarket/evm/v1/block_gas|
+
+ <!-- end services -->
+
+
+
+<a name="ethermint/nameservice/v1/nameservice.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ethermint/nameservice/v1/nameservice.proto
+
+
+
+<a name="ethermint.nameservice.v1.AuthorityEntry"></a>
+
+### AuthorityEntry
+AuthorityEntry defines the nameservice module AuthorityEntries
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `record` | [NameAuthority](#ethermint.nameservice.v1.NameAuthority) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.NameAuthority"></a>
+
+### NameAuthority
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner_public_key` | [string](#string) |  | Owner public key. |
+| `owner_address` | [string](#string) |  | Owner address. |
+| `height` | [uint64](#uint64) |  | height at which name/authority was created. |
+| `status` | [string](#string) |  |  |
+| `auction_id` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `expiry_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.NameEntry"></a>
+
+### NameEntry
+NameEntry
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `record` | [NameRecord](#ethermint.nameservice.v1.NameRecord) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.NameRecord"></a>
+
+### NameRecord
+NameRecord
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `latest` | [NameRecordEntry](#ethermint.nameservice.v1.NameRecordEntry) |  |  |
+| `history` | [NameRecordEntry](#ethermint.nameservice.v1.NameRecordEntry) | repeated |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.NameRecordEntry"></a>
+
+### NameRecordEntry
+NameRecordEntry
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `height` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.Params"></a>
+
+### Params
+Params defines the nameservice module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_rent` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `record_rent_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_rent` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `authority_rent_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_grace_period` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_auction_enabled` | [bool](#bool) |  |  |
+| `authority_auction_commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_auction_reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_auction_commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `authority_auction_reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `authority_auction_minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.Record"></a>
+
+### Record
+Params defines the nameservice module records
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `create_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `expiry_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `deleted` | [bool](#bool) |  |  |
+| `owners` | [string](#string) | repeated |  |
+| `attributes` | [bytes](#bytes) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.Signature"></a>
+
+### Signature
+Signature
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `sig` | [string](#string) |  |  |
+| `pub_key` | [string](#string) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="ethermint/nameservice/v1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ethermint/nameservice/v1/genesis.proto
+
+
+
+<a name="ethermint.nameservice.v1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the nameservice module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#ethermint.nameservice.v1.Params) |  | params defines all the nameservice of the module. |
+| `records` | [Record](#ethermint.nameservice.v1.Record) | repeated | records |
+| `authorities` | [AuthorityEntry](#ethermint.nameservice.v1.AuthorityEntry) | repeated | authorities |
+| `names` | [NameEntry](#ethermint.nameservice.v1.NameEntry) | repeated | names |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="ethermint/nameservice/v1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ethermint/nameservice/v1/query.proto
+
+
+
+<a name="ethermint.nameservice.v1.AccountBalance"></a>
+
+### AccountBalance
+AccountBalance
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `account_name` | [string](#string) |  |  |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.GetNameServiceModuleBalanceRequest"></a>
+
+### GetNameServiceModuleBalanceRequest
+GetNameServiceModuleBalanceRequest is request type for nameservice
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.GetNameServiceModuleBalanceResponse"></a>
+
+### GetNameServiceModuleBalanceResponse
+GetNameServiceModuleBalanceResponse is response type for nameservice module account balances
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `balances` | [AccountBalance](#ethermint.nameservice.v1.AccountBalance) | repeated |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryListNameRecordsRequest"></a>
+
+### QueryListNameRecordsRequest
+QueryListNameRecordsRequest is request type for nameservice names records
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryListNameRecordsResponse"></a>
+
+### QueryListNameRecordsResponse
+QueryListNameRecordsResponse is response type for nameservice names records
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `names` | [NameEntry](#ethermint.nameservice.v1.NameEntry) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryListRecordsRequest"></a>
+
+### QueryListRecordsRequest
+QueryParamRequest is request type for nameservice params
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryListRecordsResponse"></a>
+
+### QueryListRecordsResponse
+QueryParamsResponse is response type for nameservice params
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `records` | [Record](#ethermint.nameservice.v1.Record) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryParamRequest"></a>
+
+### QueryParamRequest
+QueryParamRequest is request type for nameservice params
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse is response type for nameservice params
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#ethermint.nameservice.v1.Params) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryRecordByBondIdRequest"></a>
+
+### QueryRecordByBondIdRequest
+QueryRecordByBondIdRequest
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryRecordByBondIdResponse"></a>
+
+### QueryRecordByBondIdResponse
+QueryRecordByBondIdResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `records` | [Record](#ethermint.nameservice.v1.Record) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryRecordByIdRequest"></a>
+
+### QueryRecordByIdRequest
+QueryRecordByIdRequest is request type for nameservice records by id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryRecordByIdResponse"></a>
+
+### QueryRecordByIdResponse
+QueryRecordByIdResponse is response type for nameservice records by id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record` | [Record](#ethermint.nameservice.v1.Record) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ethermint.nameservice.v1.Query"></a>
+
+### Query
+Query defines the gRPC querier service for nameservice module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Params` | [QueryParamRequest](#ethermint.nameservice.v1.QueryParamRequest) | [QueryParamsResponse](#ethermint.nameservice.v1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/nameservice/v1/params|
+| `ListRecords` | [QueryListRecordsRequest](#ethermint.nameservice.v1.QueryListRecordsRequest) | [QueryListRecordsResponse](#ethermint.nameservice.v1.QueryListRecordsResponse) | List records | GET|/ethermint/nameservice/v1/records|
+| `GetRecord` | [QueryRecordByIdRequest](#ethermint.nameservice.v1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#ethermint.nameservice.v1.QueryRecordByIdResponse) | Get record by id | GET|/ethermint/nameservice/v1/records/{id}|
+| `GetRecordByBondId` | [QueryRecordByBondIdRequest](#ethermint.nameservice.v1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#ethermint.nameservice.v1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/records-by-bond-id/{id}|
+| `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#ethermint.nameservice.v1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#ethermint.nameservice.v1.GetNameServiceModuleBalanceResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/balance|
+| `ListNameRecords` | [QueryListNameRecordsRequest](#ethermint.nameservice.v1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#ethermint.nameservice.v1.QueryListNameRecordsResponse) | List name records | GET|/ethermint/nameservice/v1/names|
+
+ <!-- end services -->
+
+
+
+<a name="ethermint/nameservice/v1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ethermint/nameservice/v1/tx.proto
+
+
+
+<a name="ethermint.nameservice.v1.MsgSetName"></a>
+
+### MsgSetName
+MsgSetName
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `wrn` | [string](#string) |  |  |
+| `cid` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgSetNameResponse"></a>
+
+### MsgSetNameResponse
+MsgSetNameResponse
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgSetRecord"></a>
+
+### MsgSetRecord
+MsgSetRecord
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `payload` | [Payload](#ethermint.nameservice.v1.Payload) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgSetRecordResponse"></a>
+
+### MsgSetRecordResponse
+MsgSetRecordResponse
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.Payload"></a>
+
+### Payload
+Payload
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record` | [Record](#ethermint.nameservice.v1.Record) |  |  |
+| `signatures` | [Signature](#ethermint.nameservice.v1.Signature) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ethermint.nameservice.v1.Msg"></a>
+
+### Msg
+Msg
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `SetRecord` | [MsgSetRecord](#ethermint.nameservice.v1.MsgSetRecord) | [MsgSetRecordResponse](#ethermint.nameservice.v1.MsgSetRecordResponse) | SetRecord will records a new record with given payload and bond id | |
+| `SetName` | [MsgSetName](#ethermint.nameservice.v1.MsgSetName) | [MsgSetNameResponse](#ethermint.nameservice.v1.MsgSetNameResponse) | SetName will store the name with given wrn and name | |
 
  <!-- end services -->
 
