@@ -55,6 +55,7 @@ message QueryGetBondsRequest{
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
+
 // QueryGetBondsResponse
 message QueryGetBondsResponse{
   repeated Bond bonds = 1 [
@@ -70,6 +71,7 @@ message QueryGetBondByIdRequest{
     (gogoproto.moretags) = "json:\"id\" yaml:\"id\""
   ];
 }
+
 // QueryGetBondByIdResponse returns QueryGetBondById query response
 message QueryGetBondByIdResponse{
   Bond bond = 1 [
@@ -98,6 +100,7 @@ message QueryGetBondsByOwnerResponse {
 message QueryGetBondModuleBalanceRequest{
 
 }
+
 // QueryGetBondModuleBalanceResponse is response type for bond module balance rpc method
 message QueryGetBondModuleBalanceResponse{
   repeated cosmos.base.v1beta1.Coin balance = 2 [

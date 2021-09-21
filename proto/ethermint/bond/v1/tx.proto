@@ -11,13 +11,13 @@ service Msg {
   // CreateBond defines a method for creating a new bond.
   rpc CreateBond(MsgCreateBond) returns (MsgCreateBondResponse);
 
-  // RefillBond defines a method for refill amount for bond.
+  // RefillBond defines a method for refilling amount for bond.
   rpc RefillBond(MsgRefillBond) returns (MsgRefillBondResponse);
 
-  // WithdrawBond defines a method for withdraw amount from bond.
+  // WithdrawBond defines a method for withdrawing amount from bond.
   rpc WithdrawBond(MsgWithdrawBond) returns (MsgWithdrawBondResponse);
 
-  // CancelBond defines a method for cancel bond.
+  // CancelBond defines a method for cancelling a bond.
   rpc CancelBond(MsgCancelBond) returns (MsgCancelBondResponse);
 }
 
@@ -53,7 +53,7 @@ message MsgRefillBond{
 message MsgRefillBondResponse{
 }
 
-// MsgRefillBond defines a SDK message for refill the amount for bond.
+// MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
 message MsgWithdrawBond {
   string id = 1;
   string signer = 2;
@@ -66,7 +66,6 @@ message MsgWithdrawBond {
 
 // MsgWithdrawBondResponse defines the MsgWithdrawBond response type.
 message MsgWithdrawBondResponse{
-
 }
 
 // MsgCancelBond defines a SDK message for the cancel the bond.
@@ -77,5 +76,4 @@ message MsgCancelBond{
 
 // MsgCancelBondResponse defines the MsgCancelBond response type.
 message MsgCancelBondResponse{
-
 }
