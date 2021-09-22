@@ -1,8 +1,8 @@
 syntax = "proto3";
-package ethermint.nameservice.v1;
+package vulcanize.nameservice.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "ethermint/nameservice/v1/nameservice.proto";
+import "vulcanize/nameservice/v1beta1/nameservice.proto";
 
 option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
 
