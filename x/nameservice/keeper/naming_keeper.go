@@ -10,6 +10,8 @@ import (
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 	"net/url"
+	"strings"
+	"time"
 )
 
 func getAuthorityPubKey(pubKey cryptotypes.PubKey) string {
@@ -33,33 +35,49 @@ func GetCIDToNamesIndexKey(id string) []byte {
 	return append(PrefixCIDToNamesIndex, []byte(id)...)
 }
 
-// GetNameAuthority - gets a name authority from the store.
-func GetNameAuthority(store sdk.KVStore, codec codec.BinaryCodec, name string) *types.NameAuthority {
-	authorityKey := GetNameAuthorityIndexKey(name)
-	if !store.Has(authorityKey) {
-		return nil
-	}
-
-	bz := store.Get(authorityKey)
-	var obj types.NameAuthority
-	codec.MustUnmarshal(bz, &obj)
-
-	return &obj
-}
-
-func SetNameAuthority(ctx sdk.Context, store sdk.KVStore, codec codec.BinaryCodec, name string, authority types.NameAuthority) {
-	store.Set(GetNameAuthorityIndexKey(name), codec.MustMarshal(&authority))
+// SetNameAuthority creates the NameAuthority record.
+func (k Keeper) SetNameAuthority(ctx sdk.Context, name string, authority *types.NameAuthority) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(GetNameAuthorityIndexKey(name), k.cdc.MustMarshal(authority))
 	//updateBlockChangesetForNameAuthority(ctx, store, codec, name)
-}
-
-// SetNameAuthority creates the NameAutority record.
-func (k Keeper) SetNameAuthority(ctx sdk.Context, name string, authority types.NameAuthority) {
-	SetNameAuthority(ctx, ctx.KVStore(k.storeKey), k.cdc, name, authority)
 }
 
 // GetNameAuthority - gets a name authority from the store.
 func (k Keeper) GetNameAuthority(ctx sdk.Context, name string) *types.NameAuthority {
-	return GetNameAuthority(ctx.KVStore(k.storeKey), k.cdc, name)
+	store := ctx.KVStore(k.storeKey)
+	authorityKey := GetNameAuthorityIndexKey(name)
+	if !store.Has(authorityKey) {
+		return nil
+	}
+	bz := store.Get(authorityKey)
+	var obj types.NameAuthority
+	err := k.cdc.Unmarshal(bz, &obj)
+	if err != nil {
+		return nil
+	}
+	return &obj
+}
+
+// HasNameAuthority - checks if a name/authority exists.
+func (k Keeper) HasNameAuthority(ctx sdk.Context, name string) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(GetNameAuthorityIndexKey(name))
+}
+
+func getBondIDToAuthoritiesIndexKey(bondID string, name string) []byte {
+	return append(append(PrefixBondIDToAuthoritiesIndex, []byte(bondID)...), []byte(name)...)
+}
+
+// AddBondToAuthorityIndexEntry adds the Bond ID -> [Authority] index entry.
+func (k Keeper) AddBondToAuthorityIndexEntry(ctx sdk.Context, bondID string, name string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(getBondIDToAuthoritiesIndexKey(bondID, name), []byte{})
+}
+
+// RemoveBondToAuthorityIndexEntry removes the Bond ID -> [Authority] index entry.
+func (k Keeper) RemoveBondToAuthorityIndexEntry(ctx sdk.Context, bondID string, name string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(getBondIDToAuthoritiesIndexKey(bondID, name))
 }
 
 func (k Keeper) getAuthority(ctx sdk.Context, wrn string) (string, *url.URL, *types.NameAuthority, error) {
@@ -107,11 +125,17 @@ func (k Keeper) checkWRNAccess(ctx sdk.Context, signer sdk.AccAddress, wrn strin
 		if pubKey != nil {
 			// Update public key in authority record.
 			authority.OwnerPublicKey = getAuthorityPubKey(pubKey)
-			k.SetNameAuthority(ctx, name, *authority)
+			k.SetNameAuthority(ctx, name, authority)
 		}
 	}
 
 	return nil
+}
+
+// HasNameRecord - checks if a name record exists.
+func (k Keeper) HasNameRecord(ctx sdk.Context, wrn string) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(GetNameRecordIndexKey(wrn))
 }
 
 // GetNameRecord - gets a name record from the store.
@@ -210,10 +234,8 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 		Height: uint64(height),
 	}
 
-	fmt.Println("name record ", nameRecord)
 	store.Set(nameRecordIndexKey, codec.MustMarshal(&nameRecord))
 
-	fmt.Println("name record stored")
 	// Update new CID -> []Name index.
 	if id != "" {
 		AddRecordToNameMapping(store, codec, id, wrn)
@@ -235,13 +257,11 @@ func (k Keeper) ProcessSetName(ctx sdk.Context, msg types.MsgSetName) error {
 		return err
 	}
 	err = k.checkWRNAccess(ctx, signerAddress, msg.Wrn)
-	fmt.Println(" Err at checkWRNAccess ", err)
 	if err != nil {
 		return err
 	}
 
 	nameRecord := k.GetNameRecord(ctx, msg.Wrn)
-	fmt.Println("nameRecord ", nameRecord)
 	if nameRecord != nil && nameRecord.Latest.Id == msg.Cid {
 		// Already pointing to same ID, no-op.
 		return nil
@@ -271,4 +291,244 @@ func (k Keeper) ListNameRecords(ctx sdk.Context) []types.NameEntry {
 	}
 
 	return nameEntries
+}
+
+func (k Keeper) ProcessReserverSubAuthority(ctx sdk.Context, name string, msg types.MsgReserveAuthority) {
+
+}
+
+func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRoot bool) error {
+	moduleParams := k.GetParams(ctx)
+
+	if k.HasNameAuthority(ctx, name) {
+		authority := k.GetNameAuthority(ctx, name)
+		if authority.Status != types.AuthorityExpired {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name already reserved.")
+		}
+	}
+
+	ownerAddress, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid owner address.")
+	}
+	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
+	if ownerAccount == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "Account not found.")
+	}
+
+	authority := types.NameAuthority{
+		OwnerPublicKey: getAuthorityPubKey(ownerAccount.GetPubKey()),
+		OwnerAddress:   owner,
+		Height:         uint64(ctx.BlockHeight()),
+		Status:         types.AuthorityActive,
+		AuctionId:      "",
+		BondId:         "",
+		ExpiryTime:     ctx.BlockTime().Add(moduleParams.AuthorityGracePeriod),
+	}
+
+	if isRoot && moduleParams.AuthorityAuctionEnabled {
+		// If auctions are enabled, clear out owner fields. They will be set after a winner is picked.
+		authority.OwnerAddress = ""
+		authority.OwnerPublicKey = ""
+		// Reset bond ID if required.
+		if authority.BondId != "" || len(authority.BondId) != 0 {
+			k.RemoveBondToAuthorityIndexEntry(ctx, authority.BondId, name)
+			authority.BondId = ""
+		}
+		// TODO(gsk967): fix this once auction module migration done
+		//params := auction.Params{
+		//	CommitsDuration: moduleParams.CommitsDuration,
+		//	RevealsDuration: moduleParams.RevealsDuration,
+		//	CommitFee:       commitFee,
+		//	RevealFee:       revealFee,
+		//	MinimumBid:      minimumBid,
+		//}
+		//
+		//// Create an auction.
+		//msg := auction.NewMsgCreateAuction(params, owner)
+		//
+		//auction, sdkErr := k.auctionKeeper.CreateAuction(ctx, msg)
+		//if sdkErr != nil {
+		//	return sdkErr
+		//}
+		//
+		//// Create auction ID -> authority name index.
+		//k.AddAuctionToAuthorityMapping(ctx, auction.ID, name)
+		//
+		//authority.Status = types.AuthorityUnderAuction
+		//authority.AuctionID = auction.ID
+		//authority.ExpiryTime = auction.RevealsEndTime.Add(moduleParams.AuthorityGracePeriod)
+
+	}
+	k.SetNameAuthority(ctx, name, &authority)
+	k.InsertAuthorityExpiryQueue(ctx, name, authority.ExpiryTime)
+
+	return nil
+}
+
+// ProcessReserveAuthority reserves a name authority.
+func (k Keeper) ProcessReserveAuthority(ctx sdk.Context, msg types.MsgReserveAuthority) error {
+	wrn := fmt.Sprintf("wrn://%s", msg.GetName())
+	parsedWrn, err := url.Parse(wrn)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
+	}
+	name := parsedWrn.Host
+	if fmt.Sprintf("wrn://%s", name) != wrn {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
+	}
+	if strings.Contains(name, ".") {
+		k.ProcessReserverSubAuthority(ctx, name, msg)
+	}
+	err = k.createAuthority(ctx, name, msg.GetSigner(), true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthorityBond) error {
+	name := msg.GetName()
+	signer := msg.GetSigner()
+	bondId := msg.GetBondId()
+	authority := k.GetNameAuthority(ctx, name)
+	if authority == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
+	}
+	if authority.OwnerAddress != signer {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied")
+	}
+
+	// TODO(gsk967) : once bond module implemented uncomment this
+	//if !k.bondKeeper.HasBond(ctx, msg.BondId) {
+	//	return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+	//}
+	//
+	//bond := k.bondKeeper.GetBond(ctx, msg.BondId)
+	//if bond.Owner != signer {
+	//	return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+	//}
+	//
+	//// No-op if bond hasn't changed.
+	//if authority.BondID == msg.BondID {
+	//	return  nil
+	//}
+	//
+	//// Remove old bond ID mapping, if any.
+	//if authority.BondId != "" {
+	//	k.RemoveBondToAuthorityIndexEntry(ctx, authority.BondId, name)
+	//}
+	//
+	//// Update bond ID for authority.
+	//authority.BondId = bond.Id
+	authority.BondId = bondId
+	k.SetNameAuthority(ctx, name, authority)
+	// Add new bond ID mapping.
+	k.AddBondToAuthorityIndexEntry(ctx, authority.BondId, name)
+	return nil
+}
+
+// ProcessDeleteName removes a WRN -> Record ID mapping.
+func (k Keeper) ProcessDeleteName(ctx sdk.Context, msg types.MsgDeleteNameAuthority) error {
+	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return err
+	}
+	err = k.checkWRNAccess(ctx, signerAddress, msg.Wrn)
+	if err != nil {
+		return err
+	}
+
+	if !k.HasNameRecord(ctx, msg.Wrn) {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name not found.")
+	}
+
+	// Set CID to empty string.
+	k.SetNameRecord(ctx, msg.Wrn, "")
+
+	return nil
+}
+
+func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) (expired map[string][]string) {
+	records := make(map[string][]string)
+
+	store := ctx.KVStore(k.storeKey)
+	itr := sdk.KVStorePrefixIterator(store, PrefixExpiryTimeToAuthoritiesIndex)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		var record []string
+		k.legacyCodec.MustUnmarshalLengthPrefixed(itr.Value(), &record)
+		records[string(itr.Key()[len(PrefixExpiryTimeToAuthoritiesIndex):])] = record
+	}
+
+	return records
+}
+
+// ResolveWRN resolves a WRN to a record.
+func (k Keeper) ResolveWRN(ctx sdk.Context, wrn string) *types.Record {
+	_, _, authority, err := k.getAuthority(ctx, wrn)
+	if err != nil || authority.Status != types.AuthorityActive {
+		// If authority is not active (or any other error), resolution fails.
+		return nil
+	}
+
+	// Name should not resolve if it's stale.
+	// i.e. authority was registered later than the name.
+	record, nameRecord := ResolveWRN(ctx.KVStore(k.storeKey), wrn, k, ctx)
+	if authority.Height > nameRecord.Latest.Height {
+		return nil
+	}
+
+	return record
+}
+
+// ResolveWRN resolves a WRN to a record.
+func ResolveWRN(store sdk.KVStore, wrn string, k Keeper, c sdk.Context) (*types.Record, *types.NameRecord) {
+	nameKey := GetNameRecordIndexKey(wrn)
+
+	if store.Has(nameKey) {
+		bz := store.Get(nameKey)
+		var obj types.NameRecord
+		k.cdc.MustUnmarshal(bz, &obj)
+
+		recordExists := k.HasRecord(c, obj.Latest.Id)
+		if !recordExists || obj.Latest.Id == "" {
+			return nil, &obj
+		}
+
+		record := k.GetRecord(c, obj.Latest.Id)
+		return &record, &obj
+	}
+
+	return nil, nil
+}
+
+func getAuthorityExpiryQueueTimeKey(timestamp time.Time) []byte {
+	timeBytes := sdk.FormatTimeBytes(timestamp)
+	return append(PrefixExpiryTimeToAuthoritiesIndex, timeBytes...)
+}
+
+func (k Keeper) InsertAuthorityExpiryQueue(ctx sdk.Context, name string, expiryTime time.Time) {
+	timeSlice := k.GetAuthorityExpiryQueueTimeSlice(ctx, expiryTime)
+	timeSlice = append(timeSlice, name)
+	k.SetAuthorityExpiryQueueTimeSlice(ctx, expiryTime, timeSlice)
+}
+
+func (k Keeper) GetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) (names []string) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(getAuthorityExpiryQueueTimeKey(timestamp))
+	if bz == nil {
+		return []string{}
+	}
+
+	//k.cdc.MustUnmarshal(bz, &names)
+	return names
+}
+
+func (k Keeper) SetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, names []string) {
+	store := ctx.KVStore(k.storeKey)
+	//bz := k.cdc.MustMarshalLengthPrefixed(names)
+	//store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
+	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), []byte{})
 }

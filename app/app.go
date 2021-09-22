@@ -360,7 +360,7 @@ func NewEthermintApp(
 	)
 
 	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(keys[nameservicetypes.StoreKey], appCodec)
-	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, app.AccountKeeper, app.BankKeeper, app.NameServiceRecordKeeper,
+	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, *cdc, app.AccountKeeper, app.BankKeeper, app.NameServiceRecordKeeper,
 		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName))
 
 	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(

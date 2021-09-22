@@ -116,7 +116,7 @@ message NameAuthority {
   ];
   google.protobuf.Timestamp expiry_time = 7 [
     (gogoproto.nullable) = false,
-    (gogoproto.stdduration) = true,
+    (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "json:\"expiryTime\" yaml:\"expiryTime\""
   ];
 }

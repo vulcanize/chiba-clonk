@@ -66,13 +66,14 @@ type Keeper struct {
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
-	cdc codec.BinaryCodec // The wire codec for binary encoding/decoding.
+	cdc         codec.BinaryCodec // The wire codec for binary encoding/decoding.
+	legacyCodec codec.LegacyAmino
 
 	paramSubspace paramtypes.Subspace
 }
 
 // NewKeeper creates new instances of the nameservice Keeper
-func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
+func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
 	storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -86,6 +87,7 @@ func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeep
 		//auctionKeeper: auctionKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
+		legacyCodec:   legacyCdc,
 		paramSubspace: ps,
 	}
 }
@@ -128,6 +130,21 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 			//records = append(records, recordObjToRecord(store, k.cdc, obj))
 			records = append(records, obj)
 		}
+	}
+
+	return records
+}
+
+func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) (expired map[string][]string) {
+	records := make(map[string][]string)
+
+	store := ctx.KVStore(k.storeKey)
+	itr := sdk.KVStorePrefixIterator(store, PrefixExpiryTimeToRecordsIndex)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		var record []string
+		//k.cdc.MustUnmarshal(itr.Value(), &record)
+		records[string(itr.Key()[len(PrefixExpiryTimeToRecordsIndex):])] = record
 	}
 
 	return records
@@ -285,7 +302,7 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 	if err != nil {
 		return nil
 	}
-	//k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &cids)
+	k.legacyCodec.MustUnmarshalLengthPrefixed(bz, &cids)
 	return cids
 }
 

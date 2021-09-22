@@ -20,6 +20,11 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	bondQueryCmd.AddCommand(
+		GetCmdWhoIs(),
+		GetCmdResolve(),
+		GetCmdLookupWRN(),
+		GetRecordExpiryQueue(),
+		GetAuthorityExpiryQueue(),
 		GetQueryParamsCmd(),
 		GetCmdList(),
 		GetCmdGetResource(),
@@ -28,6 +33,70 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdNames(),
 	)
 	return bondQueryCmd
+}
+
+// GetCmdWhoIs queries a whois info for a name.
+func GetCmdWhoIs() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "whois [name]",
+		Short: "Get name owner info.",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Get name owner info.
+Example:
+$ %s query %s whois [name]
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.Whois(cmd.Context(), &types.QueryWhoisRequest{Name: args[0]})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdLookupWRN queries naming info for a WRN.
+func GetCmdLookupWRN() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "lookup [wrn]",
+		Short: "Get naming info for WRN.",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Get naming info for WRN.
+Example:
+$ %s query %s lookup [wrn]
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.LookupWrn(cmd.Context(), &types.QueryLookupWrn{Wrn: args[0]})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetQueryParamsCmd implements the params query command.
@@ -128,6 +197,37 @@ $ %s query %s get [ID]
 	return cmd
 }
 
+// GetCmdResolve resolves a WRN to a record.
+func GetCmdResolve() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolve [wrn]",
+		Short: "Resolve WRN to record.",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Resolve WRN to record.
+Example:
+$ %s query %s resolve [wrn]
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			record, err := queryClient.ResolveWrn(cmd.Context(), &types.QueryResolveWrn{Wrn: args[0]})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(record)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 // GetCmdQueryByBond queries records by bond ID.
 func GetCmdQueryByBond() *cobra.Command {
 	cmd := &cobra.Command{
@@ -214,6 +314,68 @@ $ %s query %s names
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.ListNameRecords(cmd.Context(), &types.QueryListNameRecordsRequest{})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetRecordExpiryQueue gets the record expiry queue.
+func GetRecordExpiryQueue() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "record-expiry",
+		Short: "Get record expiry queue.",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Get record expiry queue.
+Example:
+$ %s query %s record-expiry
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.GetRecordExpiryQueue(cmd.Context(), &types.QueryGetRecordExpiryQueue{})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetAuthorityExpiryQueue gets the authority expiry queue.
+func GetAuthorityExpiryQueue() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "authority-expiry",
+		Short: "Get authority expiry queue.",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Get authority expiry queue.
+Example:
+$ %s query %s authority-expiry
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.GetAuthorityExpiryQueue(cmd.Context(), &types.QueryGetAuthorityExpiryQueue{})
 			if err != nil {
 				return err
 			}

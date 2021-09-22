@@ -91,20 +91,46 @@
     - [AccountBalance](#ethermint.nameservice.v1.AccountBalance)
     - [GetNameServiceModuleBalanceRequest](#ethermint.nameservice.v1.GetNameServiceModuleBalanceRequest)
     - [GetNameServiceModuleBalanceResponse](#ethermint.nameservice.v1.GetNameServiceModuleBalanceResponse)
+    - [QueryGetAuthorityExpiryQueue](#ethermint.nameservice.v1.QueryGetAuthorityExpiryQueue)
+    - [QueryGetAuthorityExpiryQueueResponse](#ethermint.nameservice.v1.QueryGetAuthorityExpiryQueueResponse)
+    - [QueryGetRecordExpiryQueue](#ethermint.nameservice.v1.QueryGetRecordExpiryQueue)
+    - [QueryGetRecordExpiryQueueResponse](#ethermint.nameservice.v1.QueryGetRecordExpiryQueueResponse)
     - [QueryListNameRecordsRequest](#ethermint.nameservice.v1.QueryListNameRecordsRequest)
     - [QueryListNameRecordsResponse](#ethermint.nameservice.v1.QueryListNameRecordsResponse)
     - [QueryListRecordsRequest](#ethermint.nameservice.v1.QueryListRecordsRequest)
     - [QueryListRecordsResponse](#ethermint.nameservice.v1.QueryListRecordsResponse)
+    - [QueryLookupWrn](#ethermint.nameservice.v1.QueryLookupWrn)
+    - [QueryLookupWrnResponse](#ethermint.nameservice.v1.QueryLookupWrnResponse)
     - [QueryParamRequest](#ethermint.nameservice.v1.QueryParamRequest)
     - [QueryParamsResponse](#ethermint.nameservice.v1.QueryParamsResponse)
     - [QueryRecordByBondIdRequest](#ethermint.nameservice.v1.QueryRecordByBondIdRequest)
     - [QueryRecordByBondIdResponse](#ethermint.nameservice.v1.QueryRecordByBondIdResponse)
     - [QueryRecordByIdRequest](#ethermint.nameservice.v1.QueryRecordByIdRequest)
     - [QueryRecordByIdResponse](#ethermint.nameservice.v1.QueryRecordByIdResponse)
+    - [QueryResolveWrn](#ethermint.nameservice.v1.QueryResolveWrn)
+    - [QueryResolveWrnResponse](#ethermint.nameservice.v1.QueryResolveWrnResponse)
+    - [QueryWhoisRequest](#ethermint.nameservice.v1.QueryWhoisRequest)
+    - [QueryWhoisResponse](#ethermint.nameservice.v1.QueryWhoisResponse)
   
     - [Query](#ethermint.nameservice.v1.Query)
   
 - [ethermint/nameservice/v1/tx.proto](#ethermint/nameservice/v1/tx.proto)
+    - [MsgAssociateBond](#ethermint.nameservice.v1.MsgAssociateBond)
+    - [MsgAssociateBondResponse](#ethermint.nameservice.v1.MsgAssociateBondResponse)
+    - [MsgDeleteNameAuthority](#ethermint.nameservice.v1.MsgDeleteNameAuthority)
+    - [MsgDeleteNameAuthorityResponse](#ethermint.nameservice.v1.MsgDeleteNameAuthorityResponse)
+    - [MsgDissociateBond](#ethermint.nameservice.v1.MsgDissociateBond)
+    - [MsgDissociateBondResponse](#ethermint.nameservice.v1.MsgDissociateBondResponse)
+    - [MsgDissociateRecords](#ethermint.nameservice.v1.MsgDissociateRecords)
+    - [MsgDissociateRecordsResponse](#ethermint.nameservice.v1.MsgDissociateRecordsResponse)
+    - [MsgReAssociateRecords](#ethermint.nameservice.v1.MsgReAssociateRecords)
+    - [MsgReAssociateRecordsResponse](#ethermint.nameservice.v1.MsgReAssociateRecordsResponse)
+    - [MsgRenewRecord](#ethermint.nameservice.v1.MsgRenewRecord)
+    - [MsgRenewRecordResponse](#ethermint.nameservice.v1.MsgRenewRecordResponse)
+    - [MsgReserveAuthority](#ethermint.nameservice.v1.MsgReserveAuthority)
+    - [MsgReserveAuthorityResponse](#ethermint.nameservice.v1.MsgReserveAuthorityResponse)
+    - [MsgSetAuthorityBond](#ethermint.nameservice.v1.MsgSetAuthorityBond)
+    - [MsgSetAuthorityBondResponse](#ethermint.nameservice.v1.MsgSetAuthorityBondResponse)
     - [MsgSetName](#ethermint.nameservice.v1.MsgSetName)
     - [MsgSetNameResponse](#ethermint.nameservice.v1.MsgSetNameResponse)
     - [MsgSetRecord](#ethermint.nameservice.v1.MsgSetRecord)
@@ -1352,6 +1378,66 @@ GetNameServiceModuleBalanceResponse is response type for nameservice module acco
 
 
 
+<a name="ethermint.nameservice.v1.QueryGetAuthorityExpiryQueue"></a>
+
+### QueryGetAuthorityExpiryQueue
+QueryGetAuthorityExpiryQueue
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryGetAuthorityExpiryQueueResponse"></a>
+
+### QueryGetAuthorityExpiryQueueResponse
+QueryGetAuthorityExpiryQueueResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | TODO(gsk967): add result record pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryGetRecordExpiryQueue"></a>
+
+### QueryGetRecordExpiryQueue
+QueryGetRecordExpiryQueue
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryGetRecordExpiryQueueResponse"></a>
+
+### QueryGetRecordExpiryQueueResponse
+QueryGetRecordExpiryQueueResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | TODO(gsk967): add result record pagination defines the pagination in the response. |
+
+
+
+
+
+
 <a name="ethermint.nameservice.v1.QueryListNameRecordsRequest"></a>
 
 ### QueryListNameRecordsRequest
@@ -1408,6 +1494,36 @@ QueryParamsResponse is response type for nameservice params
 | ----- | ---- | ----- | ----------- |
 | `records` | [Record](#ethermint.nameservice.v1.Record) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryLookupWrn"></a>
+
+### QueryLookupWrn
+QueryLookupWrn is request type for LookupWrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `wrn` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryLookupWrnResponse"></a>
+
+### QueryLookupWrnResponse
+QueryLookupWrnResponse is response type for QueryLookupWrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [NameRecord](#ethermint.nameservice.v1.NameRecord) |  |  |
 
 
 
@@ -1500,6 +1616,66 @@ QueryRecordByIdResponse is response type for nameservice records by id
 
 
 
+
+<a name="ethermint.nameservice.v1.QueryResolveWrn"></a>
+
+### QueryResolveWrn
+QueryResolveWrn is request type for ResolveWrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `wrn` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryResolveWrnResponse"></a>
+
+### QueryResolveWrnResponse
+QueryResolveWrnResponse is response type for QueryResolveWrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record` | [Record](#ethermint.nameservice.v1.Record) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryWhoisRequest"></a>
+
+### QueryWhoisRequest
+QueryWhoisRequest is request type for Get NameAuthority
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.QueryWhoisResponse"></a>
+
+### QueryWhoisResponse
+QueryWhoisResponse is response type for whois request
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name_authority` | [NameAuthority](#ethermint.nameservice.v1.NameAuthority) |  |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -1520,6 +1696,11 @@ Query defines the gRPC querier service for nameservice module
 | `GetRecordByBondId` | [QueryRecordByBondIdRequest](#ethermint.nameservice.v1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#ethermint.nameservice.v1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/records-by-bond-id/{id}|
 | `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#ethermint.nameservice.v1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#ethermint.nameservice.v1.GetNameServiceModuleBalanceResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/balance|
 | `ListNameRecords` | [QueryListNameRecordsRequest](#ethermint.nameservice.v1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#ethermint.nameservice.v1.QueryListNameRecordsResponse) | List name records | GET|/ethermint/nameservice/v1/names|
+| `Whois` | [QueryWhoisRequest](#ethermint.nameservice.v1.QueryWhoisRequest) | [QueryWhoisResponse](#ethermint.nameservice.v1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/ethermint/nameservice/v1/whois/{name}|
+| `LookupWrn` | [QueryLookupWrn](#ethermint.nameservice.v1.QueryLookupWrn) | [QueryLookupWrnResponse](#ethermint.nameservice.v1.QueryLookupWrnResponse) | LookupWrn | GET|/ethermint/nameservice/v1/lookup/{wrn}|
+| `ResolveWrn` | [QueryResolveWrn](#ethermint.nameservice.v1.QueryResolveWrn) | [QueryResolveWrnResponse](#ethermint.nameservice.v1.QueryResolveWrnResponse) | ResolveWrn | GET|/ethermint/nameservice/v1/resolve/{wrn}|
+| `GetRecordExpiryQueue` | [QueryGetRecordExpiryQueue](#ethermint.nameservice.v1.QueryGetRecordExpiryQueue) | [QueryGetRecordExpiryQueueResponse](#ethermint.nameservice.v1.QueryGetRecordExpiryQueueResponse) | GetRecordExpiryQueue | GET|/ethermint/nameservice/v1/record-expiry|
+| `GetAuthorityExpiryQueue` | [QueryGetAuthorityExpiryQueue](#ethermint.nameservice.v1.QueryGetAuthorityExpiryQueue) | [QueryGetAuthorityExpiryQueueResponse](#ethermint.nameservice.v1.QueryGetAuthorityExpiryQueueResponse) | GetAuthorityExpiryQueue | GET|/ethermint/nameservice/v1/authority-expiry|
 
  <!-- end services -->
 
@@ -1529,6 +1710,218 @@ Query defines the gRPC querier service for nameservice module
 <p align="right"><a href="#top">Top</a></p>
 
 ## ethermint/nameservice/v1/tx.proto
+
+
+
+<a name="ethermint.nameservice.v1.MsgAssociateBond"></a>
+
+### MsgAssociateBond
+MsgAssociateBond
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_id` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgAssociateBondResponse"></a>
+
+### MsgAssociateBondResponse
+MsgAssociateBondResponse
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgDeleteNameAuthority"></a>
+
+### MsgDeleteNameAuthority
+MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `wrn` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgDeleteNameAuthorityResponse"></a>
+
+### MsgDeleteNameAuthorityResponse
+MsgDeleteNameAuthorityResponse
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgDissociateBond"></a>
+
+### MsgDissociateBond
+MsgDissociateBond is SDK message for Msg/DissociateBond
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgDissociateBondResponse"></a>
+
+### MsgDissociateBondResponse
+MsgDissociateBondResponse is response type for MsgDissociateBond
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgDissociateRecords"></a>
+
+### MsgDissociateRecords
+MsgDissociateRecords is SDK message for Msg/DissociateRecords
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgDissociateRecordsResponse"></a>
+
+### MsgDissociateRecordsResponse
+MsgDissociateRecordsResponse is response type for MsgDissociateRecords
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgReAssociateRecords"></a>
+
+### MsgReAssociateRecords
+MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `new_bond_id` | [string](#string) |  |  |
+| `old_bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgReAssociateRecordsResponse"></a>
+
+### MsgReAssociateRecordsResponse
+MsgReAssociateRecordsResponse is response type for MsgReAssociateRecords
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgRenewRecord"></a>
+
+### MsgRenewRecord
+MsgRenewRecord is SDK message for Renew a record
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgRenewRecordResponse"></a>
+
+### MsgRenewRecordResponse
+MsgRenewRecordResponse
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgReserveAuthority"></a>
+
+### MsgReserveAuthority
+MsgReserveName
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `owner` | [string](#string) |  | if creating a sub-authority. |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgReserveAuthorityResponse"></a>
+
+### MsgReserveAuthorityResponse
+MsgReserveNameResponse
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgSetAuthorityBond"></a>
+
+### MsgSetAuthorityBond
+MsgSetAuthorityBond is SDK message for SetAuthorityBond
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ethermint.nameservice.v1.MsgSetAuthorityBondResponse"></a>
+
+### MsgSetAuthorityBondResponse
+MsgSetAuthorityBondResponse
+
+
+
 
 
 
@@ -1616,7 +2009,15 @@ Msg
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `SetRecord` | [MsgSetRecord](#ethermint.nameservice.v1.MsgSetRecord) | [MsgSetRecordResponse](#ethermint.nameservice.v1.MsgSetRecordResponse) | SetRecord will records a new record with given payload and bond id | |
+| `RenewRecord` | [MsgRenewRecord](#ethermint.nameservice.v1.MsgRenewRecord) | [MsgRenewRecordResponse](#ethermint.nameservice.v1.MsgRenewRecordResponse) | Renew Record will renew the expire record | |
+| `AssociateBond` | [MsgAssociateBond](#ethermint.nameservice.v1.MsgAssociateBond) | [MsgAssociateBondResponse](#ethermint.nameservice.v1.MsgAssociateBondResponse) | AssociateBond | |
+| `DissociateBond` | [MsgDissociateBond](#ethermint.nameservice.v1.MsgDissociateBond) | [MsgDissociateBondResponse](#ethermint.nameservice.v1.MsgDissociateBondResponse) | DissociateBond | |
+| `DissociateRecords` | [MsgDissociateRecords](#ethermint.nameservice.v1.MsgDissociateRecords) | [MsgDissociateRecordsResponse](#ethermint.nameservice.v1.MsgDissociateRecordsResponse) | DissociateRecords | |
+| `ReAssociateRecords` | [MsgReAssociateRecords](#ethermint.nameservice.v1.MsgReAssociateRecords) | [MsgReAssociateRecordsResponse](#ethermint.nameservice.v1.MsgReAssociateRecordsResponse) | ReAssociateRecords | |
 | `SetName` | [MsgSetName](#ethermint.nameservice.v1.MsgSetName) | [MsgSetNameResponse](#ethermint.nameservice.v1.MsgSetNameResponse) | SetName will store the name with given wrn and name | |
+| `ReserveName` | [MsgReserveAuthority](#ethermint.nameservice.v1.MsgReserveAuthority) | [MsgReserveAuthorityResponse](#ethermint.nameservice.v1.MsgReserveAuthorityResponse) | Reserve name | |
+| `DeleteName` | [MsgDeleteNameAuthority](#ethermint.nameservice.v1.MsgDeleteNameAuthority) | [MsgDeleteNameAuthorityResponse](#ethermint.nameservice.v1.MsgDeleteNameAuthorityResponse) | Delete Name method will remove authority name | |
+| `SetAuthorityBond` | [MsgSetAuthorityBond](#ethermint.nameservice.v1.MsgSetAuthorityBond) | [MsgSetAuthorityBondResponse](#ethermint.nameservice.v1.MsgSetAuthorityBondResponse) | SetAuthorityBond | |
 
  <!-- end services -->
 

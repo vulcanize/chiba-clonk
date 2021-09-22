@@ -35,6 +35,26 @@ service Query {
   rpc ListNameRecords(QueryListNameRecordsRequest) returns (QueryListNameRecordsResponse){
     option (google.api.http).get = "/ethermint/nameservice/v1/names";
   }
+  // Whois method retrieve the name authority info
+  rpc Whois(QueryWhoisRequest) returns (QueryWhoisResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/whois/{name}";
+  }
+  // LookupWrn
+  rpc LookupWrn(QueryLookupWrn) returns (QueryLookupWrnResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/lookup/{wrn}";
+  }
+  // ResolveWrn
+  rpc ResolveWrn(QueryResolveWrn) returns (QueryResolveWrnResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/resolve/{wrn}";
+  }
+  // GetRecordExpiryQueue
+  rpc GetRecordExpiryQueue(QueryGetRecordExpiryQueue) returns (QueryGetRecordExpiryQueueResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/record-expiry";
+  }
+  // GetAuthorityExpiryQueue
+  rpc GetAuthorityExpiryQueue(QueryGetAuthorityExpiryQueue) returns (QueryGetAuthorityExpiryQueueResponse){
+    option (google.api.http).get = "/ethermint/nameservice/v1/authority-expiry";
+  }
 }
 
 // QueryParamRequest is request type for nameservice params
@@ -120,6 +140,65 @@ message QueryListNameRecordsResponse{
   repeated NameEntry names = 1 [
     (gogoproto.nullable) = false
   ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryWhoisRequest is request type for Get NameAuthority
+message QueryWhoisRequest{
+  string name = 1;
+}
+
+// QueryWhoisResponse is response type for whois request
+message QueryWhoisResponse{
+  NameAuthority name_authority = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"nameAuthority\" yaml:\"nameAuthority\""
+  ];
+}
+
+// QueryLookupWrn is request type for LookupWrn
+message QueryLookupWrn{
+  string wrn = 1;
+}
+
+// QueryLookupWrnResponse is response type for QueryLookupWrn
+message QueryLookupWrnResponse{
+  NameRecord name = 1;
+}
+
+// QueryResolveWrn is request type for ResolveWrn
+message QueryResolveWrn{
+  string wrn = 1;
+}
+
+// QueryResolveWrnResponse is response type for QueryResolveWrn
+message QueryResolveWrnResponse{
+  Record record = 1;
+}
+
+// QueryGetRecordExpiryQueue
+message QueryGetRecordExpiryQueue{
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryGetRecordExpiryQueueResponse
+message QueryGetRecordExpiryQueueResponse{
+  // TODO(gsk967): add result record
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetAuthorityExpiryQueue
+message QueryGetAuthorityExpiryQueue{
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryGetAuthorityExpiryQueueResponse
+message QueryGetAuthorityExpiryQueueResponse{
+  // TODO(gsk967): add result record
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
