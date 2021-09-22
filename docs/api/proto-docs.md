@@ -4,39 +4,6 @@
 
 ## Table of Contents
 
-- [ethermint/bond/v1/bond.proto](#ethermint/bond/v1/bond.proto)
-    - [Bond](#ethermint.bond.v1.Bond)
-    - [Params](#ethermint.bond.v1.Params)
-  
-- [ethermint/bond/v1/genesis.proto](#ethermint/bond/v1/genesis.proto)
-    - [GenesisState](#ethermint.bond.v1.GenesisState)
-  
-- [ethermint/bond/v1/query.proto](#ethermint/bond/v1/query.proto)
-    - [QueryGetBondByIdRequest](#ethermint.bond.v1.QueryGetBondByIdRequest)
-    - [QueryGetBondByIdResponse](#ethermint.bond.v1.QueryGetBondByIdResponse)
-    - [QueryGetBondModuleBalanceRequest](#ethermint.bond.v1.QueryGetBondModuleBalanceRequest)
-    - [QueryGetBondModuleBalanceResponse](#ethermint.bond.v1.QueryGetBondModuleBalanceResponse)
-    - [QueryGetBondsByOwnerRequest](#ethermint.bond.v1.QueryGetBondsByOwnerRequest)
-    - [QueryGetBondsByOwnerResponse](#ethermint.bond.v1.QueryGetBondsByOwnerResponse)
-    - [QueryGetBondsRequest](#ethermint.bond.v1.QueryGetBondsRequest)
-    - [QueryGetBondsResponse](#ethermint.bond.v1.QueryGetBondsResponse)
-    - [QueryParamRequest](#ethermint.bond.v1.QueryParamRequest)
-    - [QueryParamsResponse](#ethermint.bond.v1.QueryParamsResponse)
-  
-    - [Query](#ethermint.bond.v1.Query)
-  
-- [ethermint/bond/v1/tx.proto](#ethermint/bond/v1/tx.proto)
-    - [MsgCancelBond](#ethermint.bond.v1.MsgCancelBond)
-    - [MsgCancelBondResponse](#ethermint.bond.v1.MsgCancelBondResponse)
-    - [MsgCreateBond](#ethermint.bond.v1.MsgCreateBond)
-    - [MsgCreateBondResponse](#ethermint.bond.v1.MsgCreateBondResponse)
-    - [MsgRefillBond](#ethermint.bond.v1.MsgRefillBond)
-    - [MsgRefillBondResponse](#ethermint.bond.v1.MsgRefillBondResponse)
-    - [MsgWithdrawBond](#ethermint.bond.v1.MsgWithdrawBond)
-    - [MsgWithdrawBondResponse](#ethermint.bond.v1.MsgWithdrawBondResponse)
-  
-    - [Msg](#ethermint.bond.v1.Msg)
-  
 - [ethermint/crypto/v1/ethsecp256k1/keys.proto](#ethermint/crypto/v1/ethsecp256k1/keys.proto)
     - [PrivKey](#ethermint.crypto.v1.ethsecp256k1.PrivKey)
     - [PubKey](#ethermint.crypto.v1.ethsecp256k1.PubKey)
@@ -113,400 +80,40 @@
 - [ethermint/types/v1/web3.proto](#ethermint/types/v1/web3.proto)
     - [ExtensionOptionsWeb3Tx](#ethermint.types.v1.ExtensionOptionsWeb3Tx)
   
+- [vulcanize/bond/v1beta1/bond.proto](#vulcanize/bond/v1beta1/bond.proto)
+    - [Bond](#vulcanize.bond.v1beta1.Bond)
+    - [Params](#vulcanize.bond.v1beta1.Params)
+  
+- [vulcanize/bond/v1beta1/genesis.proto](#vulcanize/bond/v1beta1/genesis.proto)
+    - [GenesisState](#vulcanize.bond.v1beta1.GenesisState)
+  
+- [vulcanize/bond/v1beta1/query.proto](#vulcanize/bond/v1beta1/query.proto)
+    - [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest)
+    - [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse)
+    - [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest)
+    - [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse)
+    - [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest)
+    - [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse)
+    - [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest)
+    - [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse)
+    - [QueryParamRequest](#vulcanize.bond.v1beta1.QueryParamRequest)
+    - [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse)
+  
+    - [Query](#vulcanize.bond.v1beta1.Query)
+  
+- [vulcanize/bond/v1beta1/tx.proto](#vulcanize/bond/v1beta1/tx.proto)
+    - [MsgCancelBond](#vulcanize.bond.v1beta1.MsgCancelBond)
+    - [MsgCancelBondResponse](#vulcanize.bond.v1beta1.MsgCancelBondResponse)
+    - [MsgCreateBond](#vulcanize.bond.v1beta1.MsgCreateBond)
+    - [MsgCreateBondResponse](#vulcanize.bond.v1beta1.MsgCreateBondResponse)
+    - [MsgRefillBond](#vulcanize.bond.v1beta1.MsgRefillBond)
+    - [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse)
+    - [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond)
+    - [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse)
+  
+    - [Msg](#vulcanize.bond.v1beta1.Msg)
+  
 - [Scalar Value Types](#scalar-value-types)
-
-
-
-<a name="ethermint/bond/v1/bond.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## ethermint/bond/v1/bond.proto
-
-
-
-<a name="ethermint.bond.v1.Bond"></a>
-
-### Bond
-Bond represents funds deposited by an account for record rent payments.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  | id is unique identifier of the bond |
-| `owner` | [string](#string) |  | owner of the bond |
-| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | balance of the bond |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.Params"></a>
-
-### Params
-Params defines the bond module parameters
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `max_bond_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | max_bond_amount is maximum amount to bond |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="ethermint/bond/v1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## ethermint/bond/v1/genesis.proto
-
-
-
-<a name="ethermint.bond.v1.GenesisState"></a>
-
-### GenesisState
-GenesisState defines the bond module's genesis state.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#ethermint.bond.v1.Params) |  | params defines all the parameters of the module. |
-| `bonds` | [Bond](#ethermint.bond.v1.Bond) | repeated | bonds defines all the bonds |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="ethermint/bond/v1/query.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## ethermint/bond/v1/query.proto
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondByIdRequest"></a>
-
-### QueryGetBondByIdRequest
-QueryGetBondById
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondByIdResponse"></a>
-
-### QueryGetBondByIdResponse
-QueryGetBondByIdResponse returns QueryGetBondById query response
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `bond` | [Bond](#ethermint.bond.v1.Bond) |  |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondModuleBalanceRequest"></a>
-
-### QueryGetBondModuleBalanceRequest
-QueryGetBondModuleBalanceRequest is request type for bond module balance rpc method
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondModuleBalanceResponse"></a>
-
-### QueryGetBondModuleBalanceResponse
-QueryGetBondModuleBalanceResponse is response type for bond module balance rpc method
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondsByOwnerRequest"></a>
-
-### QueryGetBondsByOwnerRequest
-QueryGetBondsByOwnerRequest is request tyep for Query/GetBondsByOwner RPC Method
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `owner` | [string](#string) |  |  |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondsByOwnerResponse"></a>
-
-### QueryGetBondsByOwnerResponse
-QueryGetBondsByOwnerResponse is response type for Query/GetBondsByOwner RPC Method
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `bonds` | [Bond](#ethermint.bond.v1.Bond) | repeated |  |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondsRequest"></a>
-
-### QueryGetBondsRequest
-QueryGetBonds
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryGetBondsResponse"></a>
-
-### QueryGetBondsResponse
-QueryGetBondsResponse
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `bonds` | [Bond](#ethermint.bond.v1.Bond) | repeated |  |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryParamRequest"></a>
-
-### QueryParamRequest
-QueryParamRequest is request for query the bond module params
-
-
-
-
-
-
-<a name="ethermint.bond.v1.QueryParamsResponse"></a>
-
-### QueryParamsResponse
-QueryParamsResponse returns response type  of bond module params
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#ethermint.bond.v1.Params) |  |  |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="ethermint.bond.v1.Query"></a>
-
-### Query
-Query defines the gRPC querier service for bond module
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Params` | [QueryParamRequest](#ethermint.bond.v1.QueryParamRequest) | [QueryParamsResponse](#ethermint.bond.v1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/bond/v1/params|
-| `Bonds` | [QueryGetBondsRequest](#ethermint.bond.v1.QueryGetBondsRequest) | [QueryGetBondsResponse](#ethermint.bond.v1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/ethermint/bond/v1/bonds|
-| `GetBondById` | [QueryGetBondByIdRequest](#ethermint.bond.v1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#ethermint.bond.v1.QueryGetBondByIdResponse) | GetBondById | GET|/ethermint/bond/v1/bonds/{id}|
-| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#ethermint.bond.v1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#ethermint.bond.v1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/ethermint/bond/v1/bonds_by_owner|
-| `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#ethermint.bond.v1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#ethermint.bond.v1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/ethermint/bond/v1/balance|
-
- <!-- end services -->
-
-
-
-<a name="ethermint/bond/v1/tx.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## ethermint/bond/v1/tx.proto
-
-
-
-<a name="ethermint.bond.v1.MsgCancelBond"></a>
-
-### MsgCancelBond
-MsgCancelBond defines a SDK message for the cancel the bond.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-| `signer` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgCancelBondResponse"></a>
-
-### MsgCancelBondResponse
-MsgCancelBondResponse defines the MsgCancelBond response type.
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgCreateBond"></a>
-
-### MsgCreateBond
-MsgCreateBond defines a SDK message for creating a new bond.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `signer` | [string](#string) |  |  |
-| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgCreateBondResponse"></a>
-
-### MsgCreateBondResponse
-MsgCreateBondResponse defines the Msg/CreateBond response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgRefillBond"></a>
-
-### MsgRefillBond
-MsgRefillBond defines a SDK message for refill the amount for bond.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-| `signer` | [string](#string) |  |  |
-| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgRefillBondResponse"></a>
-
-### MsgRefillBondResponse
-MsgRefillBondResponse defines the Msg/RefillBond response type.
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgWithdrawBond"></a>
-
-### MsgWithdrawBond
-MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
-| `signer` | [string](#string) |  |  |
-| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
-
-
-
-
-
-
-<a name="ethermint.bond.v1.MsgWithdrawBondResponse"></a>
-
-### MsgWithdrawBondResponse
-MsgWithdrawBondResponse defines the MsgWithdrawBond response type.
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="ethermint.bond.v1.Msg"></a>
-
-### Msg
-Msg defines the bond Msg service.
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `CreateBond` | [MsgCreateBond](#ethermint.bond.v1.MsgCreateBond) | [MsgCreateBondResponse](#ethermint.bond.v1.MsgCreateBondResponse) | CreateBond defines a method for creating a new bond. | |
-| `RefillBond` | [MsgRefillBond](#ethermint.bond.v1.MsgRefillBond) | [MsgRefillBondResponse](#ethermint.bond.v1.MsgRefillBondResponse) | RefillBond defines a method for refilling amount for bond. | |
-| `WithdrawBond` | [MsgWithdrawBond](#ethermint.bond.v1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#ethermint.bond.v1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdrawing amount from bond. | |
-| `CancelBond` | [MsgCancelBond](#ethermint.bond.v1.MsgCancelBond) | [MsgCancelBondResponse](#ethermint.bond.v1.MsgCancelBondResponse) | CancelBond defines a method for cancelling a bond. | |
-
- <!-- end services -->
 
 
 
@@ -1555,6 +1162,399 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
  <!-- end enums -->
 
  <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/bond.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/bond.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.Bond"></a>
+
+### Bond
+Bond represents funds deposited by an account for record rent payments.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  | id is unique identifier of the bond |
+| `owner` | [string](#string) |  | owner of the bond |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | balance of the bond |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.Params"></a>
+
+### Params
+Params defines the bond module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `max_bond_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | max_bond_amount is maximum amount to bond |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/genesis.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the bond module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.bond.v1beta1.Params) |  | params defines all the parameters of the module. |
+| `bonds` | [Bond](#vulcanize.bond.v1beta1.Bond) | repeated | bonds defines all the bonds |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/query.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIdRequest"></a>
+
+### QueryGetBondByIdRequest
+QueryGetBondById
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIdResponse"></a>
+
+### QueryGetBondByIdResponse
+QueryGetBondByIdResponse returns QueryGetBondById query response
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond` | [Bond](#vulcanize.bond.v1beta1.Bond) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest"></a>
+
+### QueryGetBondModuleBalanceRequest
+QueryGetBondModuleBalanceRequest is request type for bond module balance rpc method
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse"></a>
+
+### QueryGetBondModuleBalanceResponse
+QueryGetBondModuleBalanceResponse is response type for bond module balance rpc method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest"></a>
+
+### QueryGetBondsByOwnerRequest
+QueryGetBondsByOwnerRequest is request tyep for Query/GetBondsByOwner RPC Method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse"></a>
+
+### QueryGetBondsByOwnerResponse
+QueryGetBondsByOwnerResponse is response type for Query/GetBondsByOwner RPC Method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bonds` | [Bond](#vulcanize.bond.v1beta1.Bond) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsRequest"></a>
+
+### QueryGetBondsRequest
+QueryGetBonds
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsResponse"></a>
+
+### QueryGetBondsResponse
+QueryGetBondsResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bonds` | [Bond](#vulcanize.bond.v1beta1.Bond) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryParamRequest"></a>
+
+### QueryParamRequest
+QueryParamRequest is request for query the bond module params
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse returns response type  of bond module params
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.bond.v1beta1.Params) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.bond.v1beta1.Query"></a>
+
+### Query
+Query defines the gRPC querier service for bond module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Params` | [QueryParamRequest](#vulcanize.bond.v1beta1.QueryParamRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/bond/v1/params|
+| `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/ethermint/bond/v1/bonds|
+| `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/ethermint/bond/v1/bonds/{id}|
+| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/ethermint/bond/v1/bonds_by_owner|
+| `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/ethermint/bond/v1/balance|
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/tx.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCancelBond"></a>
+
+### MsgCancelBond
+MsgCancelBond defines a SDK message for the cancel the bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCancelBondResponse"></a>
+
+### MsgCancelBondResponse
+MsgCancelBondResponse defines the MsgCancelBond response type.
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCreateBond"></a>
+
+### MsgCreateBond
+MsgCreateBond defines a SDK message for creating a new bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `signer` | [string](#string) |  |  |
+| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCreateBondResponse"></a>
+
+### MsgCreateBondResponse
+MsgCreateBondResponse defines the Msg/CreateBond response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgRefillBond"></a>
+
+### MsgRefillBond
+MsgRefillBond defines a SDK message for refill the amount for bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgRefillBondResponse"></a>
+
+### MsgRefillBondResponse
+MsgRefillBondResponse defines the Msg/RefillBond response type.
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgWithdrawBond"></a>
+
+### MsgWithdrawBond
+MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgWithdrawBondResponse"></a>
+
+### MsgWithdrawBondResponse
+MsgWithdrawBondResponse defines the MsgWithdrawBond response type.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.bond.v1beta1.Msg"></a>
+
+### Msg
+Msg defines the bond Msg service.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateBond` | [MsgCreateBond](#vulcanize.bond.v1beta1.MsgCreateBond) | [MsgCreateBondResponse](#vulcanize.bond.v1beta1.MsgCreateBondResponse) | CreateBond defines a method for creating a new bond. | |
+| `RefillBond` | [MsgRefillBond](#vulcanize.bond.v1beta1.MsgRefillBond) | [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse) | RefillBond defines a method for refilling amount for bond. | |
+| `WithdrawBond` | [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdrawing amount from bond. | |
+| `CancelBond` | [MsgCancelBond](#vulcanize.bond.v1beta1.MsgCancelBond) | [MsgCancelBondResponse](#vulcanize.bond.v1beta1.MsgCancelBondResponse) | CancelBond defines a method for cancelling a bond. | |
 
  <!-- end services -->
 

@@ -1,8 +1,8 @@
 syntax = "proto3";
-package ethermint.bond.v1;
+package vulcanize.bond.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "ethermint/bond/v1/bond.proto";
+import "vulcanize/bond/v1beta1/bond.proto";
 
 option go_package = "github.com/tharsis/ethermint/x/bond/types";
 

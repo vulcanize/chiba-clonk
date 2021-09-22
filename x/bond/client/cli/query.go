@@ -33,7 +33,7 @@ func GetQueryCmd() *cobra.Command {
 
 // GetQueryParamsCmd implements the params query command.
 func GetQueryParamsCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,
 		Short: "Query the current bond parameters information.",
@@ -41,9 +41,9 @@ func GetQueryParamsCmd() *cobra.Command {
 			fmt.Sprintf(`Query values set as bond parameters.
 
 Example:
-$ %s query bond params
+$ %s query %s params
 `,
-				version.AppName,
+				version.AppName, types.ModuleName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -60,6 +60,8 @@ $ %s query bond params
 			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetQueryBondLists implements the bond lists query command.
@@ -71,9 +73,9 @@ func GetQueryBondLists() *cobra.Command {
 			fmt.Sprintf(`Get bond list .
 
 Example:
-$ %s query bond list
+$ %s query %s list
 `,
-				version.AppName,
+				version.AppName, types.ModuleName,
 			),
 		),
 		Args: cobra.ExactArgs(0),
@@ -140,9 +142,9 @@ func GetBondListByOwnerCmd() *cobra.Command {
 			fmt.Sprintf(`Get bond list by owner.
 
 Example:
-$ %s query bond query-by-owner [address]
+$ %s query %s query-by-owner [address]
 `,
-				version.AppName,
+				version.AppName, types.ModuleName,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -174,9 +176,9 @@ func GetBondModuleBalanceCmd() *cobra.Command {
 			fmt.Sprintf(`Get bond module balance.
 
 Example:
-$ %s query bond balance
+$ %s query %s balance
 `,
-				version.AppName,
+				version.AppName, types.ModuleName,
 			),
 		),
 		Args: cobra.ExactArgs(0),

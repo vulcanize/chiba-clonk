@@ -1,5 +1,5 @@
 syntax = "proto3";
-package ethermint.bond.v1;
+package vulcanize.bond.v1beta1;
 
 option go_package = "github.com/tharsis/ethermint/x/bond/types";
 
