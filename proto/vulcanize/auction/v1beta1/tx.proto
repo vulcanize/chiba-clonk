@@ -7,63 +7,84 @@ import "vulcanize/auction/v1beta1/types.proto";
 
 option go_package = "github.com/tharsis/ethermint/x/auction/types";
 
+// MsgCreateAuction defines a create auction message
 message MsgCreateAuction {
     option (gogoproto.goproto_getters) = false;
     
+    // Duration of the commits phase in seconds
     int64 commits_duration = 1;
+    // Duration of the reveals phase in seconds
     int64 reveals_duration = 2;
+    // Commit fees
     cosmos.base.v1beta1.Coin commit_fee = 3 [
         (gogoproto.nullable) = false,
         (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
     ];
+    // Reveal fees
     cosmos.base.v1beta1.Coin reveal_fee = 4 [
         (gogoproto.nullable) = false,
         (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
     ];
+    // Minimum acceptable bid amount
     cosmos.base.v1beta1.Coin minimum_bid = 5 [
         (gogoproto.nullable) = false,
         (gogoproto.moretags) = "json:\"minimum_bid\" yaml:\"minimum_bid\""
     ];
+    // Address of the signer
     string signer = 6 [
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
         (gogoproto.nullable) = false
     ];
 }
 
+// MsgCreateAuctionResponse returns the details of the created auction
 message MsgCreateAuctionResponse {
     option (gogoproto.goproto_getters) = false;
+    // Auction details
     Auction auction = 1;
 }
 
+// CommitBid defines the message to commit a bid
 message MsgCommitBid {
     option (gogoproto.goproto_getters) = false;
 
+    // Auction ID
     string auction_id = 1;
+    // Commit Hash
     string commit_hash = 2;
+    // Address of the signer
     string signer = 3 [
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
         (gogoproto.nullable) = false
     ];
 }
 
+// RevealBid defines the message to reveal a bid
 message MsgRevealBid {
     option (gogoproto.goproto_getters) = false;
 
+    // Auction ID
     string auction_id = 1;
+    // Reveal details
     string reveal = 2;
+    // Address of the signer
     string signer = 3 [
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
         (gogoproto.nullable) = false
     ];
 }
 
+// MsgCommitBidResponse returns the state of the auction after the bid creation
 message MsgCommitBidResponse {
     option (gogoproto.goproto_getters) = false;
+    // Auction details
     Auction auction = 1;
 }
 
+// MsgRevealBidResponse returns the state of the auction after the bid reveal
 message MsgRevealBidResponse {
     option (gogoproto.goproto_getters) = false;
+    // Auction details
     Auction auction = 1;
 }
 

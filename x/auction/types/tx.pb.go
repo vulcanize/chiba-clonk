@@ -30,13 +30,20 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgCreateAuction defines a create auction message
 type MsgCreateAuction struct {
-	CommitsDuration int64                                         `protobuf:"varint,1,opt,name=commits_duration,json=commitsDuration,proto3" json:"commits_duration,omitempty"`
-	RevealsDuration int64                                         `protobuf:"varint,2,opt,name=reveals_duration,json=revealsDuration,proto3" json:"reveals_duration,omitempty"`
-	CommitFee       types.Coin                                    `protobuf:"bytes,3,opt,name=commit_fee,json=commitFee,proto3" json:"commit_fee" json:"commit_fee" yaml:"commit_fee"`
-	RevealFee       types.Coin                                    `protobuf:"bytes,4,opt,name=reveal_fee,json=revealFee,proto3" json:"reveal_fee" json:"reveal_fee" yaml:"reveal_fee"`
-	MinimumBid      types.Coin                                    `protobuf:"bytes,5,opt,name=minimum_bid,json=minimumBid,proto3" json:"minimum_bid" json:"minimum_bid" yaml:"minimum_bid"`
-	Signer          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=signer,proto3,customtype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer"`
+	// Duration of the commits phase in seconds
+	CommitsDuration int64 `protobuf:"varint,1,opt,name=commits_duration,json=commitsDuration,proto3" json:"commits_duration,omitempty"`
+	// Duration of the reveals phase in seconds
+	RevealsDuration int64 `protobuf:"varint,2,opt,name=reveals_duration,json=revealsDuration,proto3" json:"reveals_duration,omitempty"`
+	// Commit fees
+	CommitFee types.Coin `protobuf:"bytes,3,opt,name=commit_fee,json=commitFee,proto3" json:"commit_fee" json:"commit_fee" yaml:"commit_fee"`
+	// Reveal fees
+	RevealFee types.Coin `protobuf:"bytes,4,opt,name=reveal_fee,json=revealFee,proto3" json:"reveal_fee" json:"reveal_fee" yaml:"reveal_fee"`
+	// Minimum acceptable bid amount
+	MinimumBid types.Coin `protobuf:"bytes,5,opt,name=minimum_bid,json=minimumBid,proto3" json:"minimum_bid" json:"minimum_bid" yaml:"minimum_bid"`
+	// Address of the signer
+	Signer github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=signer,proto3,customtype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer"`
 }
 
 func (m *MsgCreateAuction) Reset()         { *m = MsgCreateAuction{} }
@@ -72,7 +79,9 @@ func (m *MsgCreateAuction) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateAuction proto.InternalMessageInfo
 
+// MsgCreateAuctionResponse returns the details of the created auction
 type MsgCreateAuctionResponse struct {
+	// Auction details
 	Auction *Auction `protobuf:"bytes,1,opt,name=auction,proto3" json:"auction,omitempty"`
 }
 
@@ -109,10 +118,14 @@ func (m *MsgCreateAuctionResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateAuctionResponse proto.InternalMessageInfo
 
+// CommitBid defines the message to commit a bid
 type MsgCommitBid struct {
-	AuctionId  string                                        `protobuf:"bytes,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
-	CommitHash string                                        `protobuf:"bytes,2,opt,name=commit_hash,json=commitHash,proto3" json:"commit_hash,omitempty"`
-	Signer     github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=signer,proto3,customtype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer"`
+	// Auction ID
+	AuctionId string `protobuf:"bytes,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
+	// Commit Hash
+	CommitHash string `protobuf:"bytes,2,opt,name=commit_hash,json=commitHash,proto3" json:"commit_hash,omitempty"`
+	// Address of the signer
+	Signer github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=signer,proto3,customtype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer"`
 }
 
 func (m *MsgCommitBid) Reset()         { *m = MsgCommitBid{} }
@@ -148,10 +161,14 @@ func (m *MsgCommitBid) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCommitBid proto.InternalMessageInfo
 
+// RevealBid defines the message to reveal a bid
 type MsgRevealBid struct {
-	AuctionId string                                        `protobuf:"bytes,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
-	Reveal    string                                        `protobuf:"bytes,2,opt,name=reveal,proto3" json:"reveal,omitempty"`
-	Signer    github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=signer,proto3,customtype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer"`
+	// Auction ID
+	AuctionId string `protobuf:"bytes,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
+	// Reveal details
+	Reveal string `protobuf:"bytes,2,opt,name=reveal,proto3" json:"reveal,omitempty"`
+	// Address of the signer
+	Signer github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=signer,proto3,customtype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer"`
 }
 
 func (m *MsgRevealBid) Reset()         { *m = MsgRevealBid{} }
@@ -187,7 +204,9 @@ func (m *MsgRevealBid) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRevealBid proto.InternalMessageInfo
 
+// MsgCommitBidResponse returns the state of the auction after the bid creation
 type MsgCommitBidResponse struct {
+	// Auction details
 	Auction *Auction `protobuf:"bytes,1,opt,name=auction,proto3" json:"auction,omitempty"`
 }
 
@@ -224,7 +243,9 @@ func (m *MsgCommitBidResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCommitBidResponse proto.InternalMessageInfo
 
+// MsgRevealBidResponse returns the state of the auction after the bid reveal
 type MsgRevealBidResponse struct {
+	// Auction details
 	Auction *Auction `protobuf:"bytes,1,opt,name=auction,proto3" json:"auction,omitempty"`
 }
 

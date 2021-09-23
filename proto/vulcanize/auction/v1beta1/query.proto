@@ -8,82 +8,90 @@ import "vulcanize/auction/v1beta1/types.proto";
 
 option go_package = "github.com/tharsis/ethermint/x/auction/types";
 
+// ListRequest is the format for querying all the auctions
 message ListRequest {
 }
 
+// ListResponse returns the list of all actions
 message ListResponse {
+    // List of auctions
     Auctions auctions = 1;
     // pagination defines an optional pagination for the request
     cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// AuctionRequest is the format for querying a specific auction
 message AuctionRequest {
+    // Auction ID
     string id = 1;
 }
 
+// AuctionResponse returns the details of the queried auction
 message AuctionResponse {
+    // Auction details
     Auction auction = 1;
 }
 
+// BidRequest is the format for querying a specific bid in an auction
 message BidRequest {
+    // Auction ID
     string auction_id = 1;
+    // Bidder address
     string bidder = 2;
 }
 
+// BidResponse returns the details of the queried bid
 message BidResponse {
+    // Bid details
     Bid bid = 1;
 }
 
+// BidsRequest is the format for querying all bids in an auction
 message BidsRequest {
+    // Auction ID
     string auction_id = 1;
 }
 
+// BidsResponse returns details of all bids in an auction
 message BidsResponse {
+    // List of bids in the auction
     repeated Bid bids = 1;
 }
 
+// ListByBidderRequest is the format for querying all auctions containing a bidder address
 message ListByBidderRequest {
+    // Address of the bidder
     string bidder_address = 1;
 }
 
+// ListByBidderResponse returns all auctions containing a bidder
 message ListByBidderResponse {
+    // List of auctions
     Auctions auctions = 1;
 }
 
+// QueryParamsRequest is the format to query the parameters of the auction module
 message QueryParamsRequest {
 }
 
+// QueryParamsResponse returns parameters of the auction module
 message QueryParamsResponse {
     Params params = 1;
 }
 
+// BalanceRequest is the format to fetch all balances
 message BalanceRequest {
 }
 
 message BalanceResponse {
+    // Set of all balances within the auction
     string balance = 1 [
         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coins",
         (gogoproto.nullable) = false
     ];
 }
 
-message QueryRequest {
-    option (gogoproto.equal) = false;
-    option (gogoproto.goproto_getters) = false;
-
-    string path = 1;
-    bytes data = 2;
-}
-
-message QueryResponse {
-    option (gogoproto.equal) = false;
-    option (gogoproto.goproto_getters) = false;
-
-    bytes result = 1;
-    int64 height = 2;
-}
-
-// Query defines the gRPC querier interface
+// Query defines the gRPC querier interface for the auction module
 service Query {
     // List queries all auctions
     rpc List(ListRequest) returns (ListResponse) {
@@ -95,7 +103,7 @@ service Query {
         option (google.api.http).get = "/ethermint/auction/v1/auctions/{id}";
     }
     
-    // GetBid queries and auction bid
+    // GetBid queries an auction bid
     rpc GetBid(BidRequest) returns (BidResponse) {
         option (google.api.http).get = "/ethermint/auction/v1/bids/{auction_id}/{bidder}";
     }

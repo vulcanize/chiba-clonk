@@ -25,12 +25,18 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Params defines the auction module parameters
 type Params struct {
-	CommitsDuration int64      `protobuf:"varint,1,opt,name=commits_duration,json=commitsDuration,proto3" json:"commits_duration,omitempty"`
-	RevealsDuration int64      `protobuf:"varint,2,opt,name=reveals_duration,json=revealsDuration,proto3" json:"reveals_duration,omitempty"`
-	CommitFee       types.Coin `protobuf:"bytes,3,opt,name=commit_fee,json=commitFee,proto3" json:"commit_fee" json:"commit_fee" yaml:"commit_fee"`
-	RevealFee       types.Coin `protobuf:"bytes,4,opt,name=reveal_fee,json=revealFee,proto3" json:"reveal_fee" json:"reveal_fee" yaml:"reveal_fee"`
-	MinimumBid      types.Coin `protobuf:"bytes,5,opt,name=minimum_bid,json=minimumBid,proto3" json:"minimum_bid" json:"minimum_bid" yaml:"minimum_bid"`
+	// Duration of the commits phase in seconds
+	CommitsDuration int64 `protobuf:"varint,1,opt,name=commits_duration,json=commitsDuration,proto3" json:"commits_duration,omitempty"`
+	// Duration of the reveals phase in seconds
+	RevealsDuration int64 `protobuf:"varint,2,opt,name=reveals_duration,json=revealsDuration,proto3" json:"reveals_duration,omitempty"`
+	// Commit fees
+	CommitFee types.Coin `protobuf:"bytes,3,opt,name=commit_fee,json=commitFee,proto3" json:"commit_fee" json:"commit_fee" yaml:"commit_fee"`
+	// Reveal fees
+	RevealFee types.Coin `protobuf:"bytes,4,opt,name=reveal_fee,json=revealFee,proto3" json:"reveal_fee" json:"reveal_fee" yaml:"reveal_fee"`
+	// Minimum acceptable bid amount
+	MinimumBid types.Coin `protobuf:"bytes,5,opt,name=minimum_bid,json=minimumBid,proto3" json:"minimum_bid" json:"minimum_bid" yaml:"minimum_bid"`
 }
 
 func (m *Params) Reset()      { *m = Params{} }
@@ -100,19 +106,30 @@ func (m *Params) GetMinimumBid() types.Coin {
 	return types.Coin{}
 }
 
+// Auction represents a sealed-bid on-chain auction
 type Auction struct {
-	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Status         string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	OwnerAddress   string                 `protobuf:"bytes,3,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
-	CreateTime     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	Id     string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	// Address of the creator of the auction
+	OwnerAddress string `protobuf:"bytes,3,opt,name=owner_address,json=ownerAddress,proto3" json:"owner_address,omitempty"`
+	// Timestamp at which the auction was created
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Timestamp at which the commits phase concluded
 	CommitsEndTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=commits_end_time,json=commitsEndTime,proto3" json:"commits_end_time,omitempty"`
+	// Timestamp at which the reveals phase concluded
 	RevealsEndTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=reveals_end_time,json=revealsEndTime,proto3" json:"reveals_end_time,omitempty"`
-	CommitFee      types.Coin             `protobuf:"bytes,7,opt,name=commit_fee,json=commitFee,proto3" json:"commit_fee" json:"commit_fee" yaml:"commit_fee"`
-	RevealFee      types.Coin             `protobuf:"bytes,8,opt,name=reveal_fee,json=revealFee,proto3" json:"reveal_fee" json:"reveal_fee" yaml:"reveal_fee"`
-	MinimumBid     types.Coin             `protobuf:"bytes,9,opt,name=minimum_bid,json=minimumBid,proto3" json:"minimum_bid" json:"minimum_bid" yaml:"minimum_bid"`
-	WinnerAddress  string                 `protobuf:"bytes,10,opt,name=winner_address,json=winnerAddress,proto3" json:"winner_address,omitempty"`
-	WinningBid     types.Coin             `protobuf:"bytes,11,opt,name=winning_bid,json=winningBid,proto3" json:"winning_bid" json:"winning_bid" yaml:"winning_bid"`
-	WinningPrice   types.Coin             `protobuf:"bytes,12,opt,name=winning_price,json=winningPrice,proto3" json:"winning_price" json:"winning_price" yaml:"winning_price"`
+	// Commit and reveal fees must both be paid when committing a bid
+	// Reveal fee is returned only if the bid is revealed
+	CommitFee types.Coin `protobuf:"bytes,7,opt,name=commit_fee,json=commitFee,proto3" json:"commit_fee" json:"commit_fee" yaml:"commit_fee"`
+	RevealFee types.Coin `protobuf:"bytes,8,opt,name=reveal_fee,json=revealFee,proto3" json:"reveal_fee" json:"reveal_fee" yaml:"reveal_fee"`
+	// Minimum acceptable bid amount for a valid commit
+	MinimumBid types.Coin `protobuf:"bytes,9,opt,name=minimum_bid,json=minimumBid,proto3" json:"minimum_bid" json:"minimum_bid" yaml:"minimum_bid"`
+	// Address of the winner
+	WinnerAddress string `protobuf:"bytes,10,opt,name=winner_address,json=winnerAddress,proto3" json:"winner_address,omitempty"`
+	// Winning bid, i.e., the highest bid
+	WinningBid types.Coin `protobuf:"bytes,11,opt,name=winning_bid,json=winningBid,proto3" json:"winning_bid" json:"winning_bid" yaml:"winning_bid"`
+	// Amount the winner pays, i.e. the second highest auction
+	WinningPrice types.Coin `protobuf:"bytes,12,opt,name=winning_price,json=winningPrice,proto3" json:"winning_price" json:"winning_price" yaml:"winning_price"`
 }
 
 func (m *Auction) Reset()         { *m = Auction{} }
@@ -185,6 +202,7 @@ func (m *Auctions) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Auctions proto.InternalMessageInfo
 
+// Bid represents a sealed bid (commit) made during the auction
 type Bid struct {
 	AuctionId     string                 `protobuf:"bytes,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
 	BidderAddress string                 `protobuf:"bytes,2,opt,name=bidder_address,json=bidderAddress,proto3" json:"bidder_address,omitempty"`

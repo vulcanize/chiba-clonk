@@ -104,8 +104,6 @@
     - [ListResponse](#vulcanize.auction.v1beta1.ListResponse)
     - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
-    - [QueryRequest](#vulcanize.auction.v1beta1.QueryRequest)
-    - [QueryResponse](#vulcanize.auction.v1beta1.QueryResponse)
   
     - [Query](#vulcanize.auction.v1beta1.Query)
   
@@ -1183,23 +1181,23 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.Auction"></a>
 
 ### Auction
-
+Auction represents a sealed-bid on-chain auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `status` | [string](#string) |  |  |
-| `owner_address` | [string](#string) |  |  |
-| `create_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| `commits_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| `reveals_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `owner_address` | [string](#string) |  | Address of the creator of the auction |
+| `create_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the auction was created |
+| `commits_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the commits phase concluded |
+| `reveals_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the reveals phase concluded |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit and reveal fees must both be paid when committing a bid Reveal fee is returned only if the bid is revealed |
 | `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `winner_address` | [string](#string) |  |  |
-| `winning_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `winning_price` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount for a valid commit |
+| `winner_address` | [string](#string) |  | Address of the winner |
+| `winning_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Winning bid, i.e., the highest bid |
+| `winning_price` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Amount the winner pays, i.e. the second highest auction |
 
 
 
@@ -1224,7 +1222,7 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.Bid"></a>
 
 ### Bid
-
+Bid represents a sealed bid (commit) made during the auction
 
 
 | Field | Type | Label | Description |
@@ -1247,16 +1245,16 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.Params"></a>
 
 ### Params
-
+Params defines the auction module parameters
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `commits_duration` | [int64](#int64) |  |  |
-| `reveals_duration` | [int64](#int64) |  |  |
-| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `commits_duration` | [int64](#int64) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [int64](#int64) |  | Duration of the reveals phase in seconds |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
 
 
 
@@ -1282,7 +1280,7 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.GenesisState"></a>
 
 ### GenesisState
-
+GenesisState defines the genesis state of the auction module
 
 
 | Field | Type | Label | Description |
@@ -1314,12 +1312,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.AuctionRequest"></a>
 
 ### AuctionRequest
-
+AuctionRequest is the format for querying a specific auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `id` | [string](#string) |  |  |
+| `id` | [string](#string) |  | Auction ID |
 
 
 
@@ -1329,12 +1327,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.AuctionResponse"></a>
 
 ### AuctionResponse
-
+AuctionResponse returns the details of the queried auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  |  |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
 
 
 
@@ -1344,7 +1342,7 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.BalanceRequest"></a>
 
 ### BalanceRequest
-
+BalanceRequest is the format to fetch all balances
 
 
 
@@ -1359,7 +1357,7 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `balance` | [string](#string) |  |  |
+| `balance` | [string](#string) |  | Set of all balances within the auction |
 
 
 
@@ -1369,13 +1367,13 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.BidRequest"></a>
 
 ### BidRequest
-
+BidRequest is the format for querying a specific bid in an auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction_id` | [string](#string) |  |  |
-| `bidder` | [string](#string) |  |  |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `bidder` | [string](#string) |  | Bidder address |
 
 
 
@@ -1385,12 +1383,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.BidResponse"></a>
 
 ### BidResponse
-
+BidResponse returns the details of the queried bid
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  |  |
+| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Bid details |
 
 
 
@@ -1400,12 +1398,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.BidsRequest"></a>
 
 ### BidsRequest
-
+BidsRequest is the format for querying all bids in an auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction_id` | [string](#string) |  |  |
+| `auction_id` | [string](#string) |  | Auction ID |
 
 
 
@@ -1415,12 +1413,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.BidsResponse"></a>
 
 ### BidsResponse
-
+BidsResponse returns details of all bids in an auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `bids` | [Bid](#vulcanize.auction.v1beta1.Bid) | repeated |  |
+| `bids` | [Bid](#vulcanize.auction.v1beta1.Bid) | repeated | List of bids in the auction |
 
 
 
@@ -1430,12 +1428,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.ListByBidderRequest"></a>
 
 ### ListByBidderRequest
-
+ListByBidderRequest is the format for querying all auctions containing a bidder address
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `bidder_address` | [string](#string) |  |  |
+| `bidder_address` | [string](#string) |  | Address of the bidder |
 
 
 
@@ -1445,12 +1443,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.ListByBidderResponse"></a>
 
 ### ListByBidderResponse
-
+ListByBidderResponse returns all auctions containing a bidder
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  |  |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
 
 
 
@@ -1460,7 +1458,7 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.ListRequest"></a>
 
 ### ListRequest
-
+ListRequest is the format for querying all the auctions
 
 
 
@@ -1470,12 +1468,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.ListResponse"></a>
 
 ### ListResponse
-
+ListResponse returns the list of all actions
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  |  |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request |
 
 
@@ -1486,7 +1484,7 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
-
+QueryParamsRequest is the format to query the parameters of the auction module
 
 
 
@@ -1496,44 +1494,12 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-
+QueryParamsResponse returns parameters of the auction module
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
-
-
-
-
-
-
-<a name="vulcanize.auction.v1beta1.QueryRequest"></a>
-
-### QueryRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `path` | [string](#string) |  |  |
-| `data` | [bytes](#bytes) |  |  |
-
-
-
-
-
-
-<a name="vulcanize.auction.v1beta1.QueryResponse"></a>
-
-### QueryResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `result` | [bytes](#bytes) |  |  |
-| `height` | [int64](#int64) |  |  |
 
 
 
@@ -1549,13 +1515,13 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 <a name="vulcanize.auction.v1beta1.Query"></a>
 
 ### Query
-Query defines the gRPC querier interface
+Query defines the gRPC querier interface for the auction module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `List` | [ListRequest](#vulcanize.auction.v1beta1.ListRequest) | [ListResponse](#vulcanize.auction.v1beta1.ListResponse) | List queries all auctions | GET|/ethermint/auction/v1/auctions|
 | `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/ethermint/auction/v1/auctions/{id}|
-| `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries and auction bid | GET|/ethermint/auction/v1/bids/{auction_id}/{bidder}|
+| `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/ethermint/auction/v1/bids/{auction_id}/{bidder}|
 | `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/ethermint/auction/v1/bids/{auction_id}|
 | `ListByBidder` | [ListByBidderRequest](#vulcanize.auction.v1beta1.ListByBidderRequest) | [ListByBidderResponse](#vulcanize.auction.v1beta1.ListByBidderResponse) | ListByBidder queries auctions by bidder | GET|/ethermint/auction/v1/auctions/{bidder_address}|
 | `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/ethermint/auction/v1/params|
@@ -1575,14 +1541,14 @@ Query defines the gRPC querier interface
 <a name="vulcanize.auction.v1beta1.MsgCommitBid"></a>
 
 ### MsgCommitBid
-
+CommitBid defines the message to commit a bid
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction_id` | [string](#string) |  |  |
-| `commit_hash` | [string](#string) |  |  |
-| `signer` | [string](#string) |  |  |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `commit_hash` | [string](#string) |  | Commit Hash |
+| `signer` | [string](#string) |  | Address of the signer |
 
 
 
@@ -1592,12 +1558,12 @@ Query defines the gRPC querier interface
 <a name="vulcanize.auction.v1beta1.MsgCommitBidResponse"></a>
 
 ### MsgCommitBidResponse
-
+MsgCommitBidResponse returns the state of the auction after the bid creation
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  |  |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
 
 
 
@@ -1607,17 +1573,17 @@ Query defines the gRPC querier interface
 <a name="vulcanize.auction.v1beta1.MsgCreateAuction"></a>
 
 ### MsgCreateAuction
-
+MsgCreateAuction defines a create auction message
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `commits_duration` | [int64](#int64) |  |  |
-| `reveals_duration` | [int64](#int64) |  |  |
-| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
-| `signer` | [string](#string) |  |  |
+| `commits_duration` | [int64](#int64) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [int64](#int64) |  | Duration of the reveals phase in seconds |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
+| `signer` | [string](#string) |  | Address of the signer |
 
 
 
@@ -1627,12 +1593,12 @@ Query defines the gRPC querier interface
 <a name="vulcanize.auction.v1beta1.MsgCreateAuctionResponse"></a>
 
 ### MsgCreateAuctionResponse
-
+MsgCreateAuctionResponse returns the details of the created auction
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  |  |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
 
 
 
@@ -1642,14 +1608,14 @@ Query defines the gRPC querier interface
 <a name="vulcanize.auction.v1beta1.MsgRevealBid"></a>
 
 ### MsgRevealBid
-
+RevealBid defines the message to reveal a bid
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction_id` | [string](#string) |  |  |
-| `reveal` | [string](#string) |  |  |
-| `signer` | [string](#string) |  |  |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `reveal` | [string](#string) |  | Reveal details |
+| `signer` | [string](#string) |  | Address of the signer |
 
 
 
@@ -1659,12 +1625,12 @@ Query defines the gRPC querier interface
 <a name="vulcanize.auction.v1beta1.MsgRevealBidResponse"></a>
 
 ### MsgRevealBidResponse
-
+MsgRevealBidResponse returns the state of the auction after the bid reveal
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  |  |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
 
 
 
