@@ -1,0 +1,81 @@
+syntax = "proto3";
+package vulcanize.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "vulcanize/auction/v1beta1/types.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/auction/types";
+
+message MsgCreateAuction {
+    option (gogoproto.goproto_getters) = false;
+    
+    int64 commits_duration = 1;
+    int64 reveals_duration = 2;
+    cosmos.base.v1beta1.Coin commit_fee = 3 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
+    ];
+    cosmos.base.v1beta1.Coin reveal_fee = 4 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
+    ];
+    cosmos.base.v1beta1.Coin minimum_bid = 5 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "json:\"minimum_bid\" yaml:\"minimum_bid\""
+    ];
+    string signer = 6 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+        (gogoproto.nullable) = false
+    ];
+}
+
+message MsgCreateAuctionResponse {
+    option (gogoproto.goproto_getters) = false;
+    Auction auction = 1;
+}
+
+message MsgCommitBid {
+    option (gogoproto.goproto_getters) = false;
+
+    string auction_id = 1;
+    string commit_hash = 2;
+    string signer = 3 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+        (gogoproto.nullable) = false
+    ];
+}
+
+message MsgRevealBid {
+    option (gogoproto.goproto_getters) = false;
+
+    string auction_id = 1;
+    string reveal = 2;
+    string signer = 3 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+        (gogoproto.nullable) = false
+    ];
+}
+
+message MsgCommitBidResponse {
+    option (gogoproto.goproto_getters) = false;
+    Auction auction = 1;
+}
+
+message MsgRevealBidResponse {
+    option (gogoproto.goproto_getters) = false;
+    Auction auction = 1;
+}
+
+// Tx defines the gRPC tx interface
+service Msg {
+    // CreateAuction is the command for creating an auction
+    rpc CreateAuction(MsgCreateAuction) returns (MsgCreateAuctionResponse);
+
+    // CommitBid is the command for committing a bid
+    rpc CommitBid(MsgCommitBid) returns (MsgCommitBidResponse);
+
+    //RevealBid is the command for revealing a bid
+    rpc RevealBid(MsgRevealBid) returns (MsgRevealBidResponse);
+}
+

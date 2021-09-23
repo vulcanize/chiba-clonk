@@ -1,0 +1,122 @@
+syntax = "proto3";
+package vulcanize.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "vulcanize/auction/v1beta1/types.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/auction/types";
+
+message ListRequest {
+}
+
+message ListResponse {
+    Auctions auctions = 1;
+    // pagination defines an optional pagination for the request
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message AuctionRequest {
+    string id = 1;
+}
+
+message AuctionResponse {
+    Auction auction = 1;
+}
+
+message BidRequest {
+    string auction_id = 1;
+    string bidder = 2;
+}
+
+message BidResponse {
+    Bid bid = 1;
+}
+
+message BidsRequest {
+    string auction_id = 1;
+}
+
+message BidsResponse {
+    repeated Bid bids = 1;
+}
+
+message ListByBidderRequest {
+    string bidder_address = 1;
+}
+
+message ListByBidderResponse {
+    Auctions auctions = 1;
+}
+
+message QueryParamsRequest {
+}
+
+message QueryParamsResponse {
+    Params params = 1;
+}
+
+message BalanceRequest {
+}
+
+message BalanceResponse {
+    string balance = 1 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.nullable) = false
+    ];
+}
+
+message QueryRequest {
+    option (gogoproto.equal) = false;
+    option (gogoproto.goproto_getters) = false;
+
+    string path = 1;
+    bytes data = 2;
+}
+
+message QueryResponse {
+    option (gogoproto.equal) = false;
+    option (gogoproto.goproto_getters) = false;
+
+    bytes result = 1;
+    int64 height = 2;
+}
+
+// Query defines the gRPC querier interface
+service Query {
+    // List queries all auctions
+    rpc List(ListRequest) returns (ListResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/auctions";
+    }
+
+    // GetAuction queries an auction
+    rpc GetAuction(AuctionRequest) returns (AuctionResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/auctions/{id}";
+    }
+    
+    // GetBid queries and auction bid
+    rpc GetBid(BidRequest) returns (BidResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/bids/{auction_id}/{bidder}";
+    }
+
+    // GetBids queries all auction bids
+    rpc GetBids(BidsRequest) returns (BidsResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/bids/{auction_id}";
+    }
+
+    // ListByBidder queries auctions by bidder
+    rpc ListByBidder(ListByBidderRequest) returns (ListByBidderResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/auctions/{bidder_address}";
+    }
+
+    // QueryParams implements the params query command
+    rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/params";
+    }
+
+    // Balance queries the auction module account balance
+    rpc Balance(BalanceRequest) returns (BalanceResponse) {
+        option (google.api.http).get = "/ethermint/auction/v1/balance";
+    }
+}

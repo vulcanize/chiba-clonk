@@ -1,0 +1,12 @@
+syntax = "proto3";
+package vulcanize.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "vulcanize/auction/v1beta1/types.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/auction/types";
+
+message GenesisState {
+    Params params = 1 [(gogoproto.nullable) = false];
+    Auctions auctions = 2;
+}
