@@ -32,7 +32,7 @@ var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
 
 func request_Query_Params_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryParamRequest
+	var protoReq QueryParamsRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := client.Params(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -41,7 +41,7 @@ func request_Query_Params_0(ctx context.Context, marshaler runtime.Marshaler, cl
 }
 
 func local_request_Query_Params_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryParamRequest
+	var protoReq QueryParamsRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := server.Params(ctx, &protoReq)
@@ -444,15 +444,15 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "bond", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "bond", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Bonds_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "bond", "v1", "bonds"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Bonds_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "bond", "v1beta1", "bonds"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetBondById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "bond", "v1", "bonds", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetBondById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "bond", "v1beta1", "bonds", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetBondsByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "bond", "v1", "bonds_by_owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetBondsByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "bond", "v1beta1", "bonds_by_owner"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetBondsModuleBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "bond", "v1", "balance"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetBondsModuleBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "bond", "v1beta1", "balance"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

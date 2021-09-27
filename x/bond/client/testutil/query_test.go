@@ -24,6 +24,11 @@ type IntegrationTestSuite struct {
 	network *network.Network
 }
 
+var (
+	accountName    = "accountName"
+	accountAddress string
+)
+
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 	return &IntegrationTestSuite{cfg: cfg}
 }
@@ -35,6 +40,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	_, err := s.network.WaitForHeight(1)
 	s.Require().NoError(err)
+
+	// setting up random account
+	s.createAccountWithBalance(accountName)
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -58,8 +66,6 @@ func (s *IntegrationTestSuite) TestGetCmdQueryParams() {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		s.Run(tc.name, func() {
 			cmd := cli.GetQueryParamsCmd()
 			clientCtx := val.ClientCtx
@@ -81,14 +87,14 @@ func (s *IntegrationTestSuite) TestGetCmdQueryParams() {
 
 func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
 	val := s.network.Validators[0]
-	suiteRequire := s.Require()
+	sr := s.Require()
 	consPrivKey := ed25519.GenPrivKey()
 	consPubKeyBz, err := s.cfg.Codec.MarshalInterfaceJSON(consPrivKey.PubKey())
-	suiteRequire.NoError(err)
-	suiteRequire.NotNil(consPubKeyBz)
+	sr.NoError(err)
+	sr.NotNil(consPubKeyBz)
 
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	suiteRequire.NoError(err)
+	sr.NoError(err)
 
 	newAddr := sdk.AccAddress(info.GetPubKey().Address())
 	_, err = banktestutil.MsgSendExec(
@@ -99,12 +105,13 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	)
-	suiteRequire.NoError(err)
+	sr.NoError(err)
+	accountAddress = newAddr.String()
 }
 
-func (s *IntegrationTestSuite) createBond(accountName string) {
+func (s *IntegrationTestSuite) createBond() {
 	val := s.network.Validators[0]
-	suiteRequire := s.Require()
+	sr := s.Require()
 	createBondCmd := cli.NewCreateBondCmd()
 	args := []string{
 		fmt.Sprintf("10%s", s.cfg.BondDenom),
@@ -114,64 +121,199 @@ func (s *IntegrationTestSuite) createBond(accountName string) {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
 	}
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, createBondCmd, args)
-	suiteRequire.NoError(err)
+	sr.NoError(err)
 	var d sdk.TxResponse
 	val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
-	suiteRequire.Zero(d.Code)
+	sr.Zero(d.Code)
 	err = s.network.WaitForNextBlock()
-	suiteRequire.NoError(err)
+	sr.NoError(err)
 }
 
 func (s *IntegrationTestSuite) TestGetQueryBondLists() {
 	val := s.network.Validators[0]
-	suiteRequire := s.Require()
-	var accountName = "newAccount"
+	sr := s.Require()
 
 	testCases := []struct {
 		name       string
 		args       []string
 		outputType string
 		createBond bool
-		noOfBonds  int
 	}{
 		{
-			"Empty Bonds",
-			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			"json",
-			false,
-			0,
-		},
-		{
-			"Crate and Get Bond",
+			"create and get bond lists",
 			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			"json",
 			true,
-			1,
 		},
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			clientCtx := val.ClientCtx
 			if tc.createBond {
-				s.createAccountWithBalance(accountName)
-				s.createBond(accountName)
+				s.createBond()
 			}
 			cmd := cli.GetQueryBondLists()
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			suiteRequire.NoError(err)
+			sr.NoError(err)
 			var queryResponse types.QueryGetBondsResponse
 			if tc.outputType == "json" {
 				err := clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
-				suiteRequire.NoError(err)
+				sr.NoError(err)
 			} else {
 				err := yaml.Unmarshal(out.Bytes(), &queryResponse)
-				suiteRequire.NoError(err)
+				sr.NoError(err)
 			}
-			suiteRequire.Equal(tc.noOfBonds, len(queryResponse.GetBonds()))
+			sr.NotZero(len(queryResponse.GetBonds()))
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetQueryBondById() {
+	val := s.network.Validators[0]
+	sr := s.Require()
+	testCases := []struct {
+		name       string
+		args       []string
+		createBond bool
+		err        bool
+	}{
+		{
+			"invalid bond id",
+			[]string{
+				fmt.Sprint("not_found_bond_id"),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+			false,
+			true,
+		},
+		{
+			"create and get bond by id",
+			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			true,
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			clientCtx := val.ClientCtx
+			if tc.createBond {
+				s.createBond()
+				cmd := cli.GetQueryBondLists()
+
+				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				sr.NoError(err)
+				var queryResponse types.QueryGetBondsResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
+				sr.NoError(err)
+
+				// extract bond id from bonds list
+				bond := queryResponse.GetBonds()[0]
+				tc.args = append([]string{bond.GetId()}, tc.args...)
+
+			}
+			cmd := cli.GetBondByIdCmd()
+
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			sr.NoError(err)
+			var queryResponse types.QueryGetBondByIdResponse
+			err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
+			sr.NoError(err)
+			if tc.err {
+				sr.Zero(len(queryResponse.GetBond().GetId()))
+			} else {
+				sr.NotZero(len(queryResponse.GetBond().GetId()))
+				sr.Equal(accountAddress, queryResponse.GetBond().GetOwner())
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetQueryBondListsByOwner() {
+	val := s.network.Validators[0]
+	sr := s.Require()
+	testCases := []struct {
+		name       string
+		args       []string
+		createBond bool
+		err        bool
+	}{
+		{
+			"invalid owner address",
+			[]string{
+				fmt.Sprint("not_found_bond_id"),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+			false,
+			true,
+		},
+		{
+			"get bond lists by owner address",
+			[]string{
+				fmt.Sprint(accountAddress),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+			true,
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			clientCtx := val.ClientCtx
+			if tc.createBond {
+				s.createBond()
+			}
+			cmd := cli.GetBondListByOwnerCmd()
+
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			sr.NoError(err)
+			var queryResponse types.QueryGetBondsByOwnerResponse
+			err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
+			sr.NoError(err)
+			if tc.err {
+				sr.Zero(len(queryResponse.GetBonds()))
+			} else {
+				sr.NotZero(len(queryResponse.GetBonds()))
+				sr.Equal(accountAddress, queryResponse.GetBonds()[0].GetOwner())
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetQueryBondModuleBalance() {
+	val := s.network.Validators[0]
+	sr := s.Require()
+	testCases := []struct {
+		name       string
+		args       []string
+		createBond bool
+	}{
+		{
+			"get bond module balance",
+			[]string{
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			clientCtx := val.ClientCtx
+			if tc.createBond {
+				s.createBond()
+			}
+			cmd := cli.GetBondModuleBalanceCmd()
+
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			sr.NoError(err)
+			var queryResponse types.QueryGetBondModuleBalanceResponse
+			err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
+			sr.NoError(err)
+			sr.False(queryResponse.GetBalance().IsZero())
 		})
 	}
 }
