@@ -24,7 +24,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		return nil, err
 	}
 
-	_, err = m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
+	err = m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
 		BondId:  msg.GetBondId(),
 		Signer:  msg.GetSigner(),
 		Payload: msg.GetPayload(),
@@ -36,7 +36,9 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeSetRecord,
-			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
+			sdk.NewAttribute(types.AttributeKeySigner, msg.GetSigner()),
+			sdk.NewAttribute(types.AttributeKeyBondId, msg.GetBondId()),
+			sdk.NewAttribute(types.AttributeKeyPayload, msg.Payload.String()),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

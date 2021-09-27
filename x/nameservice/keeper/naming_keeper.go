@@ -80,6 +80,12 @@ func (k Keeper) RemoveBondToAuthorityIndexEntry(ctx sdk.Context, bondID string, 
 	store.Delete(getBondIDToAuthoritiesIndexKey(bondID, name))
 }
 
+func (k Keeper) updateBlockChangeSetForName(ctx sdk.Context, wrn string) {
+	changeSet := k.getOrCreateBlockChangeSet(ctx, ctx.BlockHeight())
+	changeSet.Names = append(changeSet.Names, wrn)
+	k.saveBlockChangeSet(ctx, changeSet)
+}
+
 func (k Keeper) getAuthority(ctx sdk.Context, wrn string) (string, *url.URL, *types.NameAuthority, error) {
 	parsedWRN, err := url.Parse(wrn)
 	if err != nil {
@@ -217,7 +223,6 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 	nameRecordIndexKey := GetNameRecordIndexKey(wrn)
 
 	var nameRecord types.NameRecord
-	fmt.Println("has ", store.Has(nameRecordIndexKey))
 	if store.Has(nameRecordIndexKey) {
 		bz := store.Get(nameRecordIndexKey)
 		codec.MustUnmarshal(bz, &nameRecord)
@@ -246,8 +251,8 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 func (k Keeper) SetNameRecord(ctx sdk.Context, wrn string, id string) {
 	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, wrn, id, ctx.BlockHeight())
 
-	// Update changeset for name.
-	//k.updateBlockChangesetForName(ctx, wrn)
+	// Update changeSet for name.
+	k.updateBlockChangeSetForName(ctx, wrn)
 }
 
 // ProcessSetName creates a WRN -> Record ID mapping.
@@ -263,7 +268,6 @@ func (k Keeper) ProcessSetName(ctx sdk.Context, msg types.MsgSetName) error {
 
 	nameRecord := k.GetNameRecord(ctx, msg.Wrn)
 	if nameRecord != nil && nameRecord.Latest.Id == msg.Cid {
-		// Already pointing to same ID, no-op.
 		return nil
 	}
 
@@ -390,7 +394,6 @@ func (k Keeper) ProcessReserveAuthority(ctx sdk.Context, msg types.MsgReserveAut
 func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthorityBond) error {
 	name := msg.GetName()
 	signer := msg.GetSigner()
-	bondId := msg.GetBondId()
 	authority := k.GetNameAuthority(ctx, name)
 	if authority == nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
@@ -399,29 +402,27 @@ func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthori
 		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied")
 	}
 
-	// TODO(gsk967) : once bond module implemented uncomment this
-	//if !k.bondKeeper.HasBond(ctx, msg.BondId) {
-	//	return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
-	//}
+	if !k.bondKeeper.HasBond(ctx, msg.BondId) {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+	}
 	//
-	//bond := k.bondKeeper.GetBond(ctx, msg.BondId)
-	//if bond.Owner != signer {
-	//	return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
-	//}
-	//
-	//// No-op if bond hasn't changed.
-	//if authority.BondID == msg.BondID {
-	//	return  nil
-	//}
-	//
-	//// Remove old bond ID mapping, if any.
-	//if authority.BondId != "" {
-	//	k.RemoveBondToAuthorityIndexEntry(ctx, authority.BondId, name)
-	//}
-	//
-	//// Update bond ID for authority.
-	//authority.BondId = bond.Id
-	authority.BondId = bondId
+	bond := k.bondKeeper.GetBond(ctx, msg.BondId)
+	if bond.Owner != signer {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+	}
+
+	// No-op if bond hasn't changed.
+	if authority.BondId == msg.BondId {
+		return nil
+	}
+
+	// Remove old bond ID mapping, if any.
+	if authority.BondId != "" {
+		k.RemoveBondToAuthorityIndexEntry(ctx, authority.BondId, name)
+	}
+
+	// Update bond ID for authority.
+	authority.BondId = bond.Id
 	k.SetNameAuthority(ctx, name, authority)
 	// Add new bond ID mapping.
 	k.AddBondToAuthorityIndexEntry(ctx, authority.BondId, name)

@@ -10,6 +10,7 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 	"sort"
@@ -61,7 +62,7 @@ type Keeper struct {
 	accountKeeper auth.AccountKeeper
 	bankKeeper    bank.Keeper
 	recordKeeper  RecordKeeper
-	//bondKeeper    bond.BondClientKeeper
+	bondKeeper    bondkeeper.Keeper
 	//auctionKeeper auction.Keeper
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
@@ -74,7 +75,7 @@ type Keeper struct {
 
 // NewKeeper creates new instances of the nameservice Keeper
 func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
-	storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
+	bondKeeper bondkeeper.Keeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
@@ -83,7 +84,7 @@ func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		recordKeeper:  recordKeeper,
-		//bondKeeper:    bondKeeper,
+		bondKeeper:    bondKeeper,
 		//auctionKeeper: auctionKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
@@ -151,7 +152,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) (expired map[string][]stri
 }
 
 // ProcessSetRecord creates a record.
-func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.Record, error) {
+func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) error {
 	payload := msg.Payload.ToReadablePayload()
 	record := types.RecordType{Attributes: payload.Record, BondId: msg.BondId}
 
@@ -159,15 +160,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	resourceSignBytes, _ := record.GetSignBytes()
 	cid, err := record.GetCID()
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
 	}
 
 	record.Id = cid
 
 	if exists := k.HasRecord(ctx, record.Id); exists {
-		// Immutable record already exists. No-op.
-		//return record.ToRecordObj(), nil
-		return nil, nil
+		return nil
 	}
 
 	record.Owners = []string{}
@@ -175,14 +174,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
 			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
-		//sigOK := pubKey.VerifyBytes(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
 			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}
@@ -191,27 +189,26 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	sort.Strings(record.Owners)
 	sdkErr := k.processRecord(ctx, &record, false)
 	if sdkErr != nil {
-		return nil, sdkErr
+		return sdkErr
 	}
-	return nil, nil
+	return nil
 }
 
 func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenewal bool) error {
 	params := k.GetParams(ctx)
-	//rent := params.RecordRent
+	rent := params.RecordRent
 
-	// todo: remove this one once bond module implemented
-	//err := k.bankKeeper.TransferCoinsToModuleAccount(ctx, r.BondId, types.RecordRentModuleAccountName, rent)
-	//if err != nil{
-	//	return err
-	//}
+	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondId, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
+	if err != nil {
+		return err
+	}
 
 	record.CreateTime = ctx.BlockHeader().Time
 	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration)
 	record.Deleted = false
 
 	k.PutRecord(ctx, record.ToRecordObj())
-	//k.InsertRecordExpiryQueue(ctx, *record)
+	k.InsertRecordExpiryQueue(ctx, record.ToRecordObj())
 
 	// Renewal doesn't change the name and bond indexes.
 	if !isRenewal {
@@ -225,43 +222,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(GetRecordIndexKey(record.Id), k.cdc.MustMarshal(&record))
-	k.updateBlockChangesetForRecord(ctx, record.Id)
-}
-
-func (k Keeper) updateBlockChangesetForRecord(ctx sdk.Context, id string) {
-	changeset := k.getOrCreateBlockChangeset(ctx, ctx.BlockHeight())
-	changeset.Records = append(changeset.Records, id)
-	k.saveBlockChangeset(ctx, changeset)
-}
-
-func (k Keeper) getOrCreateBlockChangeset(ctx sdk.Context, height int64) *types.BlockChangeset {
-	return getOrCreateBlockChangeset(ctx, ctx.KVStore(k.storeKey), k.cdc, height)
-}
-
-func GetBlockChangesetIndexKey(height int64) []byte {
-	return append(PrefixBlockChangesetIndex, helpers.Int64ToBytes(height)...)
-}
-func getOrCreateBlockChangeset(ctx sdk.Context, store sdk.KVStore, cdc codec.BinaryCodec, height int64) *types.BlockChangeset {
-
-	bz := store.Get(GetBlockChangesetIndexKey(height))
-
-	if bz != nil {
-		var changeset types.BlockChangeset
-		//codec.MustUnmarshalBinaryBare(bz, &changeset)
-		err := json.Unmarshal(bz, &changeset)
-		if err != nil {
-			return nil
-		}
-		return &changeset
-	}
-
-	return &types.BlockChangeset{
-		Height:   height,
-		Records:  []string{},
-		Names:    []string{},
-		Auctions: []string{},
-		//AuctionBids: []auction.AuctionBidInfo{},
-	}
+	k.updateBlockChangeSetForRecord(ctx, record.Id)
 }
 
 // AddBondToRecordIndexEntry adds the Bond ID -> [Record] index entry.
@@ -275,17 +236,30 @@ func getBondIDToRecordsIndexKey(bondID string, id string) []byte {
 	return append(append(PrefixBondIDToRecordsIndex, []byte(bondID)...), []byte(id)...)
 }
 
-// InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
-func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
-	//timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime)
-	//timeSlice = append(timeSlice, val.ID)
-	//k.SetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime, timeSlice)
-}
-
 // getRecordExpiryQueueTimeKey gets the prefix for the record expiry queue.
 func getRecordExpiryQueueTimeKey(timestamp time.Time) []byte {
 	timeBytes := sdk.FormatTimeBytes(timestamp)
 	return append(PrefixExpiryTimeToRecordsIndex, timeBytes...)
+}
+
+// SetRecordExpiryQueueTimeSlice sets a specific record expiry queue timeslice.
+func (k Keeper) SetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, cids []string) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.legacyCodec.MustMarshalLengthPrefixed(cids)
+	store.Set(getRecordExpiryQueueTimeKey(timestamp), bz)
+}
+
+// DeleteRecordExpiryQueueTimeSlice deletes a specific record expiry queue timeslice.
+func (k Keeper) DeleteRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(getRecordExpiryQueueTimeKey(timestamp))
+}
+
+// InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
+func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
+	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime)
+	timeSlice = append(timeSlice, val.Id)
+	k.SetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime, timeSlice)
 }
 
 // GetRecordExpiryQueueTimeSlice gets a specific record queue timeslice.

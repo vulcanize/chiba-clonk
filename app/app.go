@@ -374,7 +374,8 @@ func NewEthermintApp(
 	// Create DXNS keepers
 	app.BondKeeper = bondkeeper.NewKeeper(appCodec, app.AccountKeeper, app.BankKeeper, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName))
 	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(keys[nameservicetypes.StoreKey], appCodec)
-	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, *cdc, app.AccountKeeper, app.BankKeeper, app.NameServiceRecordKeeper,
+	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, *cdc, app.AccountKeeper, app.BankKeeper,
+		app.NameServiceRecordKeeper, app.BondKeeper,
 		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName))
 
 	// Create IBC Keeper

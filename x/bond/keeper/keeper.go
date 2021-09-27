@@ -300,3 +300,32 @@ func (k Keeper) GetBondModuleBalances(ctx sdk.Context) sdk.Coins {
 	balances := k.bankKeeper.GetAllBalances(ctx, moduleAddress)
 	return balances
 }
+
+// TransferCoinsToModuleAccount moves funds from the bonds module account to another module account.
+func (k Keeper) TransferCoinsToModuleAccount(ctx sdk.Context, id, moduleAccount string, coins sdk.Coins) error {
+	if !k.HasBond(ctx, id) {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond not found.")
+	}
+
+	bondObj := k.GetBond(ctx, id)
+
+	// Deduct rent from bond.
+	updatedBalance, isNeg := bondObj.Balance.SafeSub(coins)
+
+	if isNeg {
+		// Check if bond has sufficient funds.
+		return sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Insufficient funds.")
+	}
+
+	// Move funds from bond module to record rent module.
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, moduleAccount, coins)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Error transferring funds.")
+	}
+
+	// Update bond balance.
+	bondObj.Balance = updatedBalance
+	k.SaveBond(ctx, &bondObj)
+
+	return nil
+}

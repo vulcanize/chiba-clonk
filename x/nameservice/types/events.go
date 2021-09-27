@@ -14,6 +14,7 @@ const (
 	AttributeKeySigner     = "signer"
 	AttributeKeyOwner      = "owner"
 	AttributeKeyBondId     = "bond-id"
+	AttributeKeyPayload    = "payload"
 	AttributeKeyOldBondId  = "old-bond-id"
 	AttributeKeyNewBondId  = "new-bond-id"
 	AttributeKeyCID        = "cid"
