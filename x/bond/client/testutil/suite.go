@@ -79,6 +79,49 @@ func (s *IntegrationTestSuite) TestGetCmdQueryParams() {
 	}
 }
 
+func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
+	val := s.network.Validators[0]
+	suiteRequire := s.Require()
+	consPrivKey := ed25519.GenPrivKey()
+	consPubKeyBz, err := s.cfg.Codec.MarshalInterfaceJSON(consPrivKey.PubKey())
+	suiteRequire.NoError(err)
+	suiteRequire.NotNil(consPubKeyBz)
+
+	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	suiteRequire.NoError(err)
+
+	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	_, err = banktestutil.MsgSendExec(
+		val.ClientCtx,
+		val.Address,
+		newAddr,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(200))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	)
+	suiteRequire.NoError(err)
+}
+
+func (s *IntegrationTestSuite) createBond(accountName string) {
+	val := s.network.Validators[0]
+	suiteRequire := s.Require()
+	createBondCmd := cli.NewCreateBondCmd()
+	args := []string{
+		fmt.Sprintf("10%s", s.cfg.BondDenom),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
+	}
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, createBondCmd, args)
+	suiteRequire.NoError(err)
+	var d sdk.TxResponse
+	val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
+	suiteRequire.Zero(d.Code)
+	err = s.network.WaitForNextBlock()
+	suiteRequire.NoError(err)
+}
+
 func (s *IntegrationTestSuite) TestGetQueryBondLists() {
 	val := s.network.Validators[0]
 	suiteRequire := s.Require()
@@ -113,40 +156,8 @@ func (s *IntegrationTestSuite) TestGetQueryBondLists() {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			clientCtx := val.ClientCtx
 			if tc.createBond {
-				consPrivKey := ed25519.GenPrivKey()
-				consPubKeyBz, err := s.cfg.Codec.MarshalInterfaceJSON(consPrivKey.PubKey())
-				suiteRequire.NoError(err)
-				suiteRequire.NotNil(consPubKeyBz)
-
-				info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-				suiteRequire.NoError(err)
-
-				newAddr := sdk.AccAddress(info.GetPubKey().Address())
-				_, err = banktestutil.MsgSendExec(
-					val.ClientCtx,
-					val.Address,
-					newAddr,
-					sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(200))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-					fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-					fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-				)
-				suiteRequire.NoError(err)
-
-				createBondCmd := cli.NewCreateBondCmd()
-				args := []string{
-					fmt.Sprintf("10%s", s.cfg.BondDenom),
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
-					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-					fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-					fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
-				}
-				out, err := clitestutil.ExecTestCLICmd(clientCtx, createBondCmd, args)
-				suiteRequire.NoError(err)
-				var d sdk.TxResponse
-				clientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
-				suiteRequire.Zero(d.Code)
-				err = s.network.WaitForNextBlock()
-				suiteRequire.NoError(err)
+				s.createAccountWithBalance(accountName)
+				s.createBond(accountName)
 			}
 			cmd := cli.GetQueryBondLists()
 
