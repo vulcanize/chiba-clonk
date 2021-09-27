@@ -2,6 +2,9 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/tharsis/ethermint/x/bond"
+	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
+	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
 	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"io"
@@ -154,7 +157,8 @@ var (
 		// Ethermint modules
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
-
+		// DXNS modules
+		bond.AppModuleBasic{},
 		nameservice.AppModuleBasic{},
 	)
 
@@ -172,6 +176,7 @@ var (
 		nameservicetypes.ModuleName:                     nil,
 		nameservicetypes.RecordRentModuleAccountName:    nil,
 		nameservicetypes.AuthorityRentModuleAccountName: nil,
+		bondtypes.ModuleName:                            nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -228,6 +233,8 @@ type EthermintApp struct {
 	EvmKeeper       *evmkeeper.Keeper
 	FeeMarketKeeper feemarketkeeper.Keeper
 
+	// DXNS keepers
+	BondKeeper              bondkeeper.Keeper
 	NameServiceKeeper       nameservicekeeper.Keeper
 	NameServiceRecordKeeper nameservicekeeper.RecordKeeper
 
@@ -281,7 +288,8 @@ func NewEthermintApp(
 		ibchost.StoreKey, ibctransfertypes.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
-
+		// dxns keys
+		bondtypes.StoreKey,
 		nameservicetypes.StoreKey,
 	)
 
@@ -359,13 +367,15 @@ func NewEthermintApp(
 		tracer, bApp.Trace(), // debug EVM based on Baseapp options
 	)
 
-	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(keys[nameservicetypes.StoreKey], appCodec)
-	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, *cdc, app.AccountKeeper, app.BankKeeper, app.NameServiceRecordKeeper,
-		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName))
-
 	app.FeeMarketKeeper = feemarketkeeper.NewKeeper(
 		appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
 	)
+
+	// Create DXNS keepers
+	app.BondKeeper = bondkeeper.NewKeeper(appCodec, app.AccountKeeper, app.BankKeeper, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName))
+	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(keys[nameservicetypes.StoreKey], appCodec)
+	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, *cdc, app.AccountKeeper, app.BankKeeper, app.NameServiceRecordKeeper,
+		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName))
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
@@ -447,7 +457,8 @@ func NewEthermintApp(
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
-
+		// DXNs modules
+		bond.NewAppModule(appCodec, app.BondKeeper),
 		nameservice.NewAppModule(app.NameServiceKeeper),
 	)
 
@@ -485,7 +496,8 @@ func NewEthermintApp(
 		authz.ModuleName, feegrant.ModuleName,
 		// Ethermint modules
 		evmtypes.ModuleName, feemarkettypes.ModuleName,
-
+		// DXNS modules
+		bondtypes.ModuleName,
 		nameservicetypes.ModuleName,
 
 		// NOTE: crisis module must go at the end to check for invariants on each module
@@ -729,7 +741,8 @@ func initParamsKeeper(
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
-
+	// dxns subspaces
+	paramsKeeper.Subspace(bondtypes.ModuleName)
 	paramsKeeper.Subspace(nameservicetypes.ModuleName)
 
 	return paramsKeeper

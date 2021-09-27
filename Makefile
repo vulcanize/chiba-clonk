@@ -16,7 +16,6 @@ DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 
-
 export GO111MODULE = on
 
 # Default target executed when no arguments are given to make.
