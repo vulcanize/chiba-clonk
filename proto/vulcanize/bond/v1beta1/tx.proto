@@ -33,9 +33,7 @@ message MsgCreateBond{
 
 // MsgCreateBondResponse defines the Msg/CreateBond response type.
 message MsgCreateBondResponse{
-  string id = 1[
-    (gogoproto.moretags) = "json:\"id\" yaml:\"id\""
-  ];
+  string id = 1;
 }
 
 // MsgRefillBond defines a SDK message for refill the amount for bond.
@@ -64,7 +62,7 @@ message MsgWithdrawBond {
   ];
 }
 
-// MsgWithdrawBondResponse defines the MsgWithdrawBond response type.
+// MsgWithdrawBondResponse defines the Msg/WithdrawBond response type.
 message MsgWithdrawBondResponse{
 }
 
@@ -74,6 +72,6 @@ message MsgCancelBond{
   string signer = 2;
 }
 
-// MsgCancelBondResponse defines the MsgCancelBond response type.
+// MsgCancelBondResponse defines the Msg/CancelBond response type.
 message MsgCancelBondResponse{
 }

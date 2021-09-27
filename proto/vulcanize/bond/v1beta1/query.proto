@@ -7,14 +7,12 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-
 option go_package = "github.com/tharsis/ethermint/x/bond/types";
-
 
 // Query defines the gRPC querier service for bond module
 service Query {
-  // Bonds queries bonds list.
-  rpc Params(QueryParamRequest) returns (QueryParamsResponse) {
+  // Params queries bonds module params.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/ethermint/bond/v1/params";
   }
 
@@ -39,8 +37,8 @@ service Query {
   }
 }
 
-// QueryParamRequest is request for query the bond module params
-message QueryParamRequest{
+// QueryParamsRequest is request for query the bond module params
+message QueryParamsRequest{
 }
 
 // QueryParamsResponse returns response type  of bond module params
@@ -50,13 +48,13 @@ message QueryParamsResponse{
   ];
 }
 
-// QueryGetBonds
+// QueryGetBondById queries a bond by bond-id.
 message QueryGetBondsRequest{
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryGetBondsResponse
+// QueryGetBondsResponse is response type for get the bonds by bond-id
 message QueryGetBondsResponse{
   repeated Bond bonds = 1 [
     (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
@@ -79,7 +77,7 @@ message QueryGetBondByIdResponse{
   ];
 }
 
-// QueryGetBondsByOwnerRequest is request tyep for Query/GetBondsByOwner RPC Method
+// QueryGetBondsByOwnerRequest is request type for Query/GetBondsByOwner RPC Method
 message QueryGetBondsByOwnerRequest{
   string owner = 1;
   // pagination defines the pagination in the response.
@@ -101,7 +99,7 @@ message QueryGetBondModuleBalanceRequest{
 
 }
 
-// QueryGetBondModuleBalanceResponse is response type for bond module balance rpc method
+// QueryGetBondModuleBalanceResponse is the response type for bond module balance rpc method
 message QueryGetBondModuleBalanceResponse{
   repeated cosmos.base.v1beta1.Coin balance = 2 [
     (gogoproto.nullable) = false,
