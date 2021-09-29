@@ -101,6 +101,9 @@ import (
 	"github.com/tharsis/ethermint/x/auction"
 	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
+	"github.com/tharsis/ethermint/x/bond"
+	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
+	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	"github.com/tharsis/ethermint/x/evm"
 	evmrest "github.com/tharsis/ethermint/x/evm/client/rest"
 	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
@@ -154,6 +157,8 @@ var (
 		auction.AppModuleBasic{},
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
+		// DXNS modules
+		bond.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -167,6 +172,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 		auctiontypes.ModuleName:        nil,
+		bondtypes.ModuleName:           nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -224,6 +230,9 @@ type EthermintApp struct {
 	EvmKeeper       *evmkeeper.Keeper
 	FeeMarketKeeper feemarketkeeper.Keeper
 
+	// DXNS keepers
+	BondKeeper bondkeeper.Keeper
+
 	// the module manager
 	mm *module.Manager
 
@@ -274,7 +283,9 @@ func NewEthermintApp(
 		ibchost.StoreKey, ibctransfertypes.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
+		// dxns keys
 		auctiontypes.StoreKey,
+		bondtypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -360,6 +371,9 @@ func NewEthermintApp(
 		appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
 	)
 
+	// Create DXNS keepers
+	app.BondKeeper = bondkeeper.NewKeeper(appCodec, app.AccountKeeper, app.BankKeeper, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName))
+
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
@@ -441,6 +455,8 @@ func NewEthermintApp(
 		auction.NewAppModule(appCodec, app.AuctionKeeper),
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
+		// DXNs modules
+		bond.NewAppModule(appCodec, app.BondKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -476,7 +492,9 @@ func NewEthermintApp(
 		authz.ModuleName, feegrant.ModuleName,
 		// Ethermint modules
 		evmtypes.ModuleName, feemarkettypes.ModuleName,
+		// DXNS modules
 		auctiontypes.ModuleName,
+		bondtypes.ModuleName,
 
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
@@ -720,5 +738,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(auctiontypes.ModuleName)
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
+	// dxns subspaces
+	paramsKeeper.Subspace(bondtypes.ModuleName)
 	return paramsKeeper
 }
