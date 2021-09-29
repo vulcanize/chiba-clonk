@@ -6,15 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	"github.com/cosmos/cosmos-sdk/x/params/subspace"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/tharsis/ethermint/x/auction/types"
@@ -48,7 +44,7 @@ type Keeper struct {
 
 	cdc codec.BinaryCodec // The wire codec for binary encoding/decoding.
 
-	paramSubspace subspace.Subspace
+	paramSubspace params.Subspace
 }
 
 // AuctionClientKeeper is the subset of functionality exposed to other modules.
@@ -258,11 +254,6 @@ func (k Keeper) MatchAuctions(ctx sdk.Context, matchFn func(*types.Auction) bool
 	return auctions
 }
 
-func timeToTimestamp(t time.Time) *timestamppb.Timestamp {
-	timestamp, _ := ptypes.TimestampProto(t)
-	return timestamp
-}
-
 // CreateAuction creates a new auction.
 func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*types.Auction, error) {
 	// Might be called from another module directly, always validate.
@@ -271,14 +262,19 @@ func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*typ
 		return nil, err
 	}
 
+	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return nil, err
+	}
+
 	// Generate auction Id.
-	account := k.accountKeeper.GetAccount(ctx, msg.Signer)
+	account := k.accountKeeper.GetAccount(ctx, signerAddress)
 	if account == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "Account not found.")
 	}
 
 	auctionID := types.AuctionID{
-		Address:  msg.Signer,
+		Address:  signerAddress,
 		AccNum:   account.GetAccountNumber(),
 		Sequence: account.GetSequence(),
 	}.Generate()
@@ -291,10 +287,10 @@ func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*typ
 	auction := types.Auction{
 		Id:             auctionID,
 		Status:         types.AuctionStatusCommitPhase,
-		OwnerAddress:   msg.Signer.String(),
-		CreateTime:     timeToTimestamp(now),
-		CommitsEndTime: timeToTimestamp(commitsEndTime),
-		RevealsEndTime: timeToTimestamp(revealsEndTime),
+		OwnerAddress:   signerAddress.String(),
+		CreateTime:     now,
+		CommitsEndTime: commitsEndTime,
+		RevealsEndTime: revealsEndTime,
 		CommitFee:      msg.CommitFee,
 		RevealFee:      msg.RevealFee,
 		MinimumBid:     msg.MinimumBid,
@@ -316,19 +312,24 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Aucti
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Auction is not in commit phase.")
 	}
 
+	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return nil, err
+	}
+
 	// Take auction fees from account.
 	totalFee := auction.CommitFee.Add(auction.RevealFee)
-	sdkErr := k.bankKeeper.SendCoinsFromAccountToModule(ctx, msg.Signer, types.ModuleName, sdk.NewCoins(totalFee))
+	sdkErr := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signerAddress, types.ModuleName, sdk.NewCoins(totalFee))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
 
 	// Check if an old bid already exists, if so, return old bids auction fee (update bid scenario).
-	bidder := msg.Signer.String()
+	bidder := signerAddress.String()
 	if k.HasBid(ctx, msg.AuctionId, bidder) {
 		oldBid := k.GetBid(ctx, msg.AuctionId, bidder)
 		oldTotalFee := oldBid.CommitFee.Add(oldBid.RevealFee)
-		sdkErr := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, msg.Signer, sdk.NewCoins(oldTotalFee))
+		sdkErr := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, signerAddress, sdk.NewCoins(oldTotalFee))
 		if sdkErr != nil {
 			return nil, sdkErr
 		}
@@ -340,7 +341,7 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Aucti
 		BidderAddress: bidder,
 		Status:        types.BidStatusCommitted,
 		CommitHash:    msg.CommitHash,
-		CommitTime:    timeToTimestamp(ctx.BlockTime()),
+		CommitTime:    ctx.BlockTime(),
 		CommitFee:     auction.CommitFee,
 		RevealFee:     auction.RevealFee,
 	}
@@ -361,11 +362,16 @@ func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Aucti
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Auction is not in reveal phase.")
 	}
 
-	if !k.HasBid(ctx, msg.AuctionId, msg.Signer.String()) {
+	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return nil, err
+	}
+
+	if !k.HasBid(ctx, msg.AuctionId, signerAddress.String()) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Bid not found.")
 	}
 
-	bid := k.GetBid(ctx, auction.Id, msg.Signer.String())
+	bid := k.GetBid(ctx, auction.Id, signerAddress.String())
 	if bid.Status != types.BidStatusCommitted {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Bid not in committed state.")
 	}
@@ -405,7 +411,7 @@ func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Aucti
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal bid address.")
 	}
 
-	if bidderAddress != msg.Signer.String() {
+	if bidderAddress != signerAddress.String() {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Reveal bid address mismatch.")
 	}
 
@@ -424,14 +430,14 @@ func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Aucti
 	}
 
 	// Lock bid amount.
-	sdkErr := k.bankKeeper.SendCoinsFromAccountToModule(ctx, msg.Signer, types.ModuleName, sdk.NewCoins(bidAmount))
+	sdkErr := k.bankKeeper.SendCoinsFromAccountToModule(ctx, signerAddress, types.ModuleName, sdk.NewCoins(bidAmount))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
 
 	// Update bid.
 	bid.BidAmount = bidAmount
-	bid.RevealTime = timeToTimestamp(ctx.BlockTime())
+	bid.RevealTime = ctx.BlockTime()
 	bid.Status = types.BidStatusRevealed
 	k.SaveBid(ctx, &bid)
 
@@ -460,14 +466,14 @@ func (k Keeper) processAuctionPhases(ctx sdk.Context) {
 
 	for _, auction := range auctions {
 		// Commit -> Reveal state.
-		if auction.Status == types.AuctionStatusCommitPhase && ctx.BlockTime().After(auction.CommitsEndTime.AsTime()) {
+		if auction.Status == types.AuctionStatusCommitPhase && ctx.BlockTime().After(auction.CommitsEndTime) {
 			auction.Status = types.AuctionStatusRevealPhase
 			k.SaveAuction(ctx, auction)
 			ctx.Logger().Info(fmt.Sprintf("Moved auction %s to reveal phase.", auction.Id))
 		}
 
 		// Reveal -> Expired state.
-		if auction.Status == types.AuctionStatusRevealPhase && ctx.BlockTime().After(auction.RevealsEndTime.AsTime()) {
+		if auction.Status == types.AuctionStatusRevealPhase && ctx.BlockTime().After(auction.RevealsEndTime) {
 			auction.Status = types.AuctionStatusExpired
 			k.SaveAuction(ctx, auction)
 			ctx.Logger().Info(fmt.Sprintf("Moved auction %s to expired state.", auction.Id))
@@ -483,7 +489,7 @@ func (k Keeper) processAuctionPhases(ctx sdk.Context) {
 // Delete completed stale auctions.
 func (k Keeper) deleteCompletedAuctions(ctx sdk.Context) {
 	auctions := k.MatchAuctions(ctx, func(auction *types.Auction) bool {
-		deleteTime := auction.RevealsEndTime.AsTime().Add(CompletedAuctionDeleteTimeout)
+		deleteTime := auction.RevealsEndTime.Add(CompletedAuctionDeleteTimeout)
 		return auction.Status == types.AuctionStatusCompleted && ctx.BlockTime().After(deleteTime)
 	})
 

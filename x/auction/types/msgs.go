@@ -19,7 +19,7 @@ func NewMsgCreateAuction(params Params, signer sdk.AccAddress) MsgCreateAuction 
 		CommitFee:       params.CommitFee,
 		RevealFee:       params.RevealFee,
 		MinimumBid:      params.MinimumBid,
-		Signer:          signer,
+		Signer:          signer.String(),
 	}
 }
 
@@ -31,8 +31,8 @@ func (msg MsgCreateAuction) Type() string { return "create" }
 
 // ValidateBasic Implements Msg.
 func (msg MsgCreateAuction) ValidateBasic() error {
-	if msg.Signer.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer.String())
+	if msg.Signer == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 
 	if msg.CommitsDuration <= 0 {
@@ -57,7 +57,8 @@ func (msg MsgCreateAuction) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgCreateAuction) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Signer}
+	accAddr, _ := sdk.AccAddressFromBech32(msg.Signer)
+	return []sdk.AccAddress{accAddr}
 }
 
 // NewMsgCommitBid is the constructor function for MsgCommitBid.
@@ -66,7 +67,7 @@ func NewMsgCommitBid(auctionID string, commitHash string, signer sdk.AccAddress)
 	return MsgCommitBid{
 		AuctionId:  auctionID,
 		CommitHash: commitHash,
-		Signer:     signer,
+		Signer:     signer.String(),
 	}
 }
 
@@ -78,8 +79,8 @@ func (msg MsgCommitBid) Type() string { return "commit" }
 
 // ValidateBasic Implements Msg.
 func (msg MsgCommitBid) ValidateBasic() error {
-	if msg.Signer.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer.String())
+	if msg.Signer == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
 	}
 
 	if msg.AuctionId == "" {
@@ -100,7 +101,8 @@ func (msg MsgCommitBid) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgCommitBid) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Signer}
+	accAddr, _ := sdk.AccAddressFromBech32(msg.Signer)
+	return []sdk.AccAddress{accAddr}
 }
 
 // NewMsgRevealBid is the constructor function for MsgRevealBid.
@@ -109,7 +111,7 @@ func NewMsgRevealBid(auctionID string, reveal string, signer sdk.AccAddress) Msg
 	return MsgRevealBid{
 		AuctionId: auctionID,
 		Reveal:    reveal,
-		Signer:    signer,
+		Signer:    signer.String(),
 	}
 }
 
@@ -121,8 +123,8 @@ func (msg MsgRevealBid) Type() string { return "reveal" }
 
 // ValidateBasic Implements Msg.
 func (msg MsgRevealBid) ValidateBasic() error {
-	if msg.Signer.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer.String())
+	if msg.Signer == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
 	}
 
 	if msg.AuctionId == "" {
@@ -143,5 +145,6 @@ func (msg MsgRevealBid) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgRevealBid) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Signer}
+	accAddr, _ := sdk.AccAddressFromBech32(msg.Signer)
+	return []sdk.AccAddress{accAddr}
 }

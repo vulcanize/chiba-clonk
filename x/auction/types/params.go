@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/x/params/subspace"
+	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Default parameter namespace.
@@ -12,20 +12,20 @@ const (
 	DefaultParamspace = ModuleName
 )
 
-var _ subspace.ParamSet = Params{}
+var _ types.ParamSet = Params{}
 
 func NewParams() Params {
 	return Params{}
 }
 
 // ParamKeyTable - ParamTable for bond module.
-func ParamKeyTable() subspace.KeyTable {
-	return subspace.NewKeyTable().RegisterParamSet(&Params{})
+func ParamKeyTable() types.KeyTable {
+	return types.NewKeyTable().RegisterParamSet(&Params{})
 }
 
 // ParamSetPairs - implements params.ParamSet
-func (p *Params) ParamSetPairs() subspace.ParamSetPairs {
-	return subspace.ParamSetPairs{}
+func (p Params) ParamSetPairs() types.ParamSetPairs {
+	return types.ParamSetPairs{}
 }
 
 // Equal returns a boolean determining if two Params types are identical.

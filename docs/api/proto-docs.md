@@ -1250,8 +1250,8 @@ Params defines the auction module parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `commits_duration` | [int64](#int64) |  | Duration of the commits phase in seconds |
-| `reveals_duration` | [int64](#int64) |  | Duration of the reveals phase in seconds |
+| `commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the reveals phase in seconds |
 | `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
 | `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
 | `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
@@ -1357,7 +1357,7 @@ BalanceRequest is the format to fetch all balances
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `balance` | [string](#string) |  | Set of all balances within the auction |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | Set of all balances within the auction |
 
 
 
@@ -1519,13 +1519,13 @@ Query defines the gRPC querier interface for the auction module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `List` | [ListRequest](#vulcanize.auction.v1beta1.ListRequest) | [ListResponse](#vulcanize.auction.v1beta1.ListResponse) | List queries all auctions | GET|/ethermint/auction/v1/auctions|
-| `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/ethermint/auction/v1/auctions/{id}|
-| `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/ethermint/auction/v1/bids/{auction_id}/{bidder}|
-| `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/ethermint/auction/v1/bids/{auction_id}|
-| `ListByBidder` | [ListByBidderRequest](#vulcanize.auction.v1beta1.ListByBidderRequest) | [ListByBidderResponse](#vulcanize.auction.v1beta1.ListByBidderResponse) | ListByBidder queries auctions by bidder | GET|/ethermint/auction/v1/auctions/{bidder_address}|
-| `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/ethermint/auction/v1/params|
-| `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/ethermint/auction/v1/balance|
+| `List` | [ListRequest](#vulcanize.auction.v1beta1.ListRequest) | [ListResponse](#vulcanize.auction.v1beta1.ListResponse) | List queries all auctions | GET|/vulcanize/auction/v1beta1/auctions|
+| `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
+| `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
+| `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
+| `ListByBidder` | [ListByBidderRequest](#vulcanize.auction.v1beta1.ListByBidderRequest) | [ListByBidderResponse](#vulcanize.auction.v1beta1.ListByBidderResponse) | ListByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions/{bidder_address}|
+| `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
+| `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
 
  <!-- end services -->
 
@@ -1578,8 +1578,8 @@ MsgCreateAuction defines a create auction message
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `commits_duration` | [int64](#int64) |  | Duration of the commits phase in seconds |
-| `reveals_duration` | [int64](#int64) |  | Duration of the reveals phase in seconds |
+| `commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the reveals phase in seconds |
 | `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
 | `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
 | `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
@@ -1614,7 +1614,7 @@ RevealBid defines the message to reveal a bid
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction_id` | [string](#string) |  | Auction ID |
-| `reveal` | [string](#string) |  | Reveal details |
+| `reveal` | [string](#string) |  | Commit Hash |
 | `signer` | [string](#string) |  | Address of the signer |
 
 

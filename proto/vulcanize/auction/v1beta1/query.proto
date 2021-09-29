@@ -4,6 +4,7 @@ package vulcanize.auction.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "vulcanize/auction/v1beta1/types.proto";
 
 option go_package = "github.com/tharsis/ethermint/x/auction/types";
@@ -85,8 +86,7 @@ message BalanceRequest {
 
 message BalanceResponse {
     // Set of all balances within the auction
-    string balance = 1 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    repeated cosmos.base.v1beta1.Coin balance = 1 [
         (gogoproto.nullable) = false
     ];
 }
@@ -95,36 +95,36 @@ message BalanceResponse {
 service Query {
     // List queries all auctions
     rpc List(ListRequest) returns (ListResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/auctions";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions";
     }
 
     // GetAuction queries an auction
     rpc GetAuction(AuctionRequest) returns (AuctionResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/auctions/{id}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions/{id}";
     }
     
     // GetBid queries an auction bid
     rpc GetBid(BidRequest) returns (BidResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/bids/{auction_id}/{bidder}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}";
     }
 
     // GetBids queries all auction bids
     rpc GetBids(BidsRequest) returns (BidsResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/bids/{auction_id}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/bids/{auction_id}";
     }
 
     // ListByBidder queries auctions by bidder
     rpc ListByBidder(ListByBidderRequest) returns (ListByBidderResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/auctions/{bidder_address}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions/{bidder_address}";
     }
 
     // QueryParams implements the params query command
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/params";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/params";
     }
 
     // Balance queries the auction module account balance
     rpc Balance(BalanceRequest) returns (BalanceResponse) {
-        option (google.api.http).get = "/ethermint/auction/v1/balance";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/balance";
     }
 }

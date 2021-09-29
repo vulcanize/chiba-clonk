@@ -18,7 +18,7 @@ var _ types.QueryServer = Querier{}
 func (q Querier) List(c context.Context, req *types.ListRequest) (*types.ListResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	resp := q.Keeper.ListAuctions(ctx)
-	return &types.ListResponse{Auctions: &types.Auctions{resp}}, nil
+	return &types.ListResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
 }
 
 // GetAuction queries an auction
@@ -46,7 +46,7 @@ func (q Querier) GetBids(c context.Context, req *types.BidsRequest) (*types.Bids
 func (q Querier) ListByBidder(c context.Context, req *types.ListByBidderRequest) (*types.ListByBidderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	resp := q.Keeper.QueryAuctionsByOwner(ctx, req.BidderAddress)
-	return &types.ListByBidderResponse{Auctions: &types.Auctions{resp}}, nil
+	return &types.ListByBidderResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
 }
 
 // QueryParams implements the params query command

@@ -45,23 +45,23 @@ func (auctionID AuctionID) Generate() string {
 }
 
 func (auction Auction) GetCreateTime() string {
-	return string(sdk.FormatTimeBytes(auction.CreateTime.AsTime()))
+	return string(sdk.FormatTimeBytes(auction.CreateTime))
 }
 
 func (auction Auction) GetCommitsEndTime() string {
-	return string(sdk.FormatTimeBytes(auction.CommitsEndTime.AsTime()))
+	return string(sdk.FormatTimeBytes(auction.CommitsEndTime))
 }
 
 func (auction Auction) GetRevealsEndTime() string {
-	return string(sdk.FormatTimeBytes(auction.RevealsEndTime.AsTime()))
+	return string(sdk.FormatTimeBytes(auction.RevealsEndTime))
 }
 
 func (bid Bid) GetCommitTime() string {
-	return string(sdk.FormatTimeBytes(bid.CommitTime.AsTime()))
+	return string(sdk.FormatTimeBytes(bid.CommitTime))
 }
 
 func (bid Bid) GetRevealTime() string {
-	return string(sdk.FormatTimeBytes(bid.RevealTime.AsTime()))
+	return string(sdk.FormatTimeBytes(bid.RevealTime))
 }
 
 // AuctionBidInfo is used in the block changeset.

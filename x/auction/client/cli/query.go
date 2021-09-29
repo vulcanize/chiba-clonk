@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 
 	"github.com/spf13/cobra"
@@ -35,7 +36,7 @@ func GetQueryCmd() *cobra.Command {
 
 // GetCmdList queries all auctions.
 func GetCmdList() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List auctions.",
 		Args:  cobra.ExactArgs(0),
@@ -54,11 +55,14 @@ func GetCmdList() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdGetBid queries an auction bid.
 func GetCmdGetBid() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "get-bid [auction-id] [bidder]",
 		Short: "Get auction bid.",
 		Args:  cobra.ExactArgs(2),
@@ -80,11 +84,14 @@ func GetCmdGetBid() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdGetBids queries all auction bids.
 func GetCmdGetBids() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "get-bids [auction-id]",
 		Short: "Get all auction bids.",
 		Args:  cobra.ExactArgs(1),
@@ -105,11 +112,14 @@ func GetCmdGetBids() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdGetAuction queries an auction.
 func GetCmdGetAuction() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "get [ID]",
 		Short: "Get auction.",
 		Args:  cobra.ExactArgs(1),
@@ -130,11 +140,14 @@ func GetCmdGetAuction() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdListByBidder queries auctions by bidder.
 func GetCmdListByBidder() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "query-by-owner [address]",
 		Short: "Query auctions by owner/creator.",
 		Args:  cobra.ExactArgs(1),
@@ -155,11 +168,14 @@ func GetCmdListByBidder() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdQueryParams implements the params query command.
 func GetCmdQueryParams() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,
 		Short: "Query the current auction parameters information.",
@@ -186,11 +202,14 @@ func GetCmdQueryParams() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdBalance queries the auction module account balance.
 func GetCmdBalance() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "balance",
 		Short: "Get auction module account balance.",
 		Args:  cobra.ExactArgs(0),
@@ -209,4 +228,7 @@ func GetCmdBalance() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
