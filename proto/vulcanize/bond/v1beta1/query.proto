@@ -28,7 +28,7 @@ service Query {
 
   // Get Bonds List by Owner
   rpc GetBondsByOwner(QueryGetBondsByOwnerRequest) returns (QueryGetBondsByOwnerResponse){
-    option (google.api.http).get = "/vulcanize/bond/v1beta1/bonds_by_owner";
+    option (google.api.http).get = "/vulcanize/bond/v1beta1/by-owner/{owner}";
   }
 
   // Get Bonds module balance

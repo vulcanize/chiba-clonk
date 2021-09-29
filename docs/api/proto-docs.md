@@ -1413,7 +1413,7 @@ Query defines the gRPC querier service for bond module
 | `Params` | [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Params queries bonds module params. | GET|/vulcanize/bond/v1beta1/params|
 | `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/vulcanize/bond/v1beta1/bonds|
 | `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
-| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/vulcanize/bond/v1beta1/bonds_by_owner|
+| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/vulcanize/bond/v1beta1/by-owner/{owner}|
 | `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/vulcanize/bond/v1beta1/balance|
 
  <!-- end services -->

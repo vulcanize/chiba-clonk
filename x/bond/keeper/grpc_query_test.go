@@ -57,11 +57,11 @@ func (suite *KeeperTestSuite) TestGrpcQueryParams() {
 
 	testCases := []struct {
 		msg string
-		req *types.QueryParamRequest
+		req *types.QueryParamsRequest
 	}{
 		{
 			"Get Params",
-			&types.QueryParamRequest{},
+			&types.QueryParamsRequest{},
 		},
 	}
 	for _, test := range testCases {

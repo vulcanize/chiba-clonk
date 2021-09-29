@@ -136,7 +136,7 @@ $ %s query bond get {BOND ID}
 // GetBondListByOwnerCmd queries the bond list by owner.
 func GetBondListByOwnerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "query-by-owner [address]",
+		Use:   "by-owner [address]",
 		Short: "Query bonds by owner.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get bond list by owner.

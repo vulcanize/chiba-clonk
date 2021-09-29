@@ -101,7 +101,7 @@ func (s *IntegrationTestSuite) TestGetBondsByOwnerGRPC() {
 	}{
 		{
 			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/bond/v1beta1/bonds_by_owner", val.APIAddress),
+			fmt.Sprintf("%s/vulcanize/bond/v1beta1/by-owner", val.APIAddress),
 			map[string]string{
 				grpctypes.GRPCBlockHeightHeader: "1",
 			},
@@ -110,7 +110,7 @@ func (s *IntegrationTestSuite) TestGetBondsByOwnerGRPC() {
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/vulcanize/bond/v1beta1/bonds_by_owner?owner=%s,", val.APIAddress, val.Address.String()),
+			fmt.Sprintf("%s/vulcanize/bond/v1beta1/by-owner/%s,", val.APIAddress, val.Address.String()),
 			map[string]string{},
 			0,
 			false,
