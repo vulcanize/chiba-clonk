@@ -31,22 +31,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// ListRequest is the format for querying all the auctions
-type ListRequest struct {
+// AuctionsRequest is the format for querying all the auctions
+type AuctionsRequest struct {
+	// pagination defines an optional pagination info for the next request
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *ListRequest) Reset()         { *m = ListRequest{} }
-func (m *ListRequest) String() string { return proto.CompactTextString(m) }
-func (*ListRequest) ProtoMessage()    {}
-func (*ListRequest) Descriptor() ([]byte, []int) {
+func (m *AuctionsRequest) Reset()         { *m = AuctionsRequest{} }
+func (m *AuctionsRequest) String() string { return proto.CompactTextString(m) }
+func (*AuctionsRequest) ProtoMessage()    {}
+func (*AuctionsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_888c39bb00ad61a7, []int{0}
 }
-func (m *ListRequest) XXX_Unmarshal(b []byte) error {
+func (m *AuctionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AuctionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ListRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AuctionsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -56,38 +58,45 @@ func (m *ListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *ListRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListRequest.Merge(m, src)
+func (m *AuctionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuctionsRequest.Merge(m, src)
 }
-func (m *ListRequest) XXX_Size() int {
+func (m *AuctionsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *ListRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListRequest.DiscardUnknown(m)
+func (m *AuctionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuctionsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListRequest proto.InternalMessageInfo
+var xxx_messageInfo_AuctionsRequest proto.InternalMessageInfo
 
-// ListResponse returns the list of all actions
-type ListResponse struct {
+func (m *AuctionsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// AuctionsResponse returns the list of all auctions
+type AuctionsResponse struct {
 	// List of auctions
 	Auctions *Auctions `protobuf:"bytes,1,opt,name=auctions,proto3" json:"auctions,omitempty"`
-	// pagination defines an optional pagination for the request
+	// pagination defines an optional pagination info for the next request
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *ListResponse) Reset()         { *m = ListResponse{} }
-func (m *ListResponse) String() string { return proto.CompactTextString(m) }
-func (*ListResponse) ProtoMessage()    {}
-func (*ListResponse) Descriptor() ([]byte, []int) {
+func (m *AuctionsResponse) Reset()         { *m = AuctionsResponse{} }
+func (m *AuctionsResponse) String() string { return proto.CompactTextString(m) }
+func (*AuctionsResponse) ProtoMessage()    {}
+func (*AuctionsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_888c39bb00ad61a7, []int{1}
 }
-func (m *ListResponse) XXX_Unmarshal(b []byte) error {
+func (m *AuctionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AuctionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ListResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AuctionsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -97,26 +106,26 @@ func (m *ListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *ListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListResponse.Merge(m, src)
+func (m *AuctionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuctionsResponse.Merge(m, src)
 }
-func (m *ListResponse) XXX_Size() int {
+func (m *AuctionsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *ListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListResponse.DiscardUnknown(m)
+func (m *AuctionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuctionsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListResponse proto.InternalMessageInfo
+var xxx_messageInfo_AuctionsResponse proto.InternalMessageInfo
 
-func (m *ListResponse) GetAuctions() *Auctions {
+func (m *AuctionsResponse) GetAuctions() *Auctions {
 	if m != nil {
 		return m.Auctions
 	}
 	return nil
 }
 
-func (m *ListResponse) GetPagination() *query.PageRequest {
+func (m *AuctionsResponse) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
@@ -408,24 +417,24 @@ func (m *BidsResponse) GetBids() []*Bid {
 	return nil
 }
 
-// ListByBidderRequest is the format for querying all auctions containing a bidder address
-type ListByBidderRequest struct {
+// AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
+type AuctionsByBidderRequest struct {
 	// Address of the bidder
 	BidderAddress string `protobuf:"bytes,1,opt,name=bidder_address,json=bidderAddress,proto3" json:"bidder_address,omitempty"`
 }
 
-func (m *ListByBidderRequest) Reset()         { *m = ListByBidderRequest{} }
-func (m *ListByBidderRequest) String() string { return proto.CompactTextString(m) }
-func (*ListByBidderRequest) ProtoMessage()    {}
-func (*ListByBidderRequest) Descriptor() ([]byte, []int) {
+func (m *AuctionsByBidderRequest) Reset()         { *m = AuctionsByBidderRequest{} }
+func (m *AuctionsByBidderRequest) String() string { return proto.CompactTextString(m) }
+func (*AuctionsByBidderRequest) ProtoMessage()    {}
+func (*AuctionsByBidderRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_888c39bb00ad61a7, []int{8}
 }
-func (m *ListByBidderRequest) XXX_Unmarshal(b []byte) error {
+func (m *AuctionsByBidderRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ListByBidderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AuctionsByBidderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ListByBidderRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AuctionsByBidderRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -435,43 +444,43 @@ func (m *ListByBidderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *ListByBidderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListByBidderRequest.Merge(m, src)
+func (m *AuctionsByBidderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuctionsByBidderRequest.Merge(m, src)
 }
-func (m *ListByBidderRequest) XXX_Size() int {
+func (m *AuctionsByBidderRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *ListByBidderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListByBidderRequest.DiscardUnknown(m)
+func (m *AuctionsByBidderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuctionsByBidderRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListByBidderRequest proto.InternalMessageInfo
+var xxx_messageInfo_AuctionsByBidderRequest proto.InternalMessageInfo
 
-func (m *ListByBidderRequest) GetBidderAddress() string {
+func (m *AuctionsByBidderRequest) GetBidderAddress() string {
 	if m != nil {
 		return m.BidderAddress
 	}
 	return ""
 }
 
-// ListByBidderResponse returns all auctions containing a bidder
-type ListByBidderResponse struct {
+// AuctionsByBidderResponse returns all auctions containing a bidder
+type AuctionsByBidderResponse struct {
 	// List of auctions
 	Auctions *Auctions `protobuf:"bytes,1,opt,name=auctions,proto3" json:"auctions,omitempty"`
 }
 
-func (m *ListByBidderResponse) Reset()         { *m = ListByBidderResponse{} }
-func (m *ListByBidderResponse) String() string { return proto.CompactTextString(m) }
-func (*ListByBidderResponse) ProtoMessage()    {}
-func (*ListByBidderResponse) Descriptor() ([]byte, []int) {
+func (m *AuctionsByBidderResponse) Reset()         { *m = AuctionsByBidderResponse{} }
+func (m *AuctionsByBidderResponse) String() string { return proto.CompactTextString(m) }
+func (*AuctionsByBidderResponse) ProtoMessage()    {}
+func (*AuctionsByBidderResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_888c39bb00ad61a7, []int{9}
 }
-func (m *ListByBidderResponse) XXX_Unmarshal(b []byte) error {
+func (m *AuctionsByBidderResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ListByBidderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AuctionsByBidderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ListByBidderResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AuctionsByBidderResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -481,19 +490,19 @@ func (m *ListByBidderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *ListByBidderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListByBidderResponse.Merge(m, src)
+func (m *AuctionsByBidderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuctionsByBidderResponse.Merge(m, src)
 }
-func (m *ListByBidderResponse) XXX_Size() int {
+func (m *AuctionsByBidderResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *ListByBidderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListByBidderResponse.DiscardUnknown(m)
+func (m *AuctionsByBidderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuctionsByBidderResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListByBidderResponse proto.InternalMessageInfo
+var xxx_messageInfo_AuctionsByBidderResponse proto.InternalMessageInfo
 
-func (m *ListByBidderResponse) GetAuctions() *Auctions {
+func (m *AuctionsByBidderResponse) GetAuctions() *Auctions {
 	if m != nil {
 		return m.Auctions
 	}
@@ -665,16 +674,16 @@ func (m *BalanceResponse) GetBalance() []types.Coin {
 }
 
 func init() {
-	proto.RegisterType((*ListRequest)(nil), "vulcanize.auction.v1beta1.ListRequest")
-	proto.RegisterType((*ListResponse)(nil), "vulcanize.auction.v1beta1.ListResponse")
+	proto.RegisterType((*AuctionsRequest)(nil), "vulcanize.auction.v1beta1.AuctionsRequest")
+	proto.RegisterType((*AuctionsResponse)(nil), "vulcanize.auction.v1beta1.AuctionsResponse")
 	proto.RegisterType((*AuctionRequest)(nil), "vulcanize.auction.v1beta1.AuctionRequest")
 	proto.RegisterType((*AuctionResponse)(nil), "vulcanize.auction.v1beta1.AuctionResponse")
 	proto.RegisterType((*BidRequest)(nil), "vulcanize.auction.v1beta1.BidRequest")
 	proto.RegisterType((*BidResponse)(nil), "vulcanize.auction.v1beta1.BidResponse")
 	proto.RegisterType((*BidsRequest)(nil), "vulcanize.auction.v1beta1.BidsRequest")
 	proto.RegisterType((*BidsResponse)(nil), "vulcanize.auction.v1beta1.BidsResponse")
-	proto.RegisterType((*ListByBidderRequest)(nil), "vulcanize.auction.v1beta1.ListByBidderRequest")
-	proto.RegisterType((*ListByBidderResponse)(nil), "vulcanize.auction.v1beta1.ListByBidderResponse")
+	proto.RegisterType((*AuctionsByBidderRequest)(nil), "vulcanize.auction.v1beta1.AuctionsByBidderRequest")
+	proto.RegisterType((*AuctionsByBidderResponse)(nil), "vulcanize.auction.v1beta1.AuctionsByBidderResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "vulcanize.auction.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "vulcanize.auction.v1beta1.QueryParamsResponse")
 	proto.RegisterType((*BalanceRequest)(nil), "vulcanize.auction.v1beta1.BalanceRequest")
@@ -686,56 +695,56 @@ func init() {
 }
 
 var fileDescriptor_888c39bb00ad61a7 = []byte{
-	// 773 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0x41, 0x4f, 0xdb, 0x48,
-	0x14, 0xc7, 0xe3, 0xc0, 0x26, 0xf0, 0x02, 0x61, 0x35, 0xa0, 0x15, 0x44, 0xbb, 0x5e, 0x18, 0x36,
-	0x2c, 0x64, 0x59, 0x1b, 0xb2, 0x6c, 0xab, 0x4a, 0x54, 0x08, 0x23, 0x81, 0x2a, 0x21, 0x95, 0xe6,
-	0x52, 0xa9, 0x17, 0x64, 0xc7, 0xa3, 0x30, 0x12, 0xb1, 0x43, 0xc6, 0x41, 0xa5, 0x28, 0x97, 0xaa,
-	0xc7, 0x1e, 0x90, 0xaa, 0x96, 0x0f, 0x51, 0xf5, 0x7b, 0x70, 0x44, 0xea, 0xa5, 0xa7, 0xaa, 0x82,
-	0x7e, 0x90, 0xca, 0x33, 0xcf, 0x26, 0xa1, 0xc2, 0x71, 0xa5, 0xde, 0x92, 0x37, 0xff, 0xf7, 0xde,
-	0x6f, 0x66, 0xde, 0x7f, 0x0c, 0xe5, 0xe3, 0xce, 0x61, 0xdd, 0xf6, 0xf8, 0x0b, 0x66, 0xda, 0x9d,
-	0x7a, 0xc0, 0x7d, 0xcf, 0x3c, 0x5e, 0x75, 0x58, 0x60, 0xaf, 0x9a, 0x47, 0x1d, 0xd6, 0x3e, 0x31,
-	0x5a, 0x6d, 0x3f, 0xf0, 0xc9, 0x4c, 0x2c, 0x33, 0x50, 0x66, 0xa0, 0xac, 0x34, 0xd5, 0xf0, 0x1b,
-	0xbe, 0x54, 0x99, 0xe1, 0x2f, 0x95, 0x50, 0xfa, 0xbd, 0xe1, 0xfb, 0x8d, 0x43, 0x66, 0xda, 0x2d,
-	0x6e, 0xda, 0x9e, 0xe7, 0x07, 0x76, 0x98, 0x24, 0x70, 0xb5, 0x52, 0xf7, 0x45, 0xd3, 0x17, 0xa6,
-	0x63, 0x0b, 0xa6, 0xfa, 0xc4, 0x5d, 0x5b, 0x76, 0x83, 0x7b, 0x52, 0x8c, 0x5a, 0xbd, 0x57, 0x1b,
-	0xa9, 0xea, 0x3e, 0x8f, 0xd6, 0x13, 0x76, 0x10, 0x9c, 0xb4, 0x18, 0xb6, 0xa4, 0xe3, 0x50, 0xd8,
-	0xe5, 0x22, 0xa8, 0xb1, 0xa3, 0x0e, 0x13, 0x01, 0x3d, 0xd7, 0x60, 0x4c, 0xfd, 0x17, 0x2d, 0xdf,
-	0x13, 0x8c, 0x6c, 0xc0, 0x08, 0xa6, 0x8b, 0x69, 0x6d, 0x56, 0x5b, 0x2c, 0x54, 0xe7, 0x8d, 0x3b,
-	0x37, 0x6d, 0x6c, 0xa2, 0xb4, 0x16, 0x27, 0x91, 0x6d, 0x80, 0x1b, 0xf6, 0xe9, 0xac, 0x2c, 0xb1,
-	0x60, 0x28, 0x78, 0x23, 0x84, 0x37, 0xd4, 0x81, 0x46, 0x25, 0xf6, 0xec, 0x06, 0x43, 0x9a, 0x5a,
-	0x4f, 0x26, 0x9d, 0x85, 0x22, 0x56, 0xc7, 0x55, 0x52, 0x84, 0x2c, 0x77, 0x25, 0xd4, 0x68, 0x2d,
-	0xcb, 0x5d, 0xfa, 0x18, 0x26, 0x62, 0x05, 0xd2, 0xaf, 0x43, 0x1e, 0x41, 0x10, 0x9e, 0x0e, 0x86,
-	0xaf, 0x45, 0x29, 0x74, 0x0b, 0xc0, 0xe2, 0x6e, 0xd4, 0xee, 0x0f, 0x00, 0x5c, 0xd8, 0x8f, 0xdb,
-	0x8e, 0x62, 0xe4, 0x91, 0x4b, 0x7e, 0x83, 0x9c, 0xc3, 0x5d, 0x97, 0xb5, 0xe5, 0x1e, 0x47, 0x6b,
-	0xf8, 0x8f, 0x6e, 0x40, 0x41, 0x16, 0x41, 0xa2, 0x15, 0x18, 0x72, 0x30, 0xbd, 0x50, 0xd5, 0x13,
-	0x68, 0xc2, 0xa4, 0x50, 0x4a, 0x97, 0x65, 0x01, 0x91, 0x0e, 0x83, 0x5a, 0x30, 0xa6, 0xd4, 0xd8,
-	0xaf, 0x0a, 0xc3, 0x0e, 0x77, 0xc3, 0xbb, 0x1b, 0x4a, 0xd1, 0x50, 0x6a, 0xe9, 0x3a, 0x4c, 0x86,
-	0x33, 0x60, 0x9d, 0x58, 0x72, 0x0b, 0x51, 0xe7, 0x32, 0x14, 0xd5, 0x9e, 0xf6, 0x6d, 0xd7, 0x6d,
-	0x33, 0x21, 0xb0, 0xfb, 0xb8, 0x8a, 0x6e, 0xaa, 0x20, 0x7d, 0x0a, 0x53, 0xfd, 0xd9, 0x3f, 0x69,
-	0x92, 0xe8, 0x14, 0x90, 0x27, 0xe1, 0xa8, 0xec, 0xd9, 0x6d, 0xbb, 0x19, 0x9d, 0x07, 0xdd, 0x83,
-	0xc9, 0xbe, 0x28, 0x76, 0x7b, 0x00, 0xb9, 0x96, 0x8c, 0x60, 0xaf, 0xb9, 0x84, 0x5e, 0x98, 0x8a,
-	0x09, 0xf4, 0x57, 0x28, 0x5a, 0xf6, 0xa1, 0xed, 0xd5, 0xa3, 0x39, 0xa4, 0xbb, 0x30, 0x11, 0x47,
-	0xe2, 0xfa, 0x79, 0x47, 0x85, 0xf0, 0x68, 0x67, 0xfa, 0x66, 0x3a, 0x2a, 0xbd, 0xe5, 0x73, 0xcf,
-	0x1a, 0xbe, 0xf8, 0xfc, 0x67, 0xa6, 0x16, 0xe9, 0xab, 0xef, 0x47, 0xe0, 0x17, 0x89, 0x4c, 0x5e,
-	0x69, 0x30, 0x1c, 0x9e, 0x15, 0x59, 0x48, 0xa0, 0xeb, 0xb1, 0x67, 0xe9, 0xef, 0x81, 0x3a, 0x85,
-	0x47, 0xff, 0x79, 0xf9, 0xf1, 0xeb, 0x9b, 0x6c, 0x99, 0xcc, 0x9b, 0x77, 0x3f, 0x03, 0xb1, 0x45,
-	0xdf, 0x6a, 0x00, 0x3b, 0x2c, 0xc0, 0x23, 0x27, 0x4b, 0x29, 0x3c, 0x82, 0x3c, 0x95, 0x34, 0x52,
-	0x44, 0x5a, 0x91, 0x48, 0x15, 0xb2, 0x98, 0x02, 0xc9, 0x3c, 0xe5, 0x6e, 0x97, 0xbc, 0xd3, 0x20,
-	0xb7, 0xc3, 0x02, 0x8b, 0xbb, 0xa4, 0x3c, 0x60, 0x70, 0x91, 0x67, 0x61, 0x90, 0x0c, 0x59, 0x1e,
-	0x4a, 0x96, 0xfb, 0xe4, 0xff, 0x04, 0x96, 0xd0, 0x0a, 0xe6, 0xe9, 0x8d, 0xd7, 0xba, 0xe6, 0xa9,
-	0x1a, 0xf4, 0x2e, 0x39, 0xd3, 0x20, 0xaf, 0xc0, 0x04, 0x19, 0xd0, 0x52, 0xa4, 0xb9, 0xba, 0x5e,
-	0xc7, 0xd2, 0x35, 0xc9, 0x66, 0x90, 0xe5, 0x1f, 0x61, 0x23, 0x1f, 0xf0, 0xe1, 0x8e, 0x6c, 0x47,
-	0x8c, 0x01, 0xa3, 0x72, 0xcb, 0xdd, 0x25, 0x33, 0xb5, 0x1e, 0x39, 0xd7, 0x25, 0xe7, 0x3d, 0xb2,
-	0x96, 0xea, 0x3e, 0xfb, 0x5f, 0x8e, 0x2e, 0x39, 0xd7, 0xa0, 0xd0, 0xe3, 0x5b, 0xf2, 0x6f, 0x42,
-	0xfb, 0xef, 0x5d, 0x5f, 0x32, 0xd2, 0xca, 0x11, 0x76, 0x49, 0xc2, 0xce, 0x93, 0xb9, 0x04, 0x58,
-	0x65, 0x7f, 0xf2, 0x5a, 0x83, 0x3c, 0xba, 0x3d, 0xd1, 0x0a, 0xfd, 0x6f, 0x44, 0xa2, 0x15, 0x6e,
-	0x3d, 0x1e, 0xb4, 0x22, 0x69, 0xfe, 0x22, 0x34, 0xe9, 0x8a, 0x55, 0x8e, 0xb5, 0x7d, 0x71, 0xa5,
-	0x6b, 0x97, 0x57, 0xba, 0xf6, 0xe5, 0x4a, 0xd7, 0xce, 0xae, 0xf5, 0xcc, 0xe5, 0xb5, 0x9e, 0xf9,
-	0x74, 0xad, 0x67, 0x9e, 0x2d, 0x37, 0x78, 0x70, 0xd0, 0x71, 0x8c, 0xba, 0xdf, 0x34, 0x83, 0x03,
-	0xbb, 0x2d, 0xb8, 0x30, 0x59, 0x70, 0xc0, 0xda, 0x4d, 0xee, 0x05, 0xe6, 0xf3, 0xb8, 0xa2, 0xfc,
-	0xdc, 0x3b, 0x39, 0xf9, 0xbd, 0xff, 0xef, 0x5b, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb6, 0xb5, 0xd4,
-	0xd6, 0xda, 0x08, 0x00, 0x00,
+	// 775 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0xc1, 0x4f, 0x13, 0x4f,
+	0x14, 0xc7, 0xbb, 0x85, 0x5f, 0x0b, 0xaf, 0xbf, 0x5f, 0x21, 0xf3, 0x23, 0x0a, 0x8d, 0xae, 0x30,
+	0x58, 0x84, 0x82, 0xbb, 0x50, 0x50, 0x63, 0x82, 0x41, 0x96, 0x04, 0x62, 0x62, 0x22, 0xf6, 0xa6,
+	0x1e, 0xc8, 0x6e, 0x77, 0x52, 0x26, 0xa1, 0xbb, 0xa5, 0xbb, 0x25, 0x22, 0xe9, 0xc5, 0xb3, 0x07,
+	0x12, 0xa3, 0x1e, 0xfc, 0x4b, 0x3c, 0x7b, 0xe1, 0x48, 0xe2, 0xc5, 0x93, 0x31, 0xe0, 0x1f, 0x62,
+	0x76, 0xe6, 0xed, 0xd2, 0x42, 0xd8, 0x2e, 0xc6, 0x5b, 0x3b, 0xf3, 0x7d, 0xef, 0xfb, 0x99, 0x99,
+	0xf7, 0x5e, 0x16, 0x8a, 0x7b, 0xad, 0x9d, 0xaa, 0xe9, 0xf0, 0x37, 0x4c, 0x37, 0x5b, 0x55, 0x9f,
+	0xbb, 0x8e, 0xbe, 0xb7, 0x60, 0x31, 0xdf, 0x5c, 0xd0, 0x77, 0x5b, 0xac, 0xb9, 0xaf, 0x35, 0x9a,
+	0xae, 0xef, 0x92, 0xb1, 0x48, 0xa6, 0xa1, 0x4c, 0x43, 0x59, 0x61, 0xa4, 0xe6, 0xd6, 0x5c, 0xa1,
+	0xd2, 0x83, 0x5f, 0x32, 0xa0, 0x70, 0xa3, 0xe6, 0xba, 0xb5, 0x1d, 0xa6, 0x9b, 0x0d, 0xae, 0x9b,
+	0x8e, 0xe3, 0xfa, 0x66, 0x10, 0xe4, 0xe1, 0x6e, 0xa9, 0xea, 0x7a, 0x75, 0xd7, 0xd3, 0x2d, 0xd3,
+	0x63, 0xd2, 0x27, 0x72, 0x6d, 0x98, 0x35, 0xee, 0x08, 0x31, 0x6a, 0xd5, 0x4e, 0x6d, 0xa8, 0xaa,
+	0xba, 0x3c, 0xdc, 0x8f, 0x39, 0x81, 0xbf, 0xdf, 0x60, 0x68, 0x49, 0x5f, 0xc0, 0xd0, 0xaa, 0xdc,
+	0xf6, 0x2a, 0x6c, 0xb7, 0xc5, 0x3c, 0x9f, 0xac, 0x03, 0x9c, 0xb9, 0x8d, 0x2a, 0xe3, 0xca, 0x74,
+	0xae, 0x3c, 0xa5, 0x49, 0x3b, 0x2d, 0xb0, 0xd3, 0xe4, 0x15, 0x60, 0x3a, 0x6d, 0xd3, 0xac, 0x31,
+	0x8c, 0xad, 0x74, 0x44, 0xd2, 0xcf, 0x0a, 0x0c, 0x9f, 0xe5, 0xf6, 0x1a, 0xae, 0xe3, 0x31, 0xb2,
+	0x02, 0x03, 0x88, 0xe3, 0x61, 0xea, 0x49, 0xed, 0xd2, 0x4b, 0xd4, 0xa2, 0xf0, 0x28, 0xe8, 0x1c,
+	0x5d, 0xfa, 0x8f, 0xe9, 0xc6, 0x21, 0x8f, 0xd9, 0xc3, 0x73, 0xe7, 0x21, 0xcd, 0x6d, 0x01, 0x35,
+	0x58, 0x49, 0x73, 0x9b, 0x3e, 0x8b, 0xae, 0x26, 0xa2, 0x5f, 0x86, 0x2c, 0x82, 0x20, 0x3c, 0xed,
+	0x0d, 0x5f, 0x09, 0x43, 0xe8, 0x1a, 0x80, 0xc1, 0xed, 0xd0, 0xee, 0x26, 0x00, 0x6e, 0x6c, 0x45,
+	0xb6, 0x83, 0xb8, 0xf2, 0xc4, 0x26, 0xd7, 0x20, 0x63, 0x71, 0xdb, 0x66, 0x4d, 0x71, 0xc6, 0xc1,
+	0x0a, 0xfe, 0xa3, 0x2b, 0x90, 0x13, 0x49, 0x90, 0x68, 0x1e, 0xfa, 0x2c, 0x0c, 0xcf, 0x95, 0xd5,
+	0x18, 0x9a, 0x20, 0x28, 0x90, 0xd2, 0x39, 0x91, 0xc0, 0x4b, 0x86, 0x41, 0x0d, 0xf8, 0x57, 0xaa,
+	0xd1, 0xaf, 0x0c, 0xfd, 0x16, 0xb7, 0x83, 0xb7, 0xeb, 0x4b, 0x60, 0x28, 0xb4, 0xf4, 0x31, 0x5c,
+	0x0f, 0x1f, 0xd2, 0xd8, 0x37, 0xc4, 0x31, 0x42, 0xf7, 0x22, 0xe4, 0xe5, 0xb9, 0xb6, 0x4c, 0xdb,
+	0x6e, 0x32, 0xcf, 0x43, 0x82, 0xff, 0xe4, 0xea, 0xaa, 0x5c, 0xa4, 0xaf, 0x60, 0xf4, 0x62, 0x86,
+	0xbf, 0x54, 0x51, 0x74, 0x04, 0xc8, 0xf3, 0xa0, 0x64, 0x36, 0xcd, 0xa6, 0x59, 0x0f, 0xef, 0x85,
+	0x6e, 0xc2, 0xff, 0x5d, 0xab, 0xe8, 0xf6, 0x10, 0x32, 0x0d, 0xb1, 0x82, 0x5e, 0x13, 0x31, 0x5e,
+	0x18, 0x8a, 0x01, 0x74, 0x18, 0xf2, 0x86, 0xb9, 0x63, 0x3a, 0xd5, 0xb0, 0x1e, 0xe9, 0x53, 0x18,
+	0x8a, 0x56, 0xa2, 0xfc, 0x59, 0x4b, 0x2e, 0xe1, 0x15, 0x8f, 0x75, 0xd5, 0x76, 0x98, 0x7a, 0xcd,
+	0xe5, 0x8e, 0xd1, 0x7f, 0xf4, 0xe3, 0x56, 0xaa, 0x12, 0xea, 0xcb, 0x5f, 0x07, 0xe0, 0x1f, 0x81,
+	0x4c, 0x0e, 0x15, 0x18, 0x08, 0x0f, 0x4a, 0x4a, 0x49, 0x6e, 0x43, 0x02, 0x15, 0x66, 0x13, 0x69,
+	0x25, 0x2a, 0x9d, 0x7d, 0xfb, 0xed, 0xd7, 0xfb, 0x74, 0x91, 0x4c, 0xea, 0x97, 0x8f, 0x9a, 0xa8,
+	0x6d, 0x3f, 0x28, 0x00, 0x1b, 0xcc, 0xc7, 0x24, 0x64, 0x26, 0x41, 0xdf, 0x20, 0x53, 0x29, 0x89,
+	0x14, 0x91, 0xe6, 0x05, 0x52, 0x89, 0x4c, 0x27, 0x40, 0xd2, 0x0f, 0xb8, 0xdd, 0x26, 0x1f, 0x15,
+	0xc8, 0x6c, 0x30, 0xdf, 0xe0, 0x36, 0x29, 0xf6, 0x28, 0x66, 0xe4, 0x99, 0xea, 0x25, 0x43, 0x96,
+	0x47, 0x82, 0xe5, 0x01, 0xb9, 0x17, 0xc3, 0x12, 0xb4, 0x87, 0x7e, 0x70, 0xd6, 0x7f, 0x6d, 0xfd,
+	0x40, 0x16, 0x7e, 0x3b, 0x78, 0xc3, 0xac, 0x04, 0xf3, 0x48, 0x0f, 0xcb, 0xe8, 0xf9, 0xee, 0xf4,
+	0xd4, 0x21, 0xdb, 0x92, 0x60, 0xd3, 0xc8, 0xdc, 0x55, 0xd8, 0xc8, 0x97, 0x8e, 0x81, 0x1e, 0xb6,
+	0x21, 0x29, 0x27, 0x28, 0x99, 0x73, 0x5d, 0x5f, 0x58, 0xbc, 0x52, 0x0c, 0x32, 0x2f, 0x0b, 0xe6,
+	0xfb, 0x64, 0x29, 0xd1, 0xdb, 0x76, 0x4f, 0x95, 0x36, 0xf9, 0xa4, 0x40, 0xae, 0xa3, 0x9f, 0xc9,
+	0xdd, 0x18, 0x84, 0x8b, 0xd3, 0xa0, 0xa0, 0x25, 0x95, 0x23, 0xec, 0x8c, 0x80, 0x9d, 0x24, 0x13,
+	0x31, 0xb0, 0x72, 0x2c, 0x90, 0x77, 0x0a, 0x64, 0x71, 0x0a, 0xc4, 0xb6, 0x45, 0xf7, 0xec, 0x88,
+	0x6d, 0x8b, 0x73, 0x43, 0x85, 0x96, 0x04, 0xcd, 0x6d, 0x42, 0xe3, 0x9e, 0x5b, 0xc6, 0x18, 0xeb,
+	0x47, 0x27, 0xaa, 0x72, 0x7c, 0xa2, 0x2a, 0x3f, 0x4f, 0x54, 0xe5, 0xf0, 0x54, 0x4d, 0x1d, 0x9f,
+	0xaa, 0xa9, 0xef, 0xa7, 0x6a, 0xea, 0xe5, 0x5c, 0x8d, 0xfb, 0xdb, 0x2d, 0x4b, 0xab, 0xba, 0x75,
+	0xdd, 0xdf, 0x36, 0x9b, 0x1e, 0xf7, 0x74, 0xe6, 0x6f, 0xb3, 0x66, 0x9d, 0x3b, 0xbe, 0xfe, 0x3a,
+	0xca, 0x28, 0x3e, 0x2f, 0xac, 0x8c, 0xf8, 0xbe, 0x58, 0xfc, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xc8,
+	0x2d, 0x31, 0x68, 0x4a, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -750,16 +759,16 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// List queries all auctions
-	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
+	// Auctions queries all auctions
+	Auctions(ctx context.Context, in *AuctionsRequest, opts ...grpc.CallOption) (*AuctionsResponse, error)
 	// GetAuction queries an auction
 	GetAuction(ctx context.Context, in *AuctionRequest, opts ...grpc.CallOption) (*AuctionResponse, error)
 	// GetBid queries an auction bid
 	GetBid(ctx context.Context, in *BidRequest, opts ...grpc.CallOption) (*BidResponse, error)
 	// GetBids queries all auction bids
 	GetBids(ctx context.Context, in *BidsRequest, opts ...grpc.CallOption) (*BidsResponse, error)
-	// ListByBidder queries auctions by bidder
-	ListByBidder(ctx context.Context, in *ListByBidderRequest, opts ...grpc.CallOption) (*ListByBidderResponse, error)
+	// AuctionsByBidder queries auctions by bidder
+	AuctionsByBidder(ctx context.Context, in *AuctionsByBidderRequest, opts ...grpc.CallOption) (*AuctionsByBidderResponse, error)
 	// QueryParams implements the params query command
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Balance queries the auction module account balance
@@ -774,9 +783,9 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
-	out := new(ListResponse)
-	err := c.cc.Invoke(ctx, "/vulcanize.auction.v1beta1.Query/List", in, out, opts...)
+func (c *queryClient) Auctions(ctx context.Context, in *AuctionsRequest, opts ...grpc.CallOption) (*AuctionsResponse, error) {
+	out := new(AuctionsResponse)
+	err := c.cc.Invoke(ctx, "/vulcanize.auction.v1beta1.Query/Auctions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -810,9 +819,9 @@ func (c *queryClient) GetBids(ctx context.Context, in *BidsRequest, opts ...grpc
 	return out, nil
 }
 
-func (c *queryClient) ListByBidder(ctx context.Context, in *ListByBidderRequest, opts ...grpc.CallOption) (*ListByBidderResponse, error) {
-	out := new(ListByBidderResponse)
-	err := c.cc.Invoke(ctx, "/vulcanize.auction.v1beta1.Query/ListByBidder", in, out, opts...)
+func (c *queryClient) AuctionsByBidder(ctx context.Context, in *AuctionsByBidderRequest, opts ...grpc.CallOption) (*AuctionsByBidderResponse, error) {
+	out := new(AuctionsByBidderResponse)
+	err := c.cc.Invoke(ctx, "/vulcanize.auction.v1beta1.Query/AuctionsByBidder", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -839,16 +848,16 @@ func (c *queryClient) Balance(ctx context.Context, in *BalanceRequest, opts ...g
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// List queries all auctions
-	List(context.Context, *ListRequest) (*ListResponse, error)
+	// Auctions queries all auctions
+	Auctions(context.Context, *AuctionsRequest) (*AuctionsResponse, error)
 	// GetAuction queries an auction
 	GetAuction(context.Context, *AuctionRequest) (*AuctionResponse, error)
 	// GetBid queries an auction bid
 	GetBid(context.Context, *BidRequest) (*BidResponse, error)
 	// GetBids queries all auction bids
 	GetBids(context.Context, *BidsRequest) (*BidsResponse, error)
-	// ListByBidder queries auctions by bidder
-	ListByBidder(context.Context, *ListByBidderRequest) (*ListByBidderResponse, error)
+	// AuctionsByBidder queries auctions by bidder
+	AuctionsByBidder(context.Context, *AuctionsByBidderRequest) (*AuctionsByBidderResponse, error)
 	// QueryParams implements the params query command
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Balance queries the auction module account balance
@@ -859,8 +868,8 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) List(ctx context.Context, req *ListRequest) (*ListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+func (*UnimplementedQueryServer) Auctions(ctx context.Context, req *AuctionsRequest) (*AuctionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Auctions not implemented")
 }
 func (*UnimplementedQueryServer) GetAuction(ctx context.Context, req *AuctionRequest) (*AuctionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuction not implemented")
@@ -871,8 +880,8 @@ func (*UnimplementedQueryServer) GetBid(ctx context.Context, req *BidRequest) (*
 func (*UnimplementedQueryServer) GetBids(ctx context.Context, req *BidsRequest) (*BidsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBids not implemented")
 }
-func (*UnimplementedQueryServer) ListByBidder(ctx context.Context, req *ListByBidderRequest) (*ListByBidderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByBidder not implemented")
+func (*UnimplementedQueryServer) AuctionsByBidder(ctx context.Context, req *AuctionsByBidderRequest) (*AuctionsByBidderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuctionsByBidder not implemented")
 }
 func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
@@ -885,20 +894,20 @@ func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+func _Query_Auctions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuctionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).List(ctx, in)
+		return srv.(QueryServer).Auctions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/vulcanize.auction.v1beta1.Query/List",
+		FullMethod: "/vulcanize.auction.v1beta1.Query/Auctions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).List(ctx, req.(*ListRequest))
+		return srv.(QueryServer).Auctions(ctx, req.(*AuctionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -957,20 +966,20 @@ func _Query_GetBids_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListByBidder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByBidderRequest)
+func _Query_AuctionsByBidder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuctionsByBidderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListByBidder(ctx, in)
+		return srv.(QueryServer).AuctionsByBidder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/vulcanize.auction.v1beta1.Query/ListByBidder",
+		FullMethod: "/vulcanize.auction.v1beta1.Query/AuctionsByBidder",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListByBidder(ctx, req.(*ListByBidderRequest))
+		return srv.(QueryServer).AuctionsByBidder(ctx, req.(*AuctionsByBidderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1016,8 +1025,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "List",
-			Handler:    _Query_List_Handler,
+			MethodName: "Auctions",
+			Handler:    _Query_Auctions_Handler,
 		},
 		{
 			MethodName: "GetAuction",
@@ -1032,8 +1041,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GetBids_Handler,
 		},
 		{
-			MethodName: "ListByBidder",
-			Handler:    _Query_ListByBidder_Handler,
+			MethodName: "AuctionsByBidder",
+			Handler:    _Query_AuctionsByBidder_Handler,
 		},
 		{
 			MethodName: "QueryParams",
@@ -1048,7 +1057,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	Metadata: "vulcanize/auction/v1beta1/query.proto",
 }
 
-func (m *ListRequest) Marshal() (dAtA []byte, err error) {
+func (m *AuctionsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1058,20 +1067,32 @@ func (m *ListRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ListRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *AuctionsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ListRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AuctionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
-func (m *ListResponse) Marshal() (dAtA []byte, err error) {
+func (m *AuctionsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1081,12 +1102,12 @@ func (m *ListResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ListResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *AuctionsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ListResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AuctionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1322,7 +1343,7 @@ func (m *BidsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ListByBidderRequest) Marshal() (dAtA []byte, err error) {
+func (m *AuctionsByBidderRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1332,12 +1353,12 @@ func (m *ListByBidderRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ListByBidderRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *AuctionsByBidderRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ListByBidderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AuctionsByBidderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1352,7 +1373,7 @@ func (m *ListByBidderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ListByBidderResponse) Marshal() (dAtA []byte, err error) {
+func (m *AuctionsByBidderResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1362,12 +1383,12 @@ func (m *ListByBidderResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ListByBidderResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *AuctionsByBidderResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ListByBidderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AuctionsByBidderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1516,16 +1537,20 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *ListRequest) Size() (n int) {
+func (m *AuctionsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
-func (m *ListResponse) Size() (n int) {
+func (m *AuctionsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1626,7 +1651,7 @@ func (m *BidsResponse) Size() (n int) {
 	return n
 }
 
-func (m *ListByBidderRequest) Size() (n int) {
+func (m *AuctionsByBidderRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1639,7 +1664,7 @@ func (m *ListByBidderRequest) Size() (n int) {
 	return n
 }
 
-func (m *ListByBidderResponse) Size() (n int) {
+func (m *AuctionsByBidderResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1704,7 +1729,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *ListRequest) Unmarshal(dAtA []byte) error {
+func (m *AuctionsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1727,12 +1752,48 @@ func (m *ListRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ListRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: AuctionsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AuctionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1754,7 +1815,7 @@ func (m *ListRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ListResponse) Unmarshal(dAtA []byte) error {
+func (m *AuctionsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1777,10 +1838,10 @@ func (m *ListResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ListResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: AuctionsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ListResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AuctionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2410,7 +2471,7 @@ func (m *BidsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ListByBidderRequest) Unmarshal(dAtA []byte) error {
+func (m *AuctionsByBidderRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2433,10 +2494,10 @@ func (m *ListByBidderRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ListByBidderRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: AuctionsByBidderRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ListByBidderRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AuctionsByBidderRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2492,7 +2553,7 @@ func (m *ListByBidderRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ListByBidderResponse) Unmarshal(dAtA []byte) error {
+func (m *AuctionsByBidderResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2515,10 +2576,10 @@ func (m *ListByBidderResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ListByBidderResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: AuctionsByBidderResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ListByBidderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AuctionsByBidderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

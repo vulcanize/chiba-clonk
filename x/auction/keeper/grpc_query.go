@@ -14,11 +14,11 @@ type Querier struct {
 
 var _ types.QueryServer = Querier{}
 
-// List queries all auctions
-func (q Querier) List(c context.Context, req *types.ListRequest) (*types.ListResponse, error) {
+// Auctions queries all auctions
+func (q Querier) Auctions(c context.Context, req *types.AuctionsRequest) (*types.AuctionsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	resp := q.Keeper.ListAuctions(ctx)
-	return &types.ListResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
+	return &types.AuctionsResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
 }
 
 // GetAuction queries an auction
@@ -42,11 +42,11 @@ func (q Querier) GetBids(c context.Context, req *types.BidsRequest) (*types.Bids
 	return &types.BidsResponse{Bids: resp}, nil
 }
 
-// ListByBidder queries auctions by bidder
-func (q Querier) ListByBidder(c context.Context, req *types.ListByBidderRequest) (*types.ListByBidderResponse, error) {
+// AuctionsByBidder queries auctions by bidder
+func (q Querier) AuctionsByBidder(c context.Context, req *types.AuctionsByBidderRequest) (*types.AuctionsByBidderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	resp := q.Keeper.QueryAuctionsByOwner(ctx, req.BidderAddress)
-	return &types.ListByBidderResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
+	return &types.AuctionsByBidderResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
 }
 
 // QueryParams implements the params query command

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tharsis/ethermint/x/bond/types"
@@ -19,7 +20,7 @@ func (q Querier) Bonds(c context.Context, _ *types.QueryGetBondsRequest) (*types
 	return &types.QueryGetBondsResponse{Bonds: resp}, nil
 }
 
-func (q Querier) Params(c context.Context, _ *types.QueryParamRequest) (*types.QueryParamsResponse, error) {
+func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := q.Keeper.GetParams(ctx)
 	return &types.QueryParamsResponse{Params: &params}, nil

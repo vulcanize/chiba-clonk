@@ -9,15 +9,17 @@ import "vulcanize/auction/v1beta1/types.proto";
 
 option go_package = "github.com/tharsis/ethermint/x/auction/types";
 
-// ListRequest is the format for querying all the auctions
-message ListRequest {
+// AuctionsRequest is the format for querying all the auctions
+message AuctionsRequest {
+    // pagination defines an optional pagination info for the next request
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// ListResponse returns the list of all actions
-message ListResponse {
+// AuctionsResponse returns the list of all auctions
+message AuctionsResponse {
     // List of auctions
     Auctions auctions = 1;
-    // pagination defines an optional pagination for the request
+    // pagination defines an optional pagination info for the next request
     cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
@@ -59,14 +61,14 @@ message BidsResponse {
     repeated Bid bids = 1;
 }
 
-// ListByBidderRequest is the format for querying all auctions containing a bidder address
-message ListByBidderRequest {
+// AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
+message AuctionsByBidderRequest {
     // Address of the bidder
     string bidder_address = 1;
 }
 
-// ListByBidderResponse returns all auctions containing a bidder
-message ListByBidderResponse {
+// AuctionsByBidderResponse returns all auctions containing a bidder
+message AuctionsByBidderResponse {
     // List of auctions
     Auctions auctions = 1;
 }
@@ -93,8 +95,8 @@ message BalanceResponse {
 
 // Query defines the gRPC querier interface for the auction module
 service Query {
-    // List queries all auctions
-    rpc List(ListRequest) returns (ListResponse) {
+    // Auctions queries all auctions
+    rpc Auctions(AuctionsRequest) returns (AuctionsResponse) {
         option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions";
     }
 
@@ -113,8 +115,8 @@ service Query {
         option (google.api.http).get = "/vulcanize/auction/v1beta1/bids/{auction_id}";
     }
 
-    // ListByBidder queries auctions by bidder
-    rpc ListByBidder(ListByBidderRequest) returns (ListByBidderResponse) {
+    // AuctionsByBidder queries auctions by bidder
+    rpc AuctionsByBidder(AuctionsByBidderRequest) returns (AuctionsByBidderResponse) {
         option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions/{bidder_address}";
     }
 

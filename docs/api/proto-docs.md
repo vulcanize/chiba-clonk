@@ -92,16 +92,16 @@
 - [vulcanize/auction/v1beta1/query.proto](#vulcanize/auction/v1beta1/query.proto)
     - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
     - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
+    - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
+    - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
+    - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
+    - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
     - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
     - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
     - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
     - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
     - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
     - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
-    - [ListByBidderRequest](#vulcanize.auction.v1beta1.ListByBidderRequest)
-    - [ListByBidderResponse](#vulcanize.auction.v1beta1.ListByBidderResponse)
-    - [ListRequest](#vulcanize.auction.v1beta1.ListRequest)
-    - [ListResponse](#vulcanize.auction.v1beta1.ListResponse)
     - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
   
@@ -1372,6 +1372,67 @@ AuctionResponse returns the details of the queried auction
 
 
 
+<a name="vulcanize.auction.v1beta1.AuctionsByBidderRequest"></a>
+
+### AuctionsByBidderRequest
+AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bidder_address` | [string](#string) |  | Address of the bidder |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByBidderResponse"></a>
+
+### AuctionsByBidderResponse
+AuctionsByBidderResponse returns all auctions containing a bidder
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsRequest"></a>
+
+### AuctionsRequest
+AuctionsRequest is the format for querying all the auctions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsResponse"></a>
+
+### AuctionsResponse
+AuctionsResponse returns the list of all auctions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
+
+
+
+
+
+
 <a name="vulcanize.auction.v1beta1.BalanceRequest"></a>
 
 ### BalanceRequest
@@ -1458,62 +1519,6 @@ BidsResponse returns details of all bids in an auction
 
 
 
-<a name="vulcanize.auction.v1beta1.ListByBidderRequest"></a>
-
-### ListByBidderRequest
-ListByBidderRequest is the format for querying all auctions containing a bidder address
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `bidder_address` | [string](#string) |  | Address of the bidder |
-
-
-
-
-
-
-<a name="vulcanize.auction.v1beta1.ListByBidderResponse"></a>
-
-### ListByBidderResponse
-ListByBidderResponse returns all auctions containing a bidder
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
-
-
-
-
-
-
-<a name="vulcanize.auction.v1beta1.ListRequest"></a>
-
-### ListRequest
-ListRequest is the format for querying all the auctions
-
-
-
-
-
-
-<a name="vulcanize.auction.v1beta1.ListResponse"></a>
-
-### ListResponse
-ListResponse returns the list of all actions
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
-| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request |
-
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
@@ -1552,11 +1557,11 @@ Query defines the gRPC querier interface for the auction module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `List` | [ListRequest](#vulcanize.auction.v1beta1.ListRequest) | [ListResponse](#vulcanize.auction.v1beta1.ListResponse) | List queries all auctions | GET|/vulcanize/auction/v1beta1/auctions|
+| `Auctions` | [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest) | [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse) | Auctions queries all auctions | GET|/vulcanize/auction/v1beta1/auctions|
 | `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
 | `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
 | `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
-| `ListByBidder` | [ListByBidderRequest](#vulcanize.auction.v1beta1.ListByBidderRequest) | [ListByBidderResponse](#vulcanize.auction.v1beta1.ListByBidderResponse) | ListByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions/{bidder_address}|
+| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions/{bidder_address}|
 | `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
 | `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
 
