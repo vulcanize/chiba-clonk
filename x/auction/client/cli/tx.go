@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	utils "github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/spf13/cobra"
@@ -16,7 +16,7 @@ import (
 
 	"github.com/tharsis/ethermint/x/auction/types"
 
-	wnsUtils "github.com/vulcanize/dxns/utils"
+	wnsUtils "github.com/tharsis/ethermint/utils"
 )
 
 // GetTxCmd returns transaction commands for this module.
@@ -88,7 +88,7 @@ func GetCmdCreateAuction() *cobra.Command {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -143,7 +143,7 @@ func GetCmdCommitBid() *cobra.Command {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -180,7 +180,7 @@ func GetCmdRevealBid() *cobra.Command {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 

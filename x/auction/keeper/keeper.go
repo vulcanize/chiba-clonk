@@ -15,7 +15,7 @@ import (
 
 	"github.com/tharsis/ethermint/x/auction/types"
 
-	wnsUtils "github.com/vulcanize/dxns/utils"
+	wnsUtils "github.com/tharsis/ethermint/utils"
 )
 
 // CompletedAuctionDeleteTimeout => Completed auctions are deleted after this timeout (after reveals end time).
