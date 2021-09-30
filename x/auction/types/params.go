@@ -3,7 +3,9 @@ package types
 import (
 	"bytes"
 	"strings"
+	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -37,7 +39,22 @@ func (p Params) Equal(p2 Params) bool {
 
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
-	return Params{}
+	return Params{
+		CommitsDuration: 24 * time.Hour,
+		RevealsDuration: 24 * time.Hour,
+		CommitFee: sdk.Coin{
+			Amount: sdk.NewInt(10),
+			Denom:  "aphoton",
+		},
+		RevealFee: sdk.Coin{
+			Amount: sdk.NewInt(10),
+			Denom:  "aphoton",
+		},
+		MinimumBid: sdk.Coin{
+			Amount: sdk.NewInt(1000),
+			Denom:  "aphoton",
+		},
+	}
 }
 
 // String returns a human readable string representation of the parameters.
