@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -30,11 +31,69 @@ func GetTxCmd() *cobra.Command {
 
 	// TODO(ashwin): Add Tx commands.
 	auctionTxCmd.AddCommand(
+		GetCmdCreateAuction(),
 		GetCmdCommitBid(),
 		GetCmdRevealBid(),
 	)
 
 	return auctionTxCmd
+}
+
+func GetCmdCreateAuction() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create [commits-duration] [reveals-duration] [commit-fee] [reveal-fee] [minimum-bid]",
+		Short: "Create auction.",
+		Args:  cobra.ExactArgs(5),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			commitsDuration, err := time.ParseDuration(args[0])
+			if err != nil {
+				return err
+			}
+
+			revealsDuration, err := time.ParseDuration(args[1])
+			if err != nil {
+				return err
+			}
+
+			commitFee, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			revealFee, err := sdk.ParseCoinNormalized(args[3])
+			if err != nil {
+				return err
+			}
+
+			minimumBid, err := sdk.ParseCoinNormalized(args[4])
+			if err != nil {
+				return err
+			}
+
+			params := types.Params{
+				CommitsDuration: commitsDuration,
+				RevealsDuration: revealsDuration,
+				CommitFee:       commitFee,
+				RevealFee:       revealFee,
+				MinimumBid:      minimumBid,
+			}
+			msg := types.NewMsgCreateAuction(params, clientCtx.GetFromAddress())
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetCmdCommitBid is the CLI command for committing a bid.

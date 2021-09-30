@@ -1319,7 +1319,7 @@ GenesisState defines the genesis state of the auction module
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
-| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  |  |
+| `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
 
 
 
