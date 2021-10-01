@@ -2,9 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/tharsis/ethermint/x/bond"
-	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
 	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"io"
@@ -103,6 +100,12 @@ import (
 	"github.com/tharsis/ethermint/app/ante"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 	ethermint "github.com/tharsis/ethermint/types"
+	"github.com/tharsis/ethermint/x/auction"
+	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
+	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
+	"github.com/tharsis/ethermint/x/bond"
+	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
+	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	"github.com/tharsis/ethermint/x/evm"
 	evmrest "github.com/tharsis/ethermint/x/evm/client/rest"
 	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
@@ -157,7 +160,8 @@ var (
 		// Ethermint modules
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
-		// DXNS modules
+		// Vulcanize DXNS modules
+		auction.AppModuleBasic{},
 		bond.AppModuleBasic{},
 		nameservice.AppModuleBasic{},
 	)
@@ -173,6 +177,8 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
 
+		auctiontypes.ModuleName:                         nil,
+		auctiontypes.AuctionBurnModuleAccountName:       nil,
 		nameservicetypes.ModuleName:                     nil,
 		nameservicetypes.RecordRentModuleAccountName:    nil,
 		nameservicetypes.AuthorityRentModuleAccountName: nil,
@@ -234,6 +240,7 @@ type EthermintApp struct {
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// DXNS keepers
+	AuctionKeeper           auctionkeeper.Keeper
 	BondKeeper              bondkeeper.Keeper
 	NameServiceKeeper       nameservicekeeper.Keeper
 	NameServiceRecordKeeper nameservicekeeper.RecordKeeper
@@ -289,6 +296,7 @@ func NewEthermintApp(
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
 		// dxns keys
+		auctiontypes.StoreKey,
 		bondtypes.StoreKey,
 		nameservicetypes.StoreKey,
 	)
@@ -371,7 +379,11 @@ func NewEthermintApp(
 		appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
 	)
 
-	// Create DXNS keepers
+	// Create Vulcanize dxns keepers
+	app.AuctionKeeper = auctionkeeper.NewKeeper(
+		app.AccountKeeper, app.BankKeeper, keys[auctiontypes.StoreKey],
+		appCodec, app.GetSubspace(auctiontypes.ModuleName),
+	)
 	app.BondKeeper = bondkeeper.NewKeeper(appCodec, app.AccountKeeper, app.BankKeeper, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName))
 	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(keys[nameservicetypes.StoreKey], appCodec)
 	app.NameServiceKeeper = nameservicekeeper.NewKeeper(appCodec, *cdc, app.AccountKeeper, app.BankKeeper,
@@ -459,6 +471,7 @@ func NewEthermintApp(
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 		// DXNs modules
+		auction.NewAppModule(appCodec, app.AuctionKeeper),
 		bond.NewAppModule(appCodec, app.BondKeeper),
 		nameservice.NewAppModule(app.NameServiceKeeper),
 	)
@@ -482,6 +495,7 @@ func NewEthermintApp(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		evmtypes.ModuleName, feemarkettypes.ModuleName,
 		nameservicetypes.ModuleName,
+		auctiontypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -498,6 +512,7 @@ func NewEthermintApp(
 		// Ethermint modules
 		evmtypes.ModuleName, feemarkettypes.ModuleName,
 		// DXNS modules
+		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
 		nameservicetypes.ModuleName,
 
@@ -743,6 +758,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
 	// dxns subspaces
+	paramsKeeper.Subspace(auctiontypes.ModuleName)
 	paramsKeeper.Subspace(bondtypes.ModuleName)
 	paramsKeeper.Subspace(nameservicetypes.ModuleName)
 

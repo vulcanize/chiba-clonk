@@ -2,12 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/tharsis/ethermint/x/bond/types"
-	"strings"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -136,7 +137,7 @@ $ %s query bond get {BOND ID}
 // GetBondListByOwnerCmd queries the bond list by owner.
 func GetBondListByOwnerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "query-by-owner [address]",
+		Use:   "by-owner [address]",
 		Short: "Query bonds by owner.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get bond list by owner.
