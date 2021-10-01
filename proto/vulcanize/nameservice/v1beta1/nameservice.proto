@@ -90,10 +90,8 @@ message Record {
 
 // AuthorityEntry defines the nameservice module AuthorityEntries
 message AuthorityEntry{
-  string name = 1 [
-    (gogoproto.moretags) = "json:\"name\" yaml:\"name\""
-  ];
-  NameAuthority record = 2 ;
+  string name = 1;
+  NameAuthority entry = 2;
 }
 
 message NameAuthority {
@@ -123,10 +121,8 @@ message NameAuthority {
 
 // NameEntry
 message NameEntry{
-  string name = 1 [
-    (gogoproto.moretags) = "json:\"name\" yaml:\"name\""
-  ];
-  NameRecord record = 2;
+  string name = 1;
+  NameRecord entry = 2;
 }
 
 // NameRecord

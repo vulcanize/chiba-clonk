@@ -10,6 +10,7 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
 	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
@@ -63,7 +64,7 @@ type Keeper struct {
 	bankKeeper    bank.Keeper
 	recordKeeper  RecordKeeper
 	bondKeeper    bondkeeper.Keeper
-	//auctionKeeper auction.Keeper
+	auctionKeeper auctionkeeper.Keeper
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
@@ -75,7 +76,7 @@ type Keeper struct {
 
 // NewKeeper creates new instances of the nameservice Keeper
 func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
-	bondKeeper bondkeeper.Keeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
+	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
@@ -85,7 +86,7 @@ func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper
 		bankKeeper:    bankKeeper,
 		recordKeeper:  recordKeeper,
 		bondKeeper:    bondKeeper,
-		//auctionKeeper: auctionKeeper,
+		auctionKeeper: auctionKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
 		legacyCodec:   legacyCdc,
@@ -105,13 +106,12 @@ func (k Keeper) HasRecord(ctx sdk.Context, id string) bool {
 }
 
 // GetRecord - gets a record from the store.
-func (k Keeper) GetRecord(ctx sdk.Context, id string) types.Record {
+func (k Keeper) GetRecord(ctx sdk.Context, id string) (record *types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	result := store.Get(GetRecordIndexKey(id))
-	var record types.Record
-	err := k.cdc.Unmarshal(result, &record)
+	err := k.cdc.Unmarshal(result, record)
 	if err != nil {
-		return types.Record{}
+		return nil
 	}
 	return record
 }
@@ -144,7 +144,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) (expired map[string][]stri
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		var record []string
-		//k.cdc.MustUnmarshal(itr.Value(), &record)
+		k.legacyCodec.MustUnmarshal(itr.Value(), &record)
 		records[string(itr.Key()[len(PrefixExpiryTimeToRecordsIndex):])] = record
 	}
 
@@ -245,7 +245,7 @@ func getRecordExpiryQueueTimeKey(timestamp time.Time) []byte {
 // SetRecordExpiryQueueTimeSlice sets a specific record expiry queue timeslice.
 func (k Keeper) SetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, cids []string) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.legacyCodec.MustMarshalLengthPrefixed(cids)
+	bz := k.legacyCodec.MustMarshal(cids)
 	store.Set(getRecordExpiryQueueTimeKey(timestamp), bz)
 }
 
@@ -276,7 +276,7 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 	if err != nil {
 		return nil
 	}
-	k.legacyCodec.MustUnmarshalLengthPrefixed(bz, &cids)
+	k.legacyCodec.MustUnmarshal(bz, &cids)
 	return cids
 }
 

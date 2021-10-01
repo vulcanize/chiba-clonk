@@ -19,7 +19,7 @@ import (
 )
 
 // CompletedAuctionDeleteTimeout => Completed auctions are deleted after this timeout (after reveals end time).
-const CompletedAuctionDeleteTimeout time.Duration = time.Hour * 24
+const CompletedAuctionDeleteTimeout = time.Hour * 24
 
 // PrefixIDToAuctionIndex is the prefix for Id -> Auction index in the KVStore.
 // Note: This is the primary index in the system.
@@ -55,7 +55,7 @@ type AuctionClientKeeper interface {
 }
 
 // NewKeeper creates new instances of the auction Keeper
-func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, paramstore params.Subspace) Keeper {
+func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, usageKeepers []types.AuctionUsageKeeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, paramstore params.Subspace) Keeper {
 	if !paramstore.HasKeyTable() {
 		paramstore = paramstore.WithKeyTable(types.ParamKeyTable())
 	}
@@ -64,16 +64,9 @@ func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKe
 		bankKeeper:    bankKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
+		usageKeepers:  usageKeepers,
 		paramSubspace: paramstore,
 	}
-}
-
-func (k *Keeper) SetUsageKeepers(usageKeepers []types.AuctionUsageKeeper) {
-	k.usageKeepers = usageKeepers
-}
-
-func (k Keeper) GetUsageKeepers() []types.AuctionUsageKeeper {
-	return k.usageKeepers
 }
 
 // Generates Auction Id -> Auction index key.

@@ -3,6 +3,7 @@ package types
 import (
 	"crypto/sha256"
 	canonicalJson "github.com/gibson042/canonicaljson-go"
+	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"time"
 )
@@ -132,10 +133,10 @@ func (r *RecordType) GetCID() (string, error) {
 
 // BlockChangeset is a changeset corresponding to a block.
 type BlockChangeset struct {
-	Height   int64    `json:"height"`
-	Records  []string `json:"records"`
-	Auctions []string `json:"auctions"`
-	//AuctionBids     []auction.AuctionBidInfo `json:"auctionBids"`
-	NameAuthorities []string `json:"authorities"`
-	Names           []string `json:"names"`
+	Height          int64                         `json:"height"`
+	Records         []string                      `json:"records"`
+	Auctions        []string                      `json:"auctions"`
+	AuctionBids     []auctiontypes.AuctionBidInfo `json:"auctionBids"`
+	NameAuthorities []string                      `json:"authorities"`
+	Names           []string                      `json:"names"`
 }

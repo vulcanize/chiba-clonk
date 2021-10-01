@@ -1,17 +1,120 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
+	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
+	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // RecordKeeper exposes the bare minimal read-only API for other modules.
 type RecordKeeper struct {
-	//auctionKeeper auction.Keeper
-	storeKey sdk.StoreKey      // Unexposed key to access store from sdk.Context
-	cdc      codec.BinaryCodec // The wire codec for binary encoding/decoding.
+	auctionKeeper auctionkeeper.Keeper
+	storeKey      sdk.StoreKey      // Unexposed key to access store from sdk.Context
+	cdc           codec.BinaryCodec // The wire codec for binary encoding/decoding.
+	legacyCodec   codec.LegacyAmino
+}
+
+func (k RecordKeeper) UsesAuction(ctx sdk.Context, auctionID string) bool {
+	return k.GetAuctionToAuthorityMapping(ctx, auctionID) != ""
+}
+
+func (k RecordKeeper) OnAuction(ctx sdk.Context, auctionId string) {
+	updateBlockChangeSetForAuction(ctx, k, auctionId)
+}
+
+func (k RecordKeeper) OnAuctionBid(ctx sdk.Context, auctionID string, bidderAddress string) {
+	updateBlockChangeSetForAuctionBid(ctx, k, auctionID, bidderAddress)
+}
+
+func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string) {
+	// Update authority status based on auction status/winner.
+	name := k.GetAuctionToAuthorityMapping(ctx, auctionID)
+	if name == "" {
+		// We don't know about this auction, ignore.
+		ctx.Logger().Info(fmt.Sprintf("Ignoring auction notification, name mapping not found: %s", auctionID))
+		return
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	if !HasNameAuthority(store, name) {
+		// We don't know about this authority, ignore.
+		ctx.Logger().Info(fmt.Sprintf("Ignoring auction notification, authority not found: %s", auctionID))
+		return
+	}
+
+	authority := GetNameAuthority(store, k.cdc, name)
+	auctionObj := k.auctionKeeper.GetAuction(ctx, auctionID)
+
+	if auctionObj.Status == auctiontypes.AuctionStatusCompleted {
+		store := ctx.KVStore(k.storeKey)
+
+		if auctionObj.WinnerAddress != "" {
+			// Mark authority owner and change status to active.
+			authority.OwnerAddress = auctionObj.WinnerAddress
+			authority.Status = types.AuthorityActive
+
+			// Reset bond ID if required, as owner has changed.
+			if authority.BondId != "" {
+				RemoveBondToAuthorityIndexEntry(store, authority.BondId, name)
+				authority.BondId = ""
+			}
+
+			// Update height for updated/changed authority (owner).
+			// Can be used to check if names are older than the authority itself (stale names).
+			authority.Height = uint64(ctx.BlockHeight())
+
+			ctx.Logger().Info(fmt.Sprintf("Winner selected, marking authority as active: %s", name))
+		} else {
+			// Mark as expired.
+			authority.Status = types.AuthorityExpired
+
+			ctx.Logger().Info(fmt.Sprintf("No winner, marking authority as expired: %s", name))
+		}
+
+		authority.AuctionId = ""
+		SetNameAuthority(ctx, store, k.cdc, k.legacyCodec, name, authority)
+
+		// Forget about this auction now, we no longer need it.
+		removeAuctionToAuthorityMapping(store, auctionID)
+	} else {
+		ctx.Logger().Info(fmt.Sprintf("Ignoring auction notification, status: %s", auctionObj.Status))
+	}
+}
+
+// Record keeper implements the bond usage keeper interface.
+var _ bondtypes.BondUsageKeeper = (*RecordKeeper)(nil)
+var _ auctiontypes.AuctionUsageKeeper = (*RecordKeeper)(nil)
+
+// ModuleName returns the module name.
+func (k RecordKeeper) ModuleName() string {
+	return types.ModuleName
+}
+
+func (k RecordKeeper) GetAuctionToAuthorityMapping(ctx sdk.Context, auctionID string) string {
+	store := ctx.KVStore(k.storeKey)
+
+	auctionToAuthorityIndexKey := GetAuctionToAuthorityIndexKey(auctionID)
+	if store.Has(auctionToAuthorityIndexKey) {
+		bz := store.Get(auctionToAuthorityIndexKey)
+		var name string
+		k.legacyCodec.MustUnmarshal(bz, &name)
+		return name
+	}
+	return ""
+}
+
+// UsesBond returns true if the bond has associated records.
+func (k RecordKeeper) UsesBond(ctx sdk.Context, bondId string) bool {
+	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondId)...)
+	store := ctx.KVStore(k.storeKey)
+	itr := sdk.KVStorePrefixIterator(store, bondIDPrefix)
+	defer itr.Close()
+	return itr.Valid()
 }
 
 // RemoveBondToRecordIndexEntry removes the Bond ID -> [Record] index entry.
@@ -21,11 +124,12 @@ func (k Keeper) RemoveBondToRecordIndexEntry(ctx sdk.Context, bondID string, id 
 }
 
 // NewRecordKeeper creates new instances of the nameservice RecordKeeper
-func NewRecordKeeper(storeKey sdk.StoreKey, cdc codec.BinaryCodec) RecordKeeper {
+func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, legacyCodec codec.LegacyAmino) RecordKeeper {
 	return RecordKeeper{
-		//auctionKeeper: auctionKeeper,
-		storeKey: storeKey,
-		cdc:      cdc,
+		auctionKeeper: auctionKeeper,
+		storeKey:      storeKey,
+		cdc:           cdc,
+		legacyCodec:   legacyCodec,
 	}
 }
 
@@ -96,12 +200,12 @@ func (k Keeper) ProcessAssociateBond(ctx sdk.Context, msg types.MsgAssociateBond
 	}
 
 	record.BondId = msg.BondId
-	k.PutRecord(ctx, record)
+	k.PutRecord(ctx, *record)
 	k.AddBondToRecordIndexEntry(ctx, msg.BondId, msg.RecordId)
 
 	// Required so that renewal is triggered (with new bond ID) for expired records.
 	if record.Deleted {
-		k.InsertRecordExpiryQueue(ctx, record)
+		k.InsertRecordExpiryQueue(ctx, *record)
 	}
 
 	return nil
@@ -128,7 +232,7 @@ func (k Keeper) ProcessDissociateBond(ctx sdk.Context, msg types.MsgDissociateBo
 
 	// Clear bond ID.
 	record.BondId = ""
-	k.PutRecord(ctx, record)
+	k.PutRecord(ctx, *record)
 	k.RemoveBondToRecordIndexEntry(ctx, bondID, record.Id)
 
 	return nil

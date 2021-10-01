@@ -26,6 +26,9 @@ type Keeper struct {
 	accountKeeper auth.AccountKeeper
 	bankKeeper    bank.Keeper
 
+	// Track bond usage in other cosmos-sdk modules (more like a usage tracker).
+	usageKeepers []types.BondUsageKeeper
+
 	storeKey sdk.StoreKey
 
 	cdc codec.BinaryCodec
@@ -34,7 +37,7 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the bond Keeper
-func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, usageKeepers []types.BondUsageKeeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
@@ -45,6 +48,7 @@ func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeep
 		bankKeeper:    bankKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
+		usageKeepers:  usageKeepers,
 		paramSubspace: ps,
 	}
 }
@@ -269,13 +273,12 @@ func (k Keeper) CancelBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddre
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
 	}
 
-	// todo: continue this once nameservice is implemented
 	// Check if bond is used in other modules.
-	//for _, usageKeeper := range k.usageKeepers {
-	//	if usageKeeper.UsesBond(ctx, id) {
-	//		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprintf("Bond in use by the '%s' module.", usageKeeper.ModuleName()))
-	//	}
-	//}
+	for _, usageKeeper := range k.usageKeepers {
+		if usageKeeper.UsesBond(ctx, id) {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprintf("Bond in use by the '%s' module.", usageKeeper.ModuleName()))
+		}
+	}
 
 	// Move funds from the bond into the account.
 	err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, bond.Balance)

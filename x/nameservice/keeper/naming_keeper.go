@@ -7,6 +7,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 	"net/url"
@@ -35,33 +36,51 @@ func GetCIDToNamesIndexKey(id string) []byte {
 	return append(PrefixCIDToNamesIndex, []byte(id)...)
 }
 
+func SetNameAuthority(ctx sdk.Context, store sdk.KVStore, codec codec.BinaryCodec, legacyCodec codec.LegacyAmino, name string, authority *types.NameAuthority) {
+	store.Set(GetNameAuthorityIndexKey(name), codec.MustMarshal(authority))
+	updateBlockChangeSetForNameAuthority(ctx, store, legacyCodec, name)
+}
+
 // SetNameAuthority creates the NameAuthority record.
 func (k Keeper) SetNameAuthority(ctx sdk.Context, name string, authority *types.NameAuthority) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(GetNameAuthorityIndexKey(name), k.cdc.MustMarshal(authority))
-	//updateBlockChangesetForNameAuthority(ctx, store, codec, name)
+	SetNameAuthority(ctx, ctx.KVStore(k.storeKey), k.cdc, k.legacyCodec, name, authority)
+}
+
+func removeAuctionToAuthorityMapping(store sdk.KVStore, auctionID string) {
+	store.Delete(GetAuctionToAuthorityIndexKey(auctionID))
+}
+
+func (k Keeper) RemoveAuctionToAuthorityMapping(ctx sdk.Context, auctionID string) {
+	removeAuctionToAuthorityMapping(ctx.KVStore(k.storeKey), auctionID)
 }
 
 // GetNameAuthority - gets a name authority from the store.
-func (k Keeper) GetNameAuthority(ctx sdk.Context, name string) *types.NameAuthority {
-	store := ctx.KVStore(k.storeKey)
+func GetNameAuthority(store sdk.KVStore, codec codec.BinaryCodec, name string) *types.NameAuthority {
 	authorityKey := GetNameAuthorityIndexKey(name)
 	if !store.Has(authorityKey) {
 		return nil
 	}
+
 	bz := store.Get(authorityKey)
 	var obj types.NameAuthority
-	err := k.cdc.Unmarshal(bz, &obj)
-	if err != nil {
-		return nil
-	}
+	codec.MustUnmarshal(bz, &obj)
+
 	return &obj
+}
+
+// GetNameAuthority - gets a name authority from the store.
+func (k Keeper) GetNameAuthority(ctx sdk.Context, name string) *types.NameAuthority {
+	return GetNameAuthority(ctx.KVStore(k.storeKey), k.cdc, name)
+}
+
+// HasNameAuthority - checks if a name authority entry exists.
+func HasNameAuthority(store sdk.KVStore, name string) bool {
+	return store.Has(GetNameAuthorityIndexKey(name))
 }
 
 // HasNameAuthority - checks if a name/authority exists.
 func (k Keeper) HasNameAuthority(ctx sdk.Context, name string) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(GetNameAuthorityIndexKey(name))
+	return HasNameAuthority(ctx.KVStore(k.storeKey), name)
 }
 
 func getBondIDToAuthoritiesIndexKey(bondID string, name string) []byte {
@@ -76,7 +95,10 @@ func (k Keeper) AddBondToAuthorityIndexEntry(ctx sdk.Context, bondID string, nam
 
 // RemoveBondToAuthorityIndexEntry removes the Bond ID -> [Authority] index entry.
 func (k Keeper) RemoveBondToAuthorityIndexEntry(ctx sdk.Context, bondID string, name string) {
-	store := ctx.KVStore(k.storeKey)
+	RemoveBondToAuthorityIndexEntry(ctx.KVStore(k.storeKey), bondID, name)
+}
+
+func RemoveBondToAuthorityIndexEntry(store sdk.KVStore, bondID string, name string) {
 	store.Delete(getBondIDToAuthoritiesIndexKey(bondID, name))
 }
 
@@ -202,24 +224,21 @@ func RemoveRecordToNameMapping(store sdk.KVStore, codec codec.BinaryCodec, id st
 }
 
 // AddRecordToNameMapping adds a name to the record ID -> []names index.
-func AddRecordToNameMapping(store sdk.KVStore, codec codec.BinaryCodec, id string, wrn string) {
+func AddRecordToNameMapping(store sdk.KVStore, legacyCodec codec.LegacyAmino, id string, wrn string) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(id)
 
 	var names []string
 	if store.Has(reverseNameIndexKey) {
-		//codec.MustUnmarshalBinaryBare(store.Get(reverseNameIndexKey), &names)
-		json.Unmarshal(store.Get(reverseNameIndexKey), &names)
+		legacyCodec.MustUnmarshal(store.Get(reverseNameIndexKey), &names)
 	}
 
 	nameSet := helpers.SliceToSet(names)
 	nameSet.Add(wrn)
-	//store.Set(reverseNameIndexKey, codec.MustMarshalBinaryBare(helpers.SetToSlice(nameSet)))
-	data, _ := json.Marshal(helpers.SetToSlice(nameSet))
-	store.Set(reverseNameIndexKey, data)
+	store.Set(reverseNameIndexKey, legacyCodec.MustMarshal(helpers.SetToSlice(nameSet)))
 }
 
 // SetNameRecord - sets a name record.
-func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id string, height int64) {
+func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, legacyCodec codec.LegacyAmino, wrn string, id string, height int64) {
 	nameRecordIndexKey := GetNameRecordIndexKey(wrn)
 
 	var nameRecord types.NameRecord
@@ -243,13 +262,13 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 
 	// Update new CID -> []Name index.
 	if id != "" {
-		AddRecordToNameMapping(store, codec, id, wrn)
+		AddRecordToNameMapping(store, legacyCodec, id, wrn)
 	}
 }
 
 // SetNameRecord - sets a name record.
 func (k Keeper) SetNameRecord(ctx sdk.Context, wrn string, id string) {
-	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, wrn, id, ctx.BlockHeight())
+	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, k.legacyCodec, wrn, id, ctx.BlockHeight())
 
 	// Update changeSet for name.
 	k.updateBlockChangeSetForName(ctx, wrn)
@@ -288,8 +307,8 @@ func (k Keeper) ListNameRecords(ctx sdk.Context) []types.NameEntry {
 			var record types.NameRecord
 			k.cdc.MustUnmarshal(bz, &record)
 			nameEntries = append(nameEntries, types.NameEntry{
-				Name:   string(itr.Key()[len(PrefixWRNToNameRecordIndex):]),
-				Record: &record,
+				Name:  string(itr.Key()[len(PrefixWRNToNameRecordIndex):]),
+				Entry: &record,
 			})
 		}
 	}
@@ -299,6 +318,15 @@ func (k Keeper) ListNameRecords(ctx sdk.Context) []types.NameEntry {
 
 func (k Keeper) ProcessReserverSubAuthority(ctx sdk.Context, name string, msg types.MsgReserveAuthority) {
 
+}
+
+func GetAuctionToAuthorityIndexKey(auctionID string) []byte {
+	return append(PrefixAuctionToAuthorityNameIndex, []byte(auctionID)...)
+}
+
+func (k Keeper) AddAuctionToAuthorityMapping(ctx sdk.Context, auctionID string, name string) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(GetAuctionToAuthorityIndexKey(auctionID), k.legacyCodec.MustMarshal(name))
 }
 
 func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRoot bool) error {
@@ -339,30 +367,29 @@ func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRo
 			k.RemoveBondToAuthorityIndexEntry(ctx, authority.BondId, name)
 			authority.BondId = ""
 		}
-		// TODO(gsk967): fix this once auction module migration done
-		//params := auction.Params{
-		//	CommitsDuration: moduleParams.CommitsDuration,
-		//	RevealsDuration: moduleParams.RevealsDuration,
-		//	CommitFee:       commitFee,
-		//	RevealFee:       revealFee,
-		//	MinimumBid:      minimumBid,
-		//}
-		//
-		//// Create an auction.
-		//msg := auction.NewMsgCreateAuction(params, owner)
-		//
-		//auction, sdkErr := k.auctionKeeper.CreateAuction(ctx, msg)
-		//if sdkErr != nil {
-		//	return sdkErr
-		//}
-		//
-		//// Create auction ID -> authority name index.
-		//k.AddAuctionToAuthorityMapping(ctx, auction.ID, name)
-		//
-		//authority.Status = types.AuthorityUnderAuction
-		//authority.AuctionID = auction.ID
-		//authority.ExpiryTime = auction.RevealsEndTime.Add(moduleParams.AuthorityGracePeriod)
 
+		params := auctiontypes.Params{
+			CommitsDuration: moduleParams.AuthorityAuctionCommitsDuration,
+			RevealsDuration: moduleParams.AuthorityAuctionRevealsDuration,
+			CommitFee:       moduleParams.AuthorityAuctionCommitFee,
+			RevealFee:       moduleParams.AuthorityAuctionRevealFee,
+			MinimumBid:      moduleParams.AuthorityAuctionMinimumBid,
+		}
+
+		// Create an auction.
+		msg := auctiontypes.NewMsgCreateAuction(params, ownerAddress)
+
+		auction, sdkErr := k.auctionKeeper.CreateAuction(ctx, msg)
+		if sdkErr != nil {
+			return sdkErr
+		}
+
+		// Create auction ID -> authority name index.
+		k.AddAuctionToAuthorityMapping(ctx, auction.Id, name)
+
+		authority.Status = types.AuthorityUnderAuction
+		authority.AuctionId = auction.Id
+		authority.ExpiryTime = auction.RevealsEndTime.Add(moduleParams.AuthorityGracePeriod)
 	}
 	k.SetNameAuthority(ctx, name, &authority)
 	k.InsertAuthorityExpiryQueue(ctx, name, authority.ExpiryTime)
@@ -498,7 +525,7 @@ func ResolveWRN(store sdk.KVStore, wrn string, k Keeper, c sdk.Context) (*types.
 		}
 
 		record := k.GetRecord(c, obj.Latest.Id)
-		return &record, &obj
+		return record, &obj
 	}
 
 	return nil, nil
@@ -523,13 +550,31 @@ func (k Keeper) GetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time
 		return []string{}
 	}
 
-	//k.cdc.MustUnmarshal(bz, &names)
+	k.legacyCodec.MustUnmarshal(bz, &names)
 	return names
 }
 
 func (k Keeper) SetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, names []string) {
 	store := ctx.KVStore(k.storeKey)
-	//bz := k.cdc.MustMarshalLengthPrefixed(names)
-	//store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
-	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), []byte{})
+	bz := k.legacyCodec.MustMarshal(names)
+	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
+}
+
+// ListNameAuthorityRecords - get all name authority records.
+func (k Keeper) ListNameAuthorityRecords(ctx sdk.Context) map[string]types.NameAuthority {
+	nameAuthorityRecords := make(map[string]types.NameAuthority)
+	store := ctx.KVStore(k.storeKey)
+
+	itr := sdk.KVStorePrefixIterator(store, PrefixNameAuthorityRecordIndex)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		bz := store.Get(itr.Key())
+		if bz != nil {
+			var record types.NameAuthority
+			k.cdc.MustUnmarshal(bz, &record)
+			nameAuthorityRecords[string(itr.Key()[len(PrefixNameAuthorityRecordIndex):])] = record
+		}
+	}
+
+	return nameAuthorityRecords
 }
