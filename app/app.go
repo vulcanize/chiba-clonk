@@ -163,16 +163,17 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:     nil,
-		distrtypes.ModuleName:          nil,
-		minttypes.ModuleName:           {authtypes.Minter},
-		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:            {authtypes.Burner},
-		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		evmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
-		auctiontypes.ModuleName:        nil,
-		bondtypes.ModuleName:           nil,
+		authtypes.FeeCollectorName:                nil,
+		distrtypes.ModuleName:                     nil,
+		minttypes.ModuleName:                      {authtypes.Minter},
+		stakingtypes.BondedPoolName:               {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:            {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:                       {authtypes.Burner},
+		ibctransfertypes.ModuleName:               {authtypes.Minter, authtypes.Burner},
+		evmtypes.ModuleName:                       {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
+		auctiontypes.ModuleName:                   nil,
+		auctiontypes.AuctionBurnModuleAccountName: nil,
+		bondtypes.ModuleName:                      nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -476,7 +477,7 @@ func NewEthermintApp(
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		evmtypes.ModuleName, feemarkettypes.ModuleName,
+		evmtypes.ModuleName, feemarkettypes.ModuleName, auctiontypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are

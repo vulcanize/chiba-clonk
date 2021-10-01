@@ -17,8 +17,8 @@ const (
 )
 
 var (
-	DefaultCommitsDuration = 24 * time.Hour
-	DefaultRevealsDuration = 24 * time.Hour
+	DefaultCommitsDuration = 5 * time.Minute
+	DefaultRevealsDuration = 5 * time.Minute
 	DefaultCommitFee       = sdk.Coin{Amount: sdk.NewInt(10), Denom: sdk.DefaultBondDenom}
 	DefaultRevealFee       = sdk.Coin{Amount: sdk.NewInt(10), Denom: sdk.DefaultBondDenom}
 	DefaultMinimumBid      = sdk.Coin{Amount: sdk.NewInt(1000), Denom: sdk.DefaultBondDenom}
@@ -44,11 +44,11 @@ func ParamKeyTable() types.KeyTable {
 // ParamSetPairs - implements params.ParamSet
 func (p Params) ParamSetPairs() types.ParamSetPairs {
 	return types.ParamSetPairs{
-		types.NewParamSetPair(ParamStoreKeyCommitsDuration, p.CommitsDuration, validateCommitsDuration),
-		types.NewParamSetPair(ParamStoreKeyRevealsDuration, p.RevealsDuration, validateRevealsDuration),
-		types.NewParamSetPair(ParamStoreKeyCommitFee, p.CommitFee, validateCommitFee),
-		types.NewParamSetPair(ParamStoreKeyRevealFee, p.RevealFee, validateRevealFee),
-		types.NewParamSetPair(ParamStoreKeyMinimumBid, p.MinimumBid, validateMinimumBid),
+		types.NewParamSetPair(ParamStoreKeyCommitsDuration, &p.CommitsDuration, validateCommitsDuration),
+		types.NewParamSetPair(ParamStoreKeyRevealsDuration, &p.RevealsDuration, validateRevealsDuration),
+		types.NewParamSetPair(ParamStoreKeyCommitFee, &p.CommitFee, validateCommitFee),
+		types.NewParamSetPair(ParamStoreKeyRevealFee, &p.RevealFee, validateRevealFee),
+		types.NewParamSetPair(ParamStoreKeyMinimumBid, &p.MinimumBid, validateMinimumBid),
 	}
 }
 
