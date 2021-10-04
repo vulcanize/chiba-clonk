@@ -1,9 +1,12 @@
 # Build chain
+
 ```bash 
 # it will create binary in build folder with `ethermintd` 
 $ make build 
 ```
+
 # Setup Chain
+
 ```bash
 ./build/ethermintd keys add root 
 ./build/ethermintd init test-moniker --chain-id ethermint_9000-1
@@ -13,7 +16,8 @@ $ make build
 ./build/ethermintd start
 ```
 
-## Get Params 
+## Get Params
+
 ```bash
 $ ./build/ethermintd q nameservice params -o json | jq .
 {
@@ -49,8 +53,10 @@ $ ./build/ethermintd q nameservice params -o json | jq .
 
 ```
 
-## Create (Set) Record 
-> First you have to Create bond 
+## Create (Set) Record
+
+> First you have to Create bond
+
 ```bash
 $ ./build/ethermintd tx nameservice set ~/Desktop/examples/records/example1.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id ethermint_9000-1 --yes -o json
 {
@@ -69,7 +75,8 @@ $ ./build/ethermintd tx nameservice set ~/Desktop/examples/records/example1.yml 
 }
 ```
 
-## Get records list 
+## Get records list
+
 ```bash
 $ ./build/ethermintd q nameservice list -o json | jq . 
 {
@@ -89,7 +96,8 @@ $ ./build/ethermintd q nameservice list -o json | jq .
 
 ```
 
-## Get record by id 
+## Get record by id
+
 ```bash
 $ ./build/ethermintd q nameservice get bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae -o json | jq .
 {
@@ -105,9 +113,10 @@ $ ./build/ethermintd q nameservice get bafyreih7un2ntk235wshncebus5emlozdhdixrrv
 }
 ```
 
-## Reserver authority name 
+## Reserve name
+
 ```bash
- ./build/ethermintd tx nameservice reserve-authority hello --from root --chain-id ethermint_9000-1 --owner $(./build/ethermintd key
+ ./build/ethermintd tx nameservice reserve-name hello --from root --chain-id ethermint_9000-1 --owner $(./build/ethermintd key
 s show root -a) -y -o json | jq .
 {
   "height": "0",
@@ -125,7 +134,9 @@ s show root -a) -y -o json | jq .
 }
 
 ```
-## Query Whois for name authority 
+
+## Query Whois for name authority
+
 ```bash
  ./build/ethermintd q nameservice whois hello -o json | jq .
 {
@@ -141,7 +152,9 @@ s show root -a) -y -o json | jq .
 }
 
 ```
-## Query the nameservice module balance 
+
+## Query the nameservice module balance
+
 ```bash
 $ ./build/ethermintd q nameservice  balance -o json | jq .
 {
@@ -160,15 +173,17 @@ $ ./build/ethermintd q nameservice  balance -o json | jq .
 
 ```
 
-## add bond to the authority 
+## add bond to the authority
+
 ```bash
 $ ./build/ethermintd tx nameservice authority-bond [Authority Name] [Bond ID ]  --from root --chain-id ethermint_9000-1  -y -o json | jq .  
 $ ./build/ethermintd tx nameservice authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id ethermint_9000-1  -y -o json | jq .  
  ```
 
-## Query the records by associate bond id 
+## Query the records by associate bond id
+
 ```bash
-./build/ethermintd q nameservice query-by-bond 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d -o json | jq .
+$ ./build/ethermintd q nameservice query-by-bond 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d -o json | jq .
 {
   "records": [
     {
@@ -186,13 +201,80 @@ $ ./build/ethermintd tx nameservice authority-bond hello 95f68b1b862bfd1609b0c9a
 
 ```
 
-## Renew a record 
-> When a record is expires , needs to renew record 
+## dissociate bond from record
+
 ```bash
-./build/ethermintd tx nameservice renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1 
+$ ./build/ethermintd tx nameservice dissociate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae  --from root --chain-id ethermint_9000-1
+{"body":{"messages":[{"@type":"/vulcanize.nameservice.v1beta1.MsgDissociateBond","record_id":"bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
+
+confirm transaction before signing and broadcasting [y/N]: y
+code: 0
+codespace: ""
+data: ""
+gas_used: "0"
+gas_wanted: "0"
+height: "0"
+info: ""
+logs: []
+raw_log: '[]'
+timestamp: ""
+tx: null
+txhash: 7AFEF524CB0D92D6576FC08601A787786E802449888FD8DDAA7635698CC85060
 
 ```
-## Set the authority name 
+
+## Associate bond with record
+
+```bash
+./build/ethermintd tx nameservice associate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
+{
+  "height": "0",
+  "txhash": "F75C2BF2FE73668AE1332E1237F924AC549E31E822A56394DE5AC17200B199F9",
+  "codespace": "",
+  "code": 0,
+  "data": "",
+  "raw_log": "[]",
+  "logs": [],
+  "info": "",
+  "gas_wanted": "0",
+  "gas_used": "0",
+  "tx": null,
+  "timestamp": ""
+}
+
+``` 
+
+## dissociate-records => remove all record from bond
+
+```bash
+$./build/ethermintd tx nameservice dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .                                                           
+{
+  "height": "0",
+  "txhash": "0316F503E5DEA47CB108AE6C7C7FFAF3F71CC56BC22F63CB97322E1BE48B33B9",
+  "codespace": "",
+  "code": 0,
+  "data": "",
+  "raw_log": "[]",
+  "logs": [],
+  "info": "",
+  "gas_wanted": "0",
+  "gas_used": "0",
+  "tx": null,
+  "timestamp": ""
+}
+```
+
+## Renew a record
+
+> When a record is expires , needs to renew record
+
+```bash
+$ ./build/ethermintd tx nameservice renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1 
+
+```
+
+## Set the authority name
+
 ```bash
 $ ./build/ethermintd tx nameservice set-name wrn://hello/test test_hello_cid  --from root --chain-id ethermint_9000-1 -y -o json | jq .
 {
@@ -209,4 +291,23 @@ $ ./build/ethermintd tx nameservice set-name wrn://hello/test test_hello_cid  --
   "tx": null,
   "timestamp": ""
 }
+```
+
+## Delete the name
+
+```bash
+$./build/ethermintd tx nameservice delete-name wrn://hello/test --from root --chain-id ethermint_9000-1 -y 
+code: 0
+codespace: ""
+data: ""
+gas_used: "0"
+gas_wanted: "0"
+height: "0"
+info: ""
+logs: []
+raw_log: '[]'
+timestamp: ""
+tx: null
+txhash: A3FF4C46BAC7BD6E54BBB743A49830AE8C6F6FE59282384789CBA323C1FE540C
+
 ```

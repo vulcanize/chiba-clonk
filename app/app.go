@@ -382,20 +382,23 @@ func NewEthermintApp(
 	// Create Vulcanize dxns keepers
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
-		app.AccountKeeper, app.BankKeeper, []auctiontypes.AuctionUsageKeeper{app.NameServiceRecordKeeper}, keys[auctiontypes.StoreKey],
+		app.AccountKeeper, app.BankKeeper, keys[auctiontypes.StoreKey],
 		appCodec, app.GetSubspace(auctiontypes.ModuleName),
 	)
 
 	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(app.AuctionKeeper, keys[nameservicetypes.StoreKey], appCodec, *cdc)
-	app.NameServiceKeeper = nameservicekeeper.NewKeeper(
-		appCodec, *cdc, app.AccountKeeper, app.BankKeeper,
-		app.NameServiceRecordKeeper, app.BondKeeper, app.AuctionKeeper,
-		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName),
-	)
+
+	app.AuctionKeeper.SetUsageKeepers([]auctiontypes.AuctionUsageKeeper{app.NameServiceRecordKeeper})
 
 	app.BondKeeper = bondkeeper.NewKeeper(
 		appCodec, app.AccountKeeper, app.BankKeeper,
 		[]bondtypes.BondUsageKeeper{app.NameServiceRecordKeeper}, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName),
+	)
+
+	app.NameServiceKeeper = nameservicekeeper.NewKeeper(
+		appCodec, *cdc, app.AccountKeeper, app.BankKeeper,
+		app.NameServiceRecordKeeper, app.BondKeeper, app.AuctionKeeper,
+		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName),
 	)
 
 	// Create IBC Keeper

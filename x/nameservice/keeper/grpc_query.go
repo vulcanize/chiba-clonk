@@ -32,7 +32,7 @@ func (q Querier) GetRecord(c context.Context, req *types.QueryRecordByIdRequest)
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "Record not found.")
 	}
 	record := q.Keeper.GetRecord(ctx, id)
-	return &types.QueryRecordByIdResponse{Record: *record}, nil
+	return &types.QueryRecordByIdResponse{Record: record}, nil
 }
 
 func (q Querier) GetRecordByBondId(c context.Context, req *types.QueryRecordByBondIdRequest) (*types.QueryRecordByBondIdResponse, error) {

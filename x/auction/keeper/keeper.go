@@ -55,18 +55,25 @@ type AuctionClientKeeper interface {
 }
 
 // NewKeeper creates new instances of the auction Keeper
-func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, usageKeepers []types.AuctionUsageKeeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, paramstore params.Subspace) Keeper {
-	if !paramstore.HasKeyTable() {
-		paramstore = paramstore.WithKeyTable(types.ParamKeyTable())
+func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, ps params.Subspace) Keeper {
+	if !ps.HasKeyTable() {
+		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 	return Keeper{
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
-		usageKeepers:  usageKeepers,
-		paramSubspace: paramstore,
+		paramSubspace: ps,
 	}
+}
+
+func (k *Keeper) SetUsageKeepers(usageKeepers []types.AuctionUsageKeeper) {
+	k.usageKeepers = usageKeepers
+}
+
+func (k Keeper) GetUsageKeepers() []types.AuctionUsageKeeper {
+	return k.usageKeepers
 }
 
 // Generates Auction Id -> Auction index key.
@@ -505,16 +512,13 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 		// Only consider revealed bids.
 		if bid.Status != types.BidStatusRevealed {
 			ctx.Logger().Info(fmt.Sprintf("Ignoring unrevealed bid %s %s", bid.BidderAddress, bid.BidAmount.String()))
-
 			continue
 		}
 
 		// Init highest bid.
 		if highestBid == nil {
 			highestBid = bid
-
 			ctx.Logger().Info(fmt.Sprintf("Initializing 1st bid %s %s", bid.BidderAddress, bid.BidAmount.String()))
-
 			continue
 		}
 
@@ -563,6 +567,7 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 	for _, bid := range bids {
 		bidderAddress, err := sdk.AccAddressFromBech32(bid.BidderAddress)
 		if err != nil {
+			ctx.Logger().Error(fmt.Sprintf("Invalid bidderAddress address. %v", err))
 			panic("Invalid bidder address.")
 		}
 
@@ -587,6 +592,7 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 	if auction.WinnerAddress != "" {
 		winnerAddress, err := sdk.AccAddressFromBech32(auction.WinnerAddress)
 		if err != nil {
+			ctx.Logger().Error(fmt.Sprintf("Invalid winner address. %v", err))
 			panic("Invalid winner address.")
 		}
 
@@ -600,6 +606,7 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 		// Burn anything over the min. bid amount.
 		amountToBurn := auction.WinningPrice.Sub(auction.MinimumBid)
 		if amountToBurn.IsNegative() {
+			ctx.Logger().Error(fmt.Sprintf("Auction coins to burn cannot be negative."))
 			panic("Auction coins to burn cannot be negative.")
 		}
 

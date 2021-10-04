@@ -32,7 +32,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdDissociateRecords(),
 		GetCmdReAssociateRecords(),
 		GetCmdSetName(),
-		GetCmdReserveAuthority(),
+		GetCmdReserveName(),
 		GetCmdSetAuthorityBond(),
 		GetCmdDeleteName(),
 	)
@@ -210,8 +210,16 @@ $ %s tx %s dissociate-bond [record-id]
 func GetCmdReAssociateRecords() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "reassociate-records [old-bond-id] [new-bond-id]",
-		Short: "Reassociates all records from old to new bond.",
-		Args:  cobra.ExactArgs(2),
+		Short: "Re-Associates all records from old to new bond.",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Re-Associates all records from old to new bond.
+Example:
+$ %s tx %s reassociate-records [old-bond-id] [new-bond-id]
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -263,15 +271,15 @@ $ %s tx %s set-name [wrn] [cid]
 	return cmd
 }
 
-// GetCmdReserveAuthority is the CLI command for reserving a name.
-func GetCmdReserveAuthority() *cobra.Command {
+// GetCmdReserveName is the CLI command for reserving a name.
+func GetCmdReserveName() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "reserve-authority [name]",
+		Use:   "reserve-name [name]",
 		Short: "Reserve name.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Reserver name with owner address .
 Example:
-$ %s tx %s reserver-authority [name] --owner [ownerAddress]
+$ %s tx %s reserve-name [name] --owner [ownerAddress]
 `,
 				version.AppName, types.ModuleName,
 			),

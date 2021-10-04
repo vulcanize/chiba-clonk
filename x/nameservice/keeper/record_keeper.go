@@ -200,12 +200,12 @@ func (k Keeper) ProcessAssociateBond(ctx sdk.Context, msg types.MsgAssociateBond
 	}
 
 	record.BondId = msg.BondId
-	k.PutRecord(ctx, *record)
+	k.PutRecord(ctx, record)
 	k.AddBondToRecordIndexEntry(ctx, msg.BondId, msg.RecordId)
 
 	// Required so that renewal is triggered (with new bond ID) for expired records.
 	if record.Deleted {
-		k.InsertRecordExpiryQueue(ctx, *record)
+		k.InsertRecordExpiryQueue(ctx, record)
 	}
 
 	return nil
@@ -232,7 +232,7 @@ func (k Keeper) ProcessDissociateBond(ctx sdk.Context, msg types.MsgDissociateBo
 
 	// Clear bond ID.
 	record.BondId = ""
-	k.PutRecord(ctx, *record)
+	k.PutRecord(ctx, record)
 	k.RemoveBondToRecordIndexEntry(ctx, bondID, record.Id)
 
 	return nil

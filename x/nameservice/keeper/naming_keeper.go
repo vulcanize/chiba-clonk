@@ -525,7 +525,7 @@ func ResolveWRN(store sdk.KVStore, wrn string, k Keeper, c sdk.Context) (*types.
 		}
 
 		record := k.GetRecord(c, obj.Latest.Id)
-		return record, &obj
+		return &record, &obj
 	}
 
 	return nil, nil

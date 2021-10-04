@@ -42,6 +42,7 @@ func (payload Payload) ToReadablePayload() PayloadType {
 	var payloadType PayloadType
 
 	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(payload.Record.Attributes)
+
 	payloadType.Signatures = payload.Signatures
 
 	return payloadType

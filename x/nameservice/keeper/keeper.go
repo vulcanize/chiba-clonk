@@ -106,13 +106,10 @@ func (k Keeper) HasRecord(ctx sdk.Context, id string) bool {
 }
 
 // GetRecord - gets a record from the store.
-func (k Keeper) GetRecord(ctx sdk.Context, id string) (record *types.Record) {
+func (k Keeper) GetRecord(ctx sdk.Context, id string) (record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	result := store.Get(GetRecordIndexKey(id))
-	err := k.cdc.Unmarshal(result, record)
-	if err != nil {
-		return nil
-	}
+	k.cdc.MustUnmarshal(result, &record)
 	return record
 }
 
