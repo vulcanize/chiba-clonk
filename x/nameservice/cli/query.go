@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -158,7 +159,16 @@ $ %s query %s list
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			recordsList := res.GetRecords()
+			records := make([]types.RecordType, len(recordsList))
+			for i, record := range res.GetRecords() {
+				records[i] = record.ToRecordType()
+			}
+			bytesResult, err := json.Marshal(records)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintBytes(bytesResult)
 		},
 	}
 

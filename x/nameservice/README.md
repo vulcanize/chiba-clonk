@@ -78,21 +78,26 @@ $ ./build/ethermintd tx nameservice set ~/Desktop/examples/records/example1.yml 
 ## Get records list
 
 ```bash
-$ ./build/ethermintd q nameservice list -o json | jq . 
-{
-  "records": [
-    {
-      "id": "bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae",
-      "bond_id": "95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d",
-      "create_time": "2021-09-27T07:23:25.558111606Z",
-      "expiry_time": "2022-09-27T07:23:25.558111606Z",
-      "deleted": false,
-      "owners": [],
-      "attributes": "eyJhdHRyMSI6InZhbHVlMSIsImF0dHIyIjoidmFsdWUyIiwibGluazEiOnsiLyI6IlFtU251V214cHRKWmRMSnBLUmFyeEJNUzJKdTJvQU5WcmdicjJ4V2JpZTliMkQifSwibGluazIiOnsiLyI6IlFtUDhqVEcxbTlHU0RKTENiZVdoVlNWZ0V6Q1BQd1hSZENSdUp0UTVUejlLYzkifX0="
+$ ./build/ethermintd q nameservice list -o json  | jq   
+[
+  {
+    "id": "bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae",
+    "bondId": "c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440",
+    "createTime": "2021-10-04T06:50:06.369025861Z",
+    "expiryTime": "2022-10-04T06:50:06.369025861Z",
+    "attributes": {
+      "attr1": "value1",
+      "attr2": "value2",
+      "link1": {
+        "/": "QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D"
+      },
+      "link2": {
+        "/": "QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9"
+      }
     }
-  ],
-  "pagination": null
-}
+  }
+]
+
 
 ```
 
