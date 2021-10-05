@@ -300,6 +300,7 @@ func (m *AuthorityEntry) GetEntry() *NameAuthority {
 	return nil
 }
 
+// NameAuthority
 type NameAuthority struct {
 	// Owner public key.
 	OwnerPublicKey string `protobuf:"bytes,1,opt,name=owner_public_key,json=ownerPublicKey,proto3" json:"owner_public_key,omitempty" json:"ownerPublicKey" yaml:"ownerPublicKey"`

@@ -313,8 +313,36 @@ func (k Keeper) ListNameRecords(ctx sdk.Context) []types.NameEntry {
 	return nameEntries
 }
 
-func (k Keeper) ProcessReserverSubAuthority(ctx sdk.Context, name string, msg types.MsgReserveAuthority) {
+// ProcessReserveSubAuthority reserves a sub-authority.
+func (k Keeper) ProcessReserveSubAuthority(ctx sdk.Context, name string, msg types.MsgReserveAuthority) error {
+	// Get parent authority name.
+	names := strings.Split(name, ".")
+	parent := strings.Join(names[1:], ".")
 
+	// Check if parent authority exists.
+	if !k.HasNameAuthority(ctx, parent) {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Parent authority not found.")
+	}
+	parentAuthority := k.GetNameAuthority(ctx, parent)
+
+	// Sub-authority creator needs to be the owner of the parent authority.
+	if parentAuthority.OwnerAddress != msg.Signer {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied.")
+	}
+
+	// Sub-authority owner defaults to parent authority owner.
+	subAuthorityOwner := msg.Signer
+	if len(msg.Owner) != 0 {
+		// Override sub-authority owner if provided in message.
+		subAuthorityOwner = msg.Owner
+	}
+
+	sdkErr := k.createAuthority(ctx, name, subAuthorityOwner, false)
+	if sdkErr != nil {
+		return sdkErr
+	}
+
+	return nil
 }
 
 func GetAuctionToAuthorityIndexKey(auctionID string) []byte {
@@ -407,7 +435,7 @@ func (k Keeper) ProcessReserveAuthority(ctx sdk.Context, msg types.MsgReserveAut
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
 	}
 	if strings.Contains(name, ".") {
-		k.ProcessReserverSubAuthority(ctx, name, msg)
+		return k.ProcessReserveSubAuthority(ctx, name, msg)
 	}
 	err = k.createAuthority(ctx, name, msg.GetSigner(), true)
 	if err != nil {

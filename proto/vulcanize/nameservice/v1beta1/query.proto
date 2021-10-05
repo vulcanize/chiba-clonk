@@ -11,7 +11,7 @@ option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
 
 // Query defines the gRPC querier service for nameservice module
 service Query {
-  // Bonds queries bonds list.
+  // Params queries the nameservice module params.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/ethermint/nameservice/v1/params";
   }
@@ -27,7 +27,7 @@ service Query {
   rpc GetRecordByBondId(QueryRecordByBondIdRequest) returns (QueryRecordByBondIdResponse){
     option (google.api.http).get = "/ethermint/nameservice/v1/records-by-bond-id/{id}";
   }
-  // Get records by bond id
+  // Get nameservice module balance
   rpc GetNameServiceModuleBalance(GetNameServiceModuleBalanceRequest) returns (GetNameServiceModuleBalanceResponse){
     option (google.api.http).get = "/ethermint/nameservice/v1/balance";
   }
@@ -57,21 +57,22 @@ service Query {
   }
 }
 
-// QueryParamRequest is request type for nameservice params
+// QueryParamsRequest is request type for nameservice params
 message QueryParamsRequest{
 }
+
 // QueryParamsResponse is response type for nameservice params
 message QueryParamsResponse{
   Params params = 1;
 }
 
-// QueryListRecordsRequest is request type for nameservice params
+// QueryListRecordsRequest is request type for nameservice records list
 message QueryListRecordsRequest{
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryListRecordsResponse is response type for nameservice params
+// QueryListRecordsResponse is response type for nameservice records list
 message QueryListRecordsResponse{
   repeated Record records = 1 [
     (gogoproto.nullable) = false
@@ -92,14 +93,14 @@ message QueryRecordByIdResponse{
   ];
 }
 
-// QueryRecordByBondIdRequest
+// QueryRecordByBondIdRequest is request type for get the records by bond-id
 message QueryRecordByBondIdRequest{
   string id = 1;
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryRecordByBondIdResponse
+// QueryRecordByBondIdResponse is response type for records list by bond-id
 message QueryRecordByBondIdResponse{
   repeated Record records = 1 [
     (gogoproto.nullable) = false
@@ -108,16 +109,16 @@ message QueryRecordByBondIdResponse{
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// GetNameServiceModuleBalanceRequest is request type for nameservice
+// GetNameServiceModuleBalanceRequest is request type for nameservice module accounts balance
 message GetNameServiceModuleBalanceRequest{
 }
 
-// GetNameServiceModuleBalanceResponse is response type for nameservice module account balances
+// GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
 message GetNameServiceModuleBalanceResponse{
   repeated AccountBalance balances = 1;
 }
 
-// AccountBalance
+// AccountBalance is nameservice module account balance
 message AccountBalance {
   string account_name = 1 [
     (gogoproto.moretags) = "json:\"accountName\" yaml:\"accountName\""

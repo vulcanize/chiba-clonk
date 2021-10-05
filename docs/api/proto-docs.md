@@ -176,9 +176,9 @@
     - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
     - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
     - [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn)
-  - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
-  - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
-  - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
+    - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
+    - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
+    - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
     - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
     - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
     - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
@@ -187,7 +187,7 @@
     - [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
     - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
-  
+
     - [Query](#vulcanize.nameservice.v1beta1.Query)
   
 - [vulcanize/nameservice/v1beta1/tx.proto](#vulcanize/nameservice/v1beta1/tx.proto)
@@ -2181,6 +2181,7 @@ AuthorityEntry defines the nameservice module AuthorityEntries
 
 ### NameAuthority
 
+NameAuthority
 
 
 | Field | Type | Label | Description |
@@ -2332,7 +2333,7 @@ GenesisState defines the nameservice module's genesis state.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `params` | [Params](#vulcanize.nameservice.v1beta1.Params) |  | params defines all the nameservice of the module. |
+| `params` | [Params](#vulcanize.nameservice.v1beta1.Params) |  | params defines all the params of nameservice module. |
 | `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated | records |
 | `authorities` | [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry) | repeated | authorities |
 | `names` | [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry) | repeated | names |
@@ -2361,7 +2362,8 @@ GenesisState defines the nameservice module's genesis state.
 <a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
 
 ### AccountBalance
-AccountBalance
+
+AccountBalance is nameservice module account balance
 
 
 | Field | Type | Label | Description |
@@ -2377,17 +2379,14 @@ AccountBalance
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest"></a>
 
 ### GetNameServiceModuleBalanceRequest
-GetNameServiceModuleBalanceRequest is request type for nameservice
 
-
-
-
-
+GetNameServiceModuleBalanceRequest is request type for nameservice module accounts balance
 
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse"></a>
 
 ### GetNameServiceModuleBalanceResponse
-GetNameServiceModuleBalanceResponse is response type for nameservice module account balances
+
+GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
 
 
 | Field | Type | Label | Description |
@@ -2494,7 +2493,7 @@ QueryListNameRecordsResponse is response type for nameservice names records
 
 ### QueryListRecordsRequest
 
-QueryListRecordsRequest is request type for nameservice params
+QueryListRecordsRequest is request type for nameservice records list
 
 
 | Field | Type | Label | Description |
@@ -2510,7 +2509,7 @@ QueryListRecordsRequest is request type for nameservice params
 
 ### QueryListRecordsResponse
 
-QueryListRecordsResponse is response type for nameservice params
+QueryListRecordsResponse is response type for nameservice records list
 
 
 | Field | Type | Label | Description |
@@ -2533,16 +2532,11 @@ QueryLookupWrn is request type for LookupWrn
 | ----- | ---- | ----- | ----------- |
 | `wrn` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrnResponse"></a>
 
 ### QueryLookupWrnResponse
-QueryLookupWrnResponse is response type for QueryLookupWrn
 
+QueryLookupWrnResponse is response type for QueryLookupWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2551,12 +2545,8 @@ QueryLookupWrnResponse is response type for QueryLookupWrn
 <a name="vulcanize.nameservice.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
-QueryParamRequest is request type for nameservice params
 
-
-
-
-
+QueryParamsRequest is request type for nameservice params
 
 <a name="vulcanize.nameservice.v1beta1.QueryParamsResponse"></a>
 
@@ -2576,7 +2566,8 @@ QueryParamsResponse is response type for nameservice params
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
 
 ### QueryRecordByBondIdRequest
-QueryRecordByBondIdRequest
+
+QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
 | Field | Type | Label | Description |
@@ -2592,7 +2583,8 @@ QueryRecordByBondIdRequest
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
 
 ### QueryRecordByBondIdResponse
-QueryRecordByBondIdResponse
+
+QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
 | Field | Type | Label | Description |
@@ -2708,11 +2700,11 @@ Query defines the gRPC querier service for nameservice module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/nameservice/v1/params|
+| `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Params queries the nameservice module params. | GET|/ethermint/nameservice/v1/params|
 | `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/ethermint/nameservice/v1/records|
 | `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/ethermint/nameservice/v1/records/{id}|
 | `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/records-by-bond-id/{id}|
-| `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/balance|
+| `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/ethermint/nameservice/v1/balance|
 | `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/ethermint/nameservice/v1/names|
 | `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/ethermint/nameservice/v1/whois/{name}|
 | `LookupWrn` | [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn) | [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse) | LookupWrn | GET|/ethermint/nameservice/v1/lookup/{wrn}|

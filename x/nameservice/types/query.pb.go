@@ -32,7 +32,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryParamRequest is request type for nameservice params
+// QueryParamsRequest is request type for nameservice params
 type QueryParamsRequest struct {
 }
 
@@ -114,7 +114,7 @@ func (m *QueryParamsResponse) GetParams() *Params {
 	return nil
 }
 
-// QueryListRecordsRequest is request type for nameservice params
+// QueryListRecordsRequest is request type for nameservice records list
 type QueryListRecordsRequest struct {
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -160,7 +160,7 @@ func (m *QueryListRecordsRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryListRecordsResponse is response type for nameservice params
+// QueryListRecordsResponse is response type for nameservice records list
 type QueryListRecordsResponse struct {
 	Records []Record `protobuf:"bytes,1,rep,name=records,proto3" json:"records"`
 	// pagination defines the pagination in the response.
@@ -304,7 +304,7 @@ func (m *QueryRecordByIdResponse) GetRecord() Record {
 	return Record{}
 }
 
-// QueryRecordByBondIdRequest
+// QueryRecordByBondIdRequest is request type for get the records by bond-id
 type QueryRecordByBondIdRequest struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// pagination defines an optional pagination for the request.
@@ -358,7 +358,7 @@ func (m *QueryRecordByBondIdRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryRecordByBondIdResponse
+// QueryRecordByBondIdResponse is response type for records list by bond-id
 type QueryRecordByBondIdResponse struct {
 	Records []Record `protobuf:"bytes,1,rep,name=records,proto3" json:"records"`
 	// pagination defines the pagination in the response.
@@ -412,7 +412,7 @@ func (m *QueryRecordByBondIdResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// GetNameServiceModuleBalanceRequest is request type for nameservice
+// GetNameServiceModuleBalanceRequest is request type for nameservice module accounts balance
 type GetNameServiceModuleBalanceRequest struct {
 }
 
@@ -449,7 +449,7 @@ func (m *GetNameServiceModuleBalanceRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetNameServiceModuleBalanceRequest proto.InternalMessageInfo
 
-// GetNameServiceModuleBalanceResponse is response type for nameservice module account balances
+// GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
 type GetNameServiceModuleBalanceResponse struct {
 	Balances []*AccountBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 }
@@ -494,7 +494,7 @@ func (m *GetNameServiceModuleBalanceResponse) GetBalances() []*AccountBalance {
 	return nil
 }
 
-// AccountBalance
+// AccountBalance is nameservice module account balance
 type AccountBalance struct {
 	AccountName string                                   `protobuf:"bytes,1,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty" json:"accountName" yaml:"accountName"`
 	Balance     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=balance,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"balance" json:"balance" yaml:"balance"`
@@ -1223,7 +1223,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Bonds queries bonds list.
+	// Params queries the nameservice module params.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// List records
 	ListRecords(ctx context.Context, in *QueryListRecordsRequest, opts ...grpc.CallOption) (*QueryListRecordsResponse, error)
@@ -1231,7 +1231,7 @@ type QueryClient interface {
 	GetRecord(ctx context.Context, in *QueryRecordByIdRequest, opts ...grpc.CallOption) (*QueryRecordByIdResponse, error)
 	// Get records by bond id
 	GetRecordByBondId(ctx context.Context, in *QueryRecordByBondIdRequest, opts ...grpc.CallOption) (*QueryRecordByBondIdResponse, error)
-	// Get records by bond id
+	// Get nameservice module balance
 	GetNameServiceModuleBalance(ctx context.Context, in *GetNameServiceModuleBalanceRequest, opts ...grpc.CallOption) (*GetNameServiceModuleBalanceResponse, error)
 	// List name records
 	ListNameRecords(ctx context.Context, in *QueryListNameRecordsRequest, opts ...grpc.CallOption) (*QueryListNameRecordsResponse, error)
@@ -1356,7 +1356,7 @@ func (c *queryClient) GetAuthorityExpiryQueue(ctx context.Context, in *QueryGetA
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Bonds queries bonds list.
+	// Params queries the nameservice module params.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// List records
 	ListRecords(context.Context, *QueryListRecordsRequest) (*QueryListRecordsResponse, error)
@@ -1364,7 +1364,7 @@ type QueryServer interface {
 	GetRecord(context.Context, *QueryRecordByIdRequest) (*QueryRecordByIdResponse, error)
 	// Get records by bond id
 	GetRecordByBondId(context.Context, *QueryRecordByBondIdRequest) (*QueryRecordByBondIdResponse, error)
-	// Get records by bond id
+	// Get nameservice module balance
 	GetNameServiceModuleBalance(context.Context, *GetNameServiceModuleBalanceRequest) (*GetNameServiceModuleBalanceResponse, error)
 	// List name records
 	ListNameRecords(context.Context, *QueryListNameRecordsRequest) (*QueryListNameRecordsResponse, error)
