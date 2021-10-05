@@ -509,8 +509,8 @@ func (k Keeper) ProcessDeleteName(ctx sdk.Context, msg types.MsgDeleteNameAuthor
 	return nil
 }
 
-func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) (expired map[string][]string) {
-	records := make(map[string][]string)
+func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord {
+	var authorities []*types.ExpiryQueueRecord
 
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, PrefixExpiryTimeToAuthoritiesIndex)
@@ -519,12 +519,15 @@ func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) (expired map[string][]s
 		var record []string
 		err := json.Unmarshal(itr.Value(), &record)
 		if err != nil {
-			return records
+			return authorities
 		}
-		records[string(itr.Key()[len(PrefixExpiryTimeToAuthoritiesIndex):])] = record
+		authorities = append(authorities, &types.ExpiryQueueRecord{
+			Id:    string(itr.Key()[len(PrefixExpiryTimeToAuthoritiesIndex):]),
+			Value: record,
+		})
 	}
 
-	return records
+	return authorities
 }
 
 // ResolveWRN resolves a WRN to a record.

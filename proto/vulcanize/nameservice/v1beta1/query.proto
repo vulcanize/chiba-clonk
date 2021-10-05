@@ -186,9 +186,15 @@ message QueryGetRecordExpiryQueue{
 
 // QueryGetRecordExpiryQueueResponse
 message QueryGetRecordExpiryQueueResponse{
-  // TODO(gsk967): add result record
+  repeated ExpiryQueueRecord records = 1;
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// ExpiryQueueRecord
+message ExpiryQueueRecord{
+  string id = 1;
+  repeated string value = 2;
 }
 
 // QueryGetAuthorityExpiryQueue
@@ -199,7 +205,7 @@ message QueryGetAuthorityExpiryQueue{
 
 // QueryGetAuthorityExpiryQueueResponse
 message QueryGetAuthorityExpiryQueueResponse{
-  // TODO(gsk967): add result record
+  repeated ExpiryQueueRecord authorities = 1;
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

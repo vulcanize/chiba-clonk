@@ -127,8 +127,8 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 	return records
 }
 
-func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) (expired map[string][]string) {
-	records := make(map[string][]string)
+func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord {
+	var records []*types.ExpiryQueueRecord
 
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, PrefixExpiryTimeToRecordsIndex)
@@ -139,7 +139,10 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) (expired map[string][]stri
 		if err != nil {
 			return records
 		}
-		records[string(itr.Key()[len(PrefixExpiryTimeToRecordsIndex):])] = record
+		records = append(records, &types.ExpiryQueueRecord{
+			Id:    string(itr.Key()[len(PrefixExpiryTimeToRecordsIndex):]),
+			Value: record,
+		})
 	}
 
 	return records

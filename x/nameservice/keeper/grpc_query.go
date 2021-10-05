@@ -86,12 +86,12 @@ func (q Querier) ResolveWrn(c context.Context, req *types.QueryResolveWrn) (*typ
 
 func (q Querier) GetRecordExpiryQueue(c context.Context, _ *types.QueryGetRecordExpiryQueue) (*types.QueryGetRecordExpiryQueueResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	_ = q.Keeper.GetRecordExpiryQueue(ctx)
-	return &types.QueryGetRecordExpiryQueueResponse{}, nil
+	records := q.Keeper.GetRecordExpiryQueue(ctx)
+	return &types.QueryGetRecordExpiryQueueResponse{Records: records}, nil
 }
 
 func (q Querier) GetAuthorityExpiryQueue(c context.Context, _ *types.QueryGetAuthorityExpiryQueue) (*types.QueryGetAuthorityExpiryQueueResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	_ = q.Keeper.GetAuthorityExpiryQueue(ctx)
-	return &types.QueryGetAuthorityExpiryQueueResponse{}, nil
+	authorities := q.Keeper.GetAuthorityExpiryQueue(ctx)
+	return &types.QueryGetAuthorityExpiryQueueResponse{Authorities: authorities}, nil
 }
