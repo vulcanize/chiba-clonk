@@ -2,8 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
-	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
+
 	"io"
 	"net/http"
 	"os"
@@ -100,12 +99,14 @@ import (
 	"github.com/tharsis/ethermint/app/ante"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 	ethermint "github.com/tharsis/ethermint/types"
+
 	"github.com/tharsis/ethermint/x/auction"
 	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	"github.com/tharsis/ethermint/x/bond"
 	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
+
 	"github.com/tharsis/ethermint/x/evm"
 	evmrest "github.com/tharsis/ethermint/x/evm/client/rest"
 	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
@@ -115,6 +116,8 @@ import (
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	"github.com/tharsis/ethermint/x/nameservice"
+	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
+	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 func init() {
