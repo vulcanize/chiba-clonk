@@ -386,7 +386,7 @@ func NewEthermintApp(
 		appCodec, app.GetSubspace(auctiontypes.ModuleName),
 	)
 
-	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(app.AuctionKeeper, keys[nameservicetypes.StoreKey], appCodec, *cdc)
+	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(app.AuctionKeeper, keys[nameservicetypes.StoreKey], appCodec)
 
 	app.AuctionKeeper.SetUsageKeepers([]auctiontypes.AuctionUsageKeeper{app.NameServiceRecordKeeper})
 
@@ -396,7 +396,7 @@ func NewEthermintApp(
 	)
 
 	app.NameServiceKeeper = nameservicekeeper.NewKeeper(
-		appCodec, *cdc, app.AccountKeeper, app.BankKeeper,
+		appCodec, app.AccountKeeper, app.BankKeeper,
 		app.NameServiceRecordKeeper, app.BondKeeper, app.AuctionKeeper,
 		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName),
 	)

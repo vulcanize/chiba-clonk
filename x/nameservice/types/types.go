@@ -3,7 +3,6 @@ package types
 import (
 	"crypto/sha256"
 	canonicalJson "github.com/gibson042/canonicaljson-go"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"time"
 )
@@ -48,7 +47,7 @@ func (payload Payload) ToReadablePayload() PayloadType {
 	return payloadType
 }
 
-// Record to Record Type for human readable attributes
+// Record to Record Type for human-readable attributes
 
 func (r *Record) ToRecordType() RecordType {
 	var resourceObj RecordType
@@ -92,7 +91,7 @@ func (r *RecordType) ToRecordObj() Record {
 	return resourceObj
 }
 
-// CanonicalJSON returns the canonical JSON respresentation of the record.
+// CanonicalJSON returns the canonical JSON representation of the record.
 func (r *RecordType) CanonicalJSON() []byte {
 	bytes, err := canonicalJson.Marshal(r.Attributes)
 	if err != nil {
@@ -130,14 +129,4 @@ func (r *RecordType) GetCID() (string, error) {
 	}
 
 	return id, nil
-}
-
-// BlockChangeset is a changeset corresponding to a block.
-type BlockChangeset struct {
-	Height          int64                         `json:"height"`
-	Records         []string                      `json:"records"`
-	Auctions        []string                      `json:"auctions"`
-	AuctionBids     []auctiontypes.AuctionBidInfo `json:"auctionBids"`
-	NameAuthorities []string                      `json:"authorities"`
-	Names           []string                      `json:"names"`
 }

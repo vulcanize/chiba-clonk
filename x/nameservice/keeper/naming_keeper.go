@@ -36,14 +36,14 @@ func GetCIDToNamesIndexKey(id string) []byte {
 	return append(PrefixCIDToNamesIndex, []byte(id)...)
 }
 
-func SetNameAuthority(ctx sdk.Context, store sdk.KVStore, codec codec.BinaryCodec, legacyCodec codec.LegacyAmino, name string, authority *types.NameAuthority) {
+func SetNameAuthority(ctx sdk.Context, store sdk.KVStore, codec codec.BinaryCodec, name string, authority *types.NameAuthority) {
 	store.Set(GetNameAuthorityIndexKey(name), codec.MustMarshal(authority))
-	updateBlockChangeSetForNameAuthority(ctx, store, legacyCodec, name)
+	updateBlockChangeSetForNameAuthority(ctx, codec, store, name)
 }
 
 // SetNameAuthority creates the NameAuthority record.
 func (k Keeper) SetNameAuthority(ctx sdk.Context, name string, authority *types.NameAuthority) {
-	SetNameAuthority(ctx, ctx.KVStore(k.storeKey), k.cdc, k.legacyCodec, name, authority)
+	SetNameAuthority(ctx, ctx.KVStore(k.storeKey), k.cdc, name, authority)
 }
 
 func removeAuctionToAuthorityMapping(store sdk.KVStore, auctionID string) {
@@ -224,21 +224,25 @@ func RemoveRecordToNameMapping(store sdk.KVStore, codec codec.BinaryCodec, id st
 }
 
 // AddRecordToNameMapping adds a name to the record ID -> []names index.
-func AddRecordToNameMapping(store sdk.KVStore, legacyCodec codec.LegacyAmino, id string, wrn string) {
+func AddRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(id)
 
 	var names []string
 	if store.Has(reverseNameIndexKey) {
-		legacyCodec.MustUnmarshal(store.Get(reverseNameIndexKey), &names)
+		err := json.Unmarshal(store.Get(reverseNameIndexKey), &names)
+		if err != nil {
+			return
+		}
 	}
 
 	nameSet := helpers.SliceToSet(names)
 	nameSet.Add(wrn)
-	store.Set(reverseNameIndexKey, legacyCodec.MustMarshal(helpers.SetToSlice(nameSet)))
+	bz, _ := json.Marshal(helpers.SetToSlice(nameSet))
+	store.Set(reverseNameIndexKey, bz)
 }
 
 // SetNameRecord - sets a name record.
-func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, legacyCodec codec.LegacyAmino, wrn string, id string, height int64) {
+func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id string, height int64) {
 	nameRecordIndexKey := GetNameRecordIndexKey(wrn)
 
 	var nameRecord types.NameRecord
@@ -262,13 +266,13 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, legacyCodec codec
 
 	// Update new CID -> []Name index.
 	if id != "" {
-		AddRecordToNameMapping(store, legacyCodec, id, wrn)
+		AddRecordToNameMapping(store, id, wrn)
 	}
 }
 
 // SetNameRecord - sets a name record.
 func (k Keeper) SetNameRecord(ctx sdk.Context, wrn string, id string) {
-	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, k.legacyCodec, wrn, id, ctx.BlockHeight())
+	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, wrn, id, ctx.BlockHeight())
 
 	// Update changeSet for name.
 	k.updateBlockChangeSetForName(ctx, wrn)
@@ -354,7 +358,7 @@ func GetAuctionToAuthorityIndexKey(auctionID string) []byte {
 
 func (k Keeper) AddAuctionToAuthorityMapping(ctx sdk.Context, auctionID string, name string) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(GetAuctionToAuthorityIndexKey(auctionID), k.legacyCodec.MustMarshal(name))
+	store.Set(GetAuctionToAuthorityIndexKey(auctionID), []byte(name))
 }
 
 func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRoot bool) error {
@@ -513,7 +517,10 @@ func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) (expired map[string][]s
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		var record []string
-		k.legacyCodec.MustUnmarshalLengthPrefixed(itr.Value(), &record)
+		err := json.Unmarshal(itr.Value(), &record)
+		if err != nil {
+			return records
+		}
 		records[string(itr.Key()[len(PrefixExpiryTimeToAuthoritiesIndex):])] = record
 	}
 
@@ -578,13 +585,16 @@ func (k Keeper) GetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time
 		return []string{}
 	}
 
-	k.legacyCodec.MustUnmarshal(bz, &names)
+	err := json.Unmarshal(bz, &names)
+	if err != nil {
+		return []string{}
+	}
 	return names
 }
 
 func (k Keeper) SetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, names []string) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.legacyCodec.MustMarshal(names)
+	bz, _ := json.Marshal(names)
 	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
 }
 

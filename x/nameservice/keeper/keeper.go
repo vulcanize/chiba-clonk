@@ -49,10 +49,6 @@ var (
 	// PrefixExpiryTimeToAuthoritiesIndex is the prefix for the Expiry Time -> [Authority] index.
 	PrefixExpiryTimeToAuthoritiesIndex = []byte{0x11}
 
-	// KeySyncStatus is the key for the sync status record.
-	// Only used by WNS lite but defined here to prevent conflicts with existing prefixes.
-	KeySyncStatus = []byte{0xff}
-
 	// PrefixCIDToNamesIndex the the reverse index for naming, i.e. maps CID -> []Names.
 	// TODO(ashwin): Move out of WNS once we have an indexing service.
 	PrefixCIDToNamesIndex = []byte{0xe0}
@@ -68,14 +64,13 @@ type Keeper struct {
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
-	cdc         codec.BinaryCodec // The wire codec for binary encoding/decoding.
-	legacyCodec codec.LegacyAmino
+	cdc codec.BinaryCodec // The wire codec for binary encoding/decoding.
 
 	paramSubspace paramtypes.Subspace
 }
 
 // NewKeeper creates new instances of the nameservice Keeper
-func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
+func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
 	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -89,7 +84,6 @@ func NewKeeper(cdc codec.BinaryCodec, legacyCdc codec.LegacyAmino, accountKeeper
 		auctionKeeper: auctionKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
-		legacyCodec:   legacyCdc,
 		paramSubspace: ps,
 	}
 }
@@ -141,7 +135,10 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) (expired map[string][]stri
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		var record []string
-		k.legacyCodec.MustUnmarshal(itr.Value(), &record)
+		err := json.Unmarshal(itr.Value(), &record)
+		if err != nil {
+			return records
+		}
 		records[string(itr.Key()[len(PrefixExpiryTimeToRecordsIndex):])] = record
 	}
 
@@ -242,7 +239,7 @@ func getRecordExpiryQueueTimeKey(timestamp time.Time) []byte {
 // SetRecordExpiryQueueTimeSlice sets a specific record expiry queue timeslice.
 func (k Keeper) SetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, cids []string) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.legacyCodec.MustMarshal(cids)
+	bz, _ := json.Marshal(cids)
 	store.Set(getRecordExpiryQueueTimeKey(timestamp), bz)
 }
 
@@ -250,13 +247,6 @@ func (k Keeper) SetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 func (k Keeper) DeleteRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(getRecordExpiryQueueTimeKey(timestamp))
-}
-
-// InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
-func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
-	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime)
-	timeSlice = append(timeSlice, val.Id)
-	k.SetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime, timeSlice)
 }
 
 // GetRecordExpiryQueueTimeSlice gets a specific record queue timeslice.
@@ -268,13 +258,18 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 	if bz == nil {
 		return []string{}
 	}
-
 	err := json.Unmarshal(bz, &cids)
 	if err != nil {
-		return nil
+		return []string{}
 	}
-	k.legacyCodec.MustUnmarshal(bz, &cids)
 	return cids
+}
+
+// InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
+func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
+	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime)
+	timeSlice = append(timeSlice, val.Id)
+	k.SetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime, timeSlice)
 }
 
 // GetModuleBalances gets the nameservice module account(s) balances.

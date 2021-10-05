@@ -151,7 +151,9 @@
     - [Msg](#vulcanize.bond.v1beta1.Msg)
   
 - [vulcanize/nameservice/v1beta1/nameservice.proto](#vulcanize/nameservice/v1beta1/nameservice.proto)
+    - [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo)
     - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
+    - [BlockChangeSet](#vulcanize.nameservice.v1beta1.BlockChangeSet)
     - [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority)
     - [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry)
     - [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord)
@@ -176,9 +178,9 @@
     - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
     - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
     - [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn)
-  - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
-  - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
-  - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
+    - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
+    - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
+    - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
     - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
     - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
     - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
@@ -187,7 +189,7 @@
     - [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
     - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
-  
+
     - [Query](#vulcanize.nameservice.v1beta1.Query)
   
 - [vulcanize/nameservice/v1beta1/tx.proto](#vulcanize/nameservice/v1beta1/tx.proto)
@@ -2159,29 +2161,48 @@ Msg defines the bond Msg service.
 
 ## vulcanize/nameservice/v1beta1/nameservice.proto
 
+<a name="vulcanize.nameservice.v1beta1.AuctionBidInfo"></a>
 
+### AuctionBidInfo
+
+AuctionBidInfo
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  |  |
+| `bidder_address` | [string](#string) |  |  |
 
 <a name="vulcanize.nameservice.v1beta1.AuthorityEntry"></a>
 
 ### AuthorityEntry
-AuthorityEntry defines the nameservice module AuthorityEntries
 
+AuthorityEntry defines the nameservice module AuthorityEntries
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [string](#string) |  |  |
 | `entry` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
 
+<a name="vulcanize.nameservice.v1beta1.BlockChangeSet"></a>
 
+### BlockChangeSet
 
+BlockChangeSet
 
-
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `height` | [int64](#int64) |  |  |
+| `records` | [string](#string) | repeated |  |
+| `auctions` | [string](#string) | repeated |  |
+| `auction_bids` | [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo) | repeated |  |
+| `authorities` | [string](#string) | repeated |  |
+| `names` | [string](#string) | repeated |  |
 
 <a name="vulcanize.nameservice.v1beta1.NameAuthority"></a>
 
 ### NameAuthority
 
-
+NameAuthority
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2361,7 +2382,6 @@ GenesisState defines the nameservice module's genesis state.
 <a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
 
 ### AccountBalance
-
 AccountBalance is nameservice module account balance
 
 
@@ -2369,11 +2389,6 @@ AccountBalance is nameservice module account balance
 | ----- | ---- | ----- | ----------- |
 | `account_name` | [string](#string) |  |  |
 | `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest"></a>
 
@@ -2386,7 +2401,6 @@ GetNameServiceModuleBalanceRequest is request type for nameservice module accoun
 ### GetNameServiceModuleBalanceResponse
 
 GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2491,7 +2505,6 @@ QueryListNameRecordsResponse is response type for nameservice names records
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest"></a>
 
 ### QueryListRecordsRequest
-
 QueryListRecordsRequest is request type for nameservice records list
 
 
@@ -2507,7 +2520,6 @@ QueryListRecordsRequest is request type for nameservice records list
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
 
 ### QueryListRecordsResponse
-
 QueryListRecordsResponse is response type for nameservice records list
 
 
@@ -2531,16 +2543,11 @@ QueryLookupWrn is request type for LookupWrn
 | ----- | ---- | ----- | ----------- |
 | `wrn` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrnResponse"></a>
 
 ### QueryLookupWrnResponse
-QueryLookupWrnResponse is response type for QueryLookupWrn
 
+QueryLookupWrnResponse is response type for QueryLookupWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2558,7 +2565,6 @@ QueryParamsRequest is request type for nameservice params
 
 QueryParamsResponse is response type for nameservice params
 
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#vulcanize.nameservice.v1beta1.Params) |  |  |
@@ -2571,7 +2577,6 @@ QueryParamsResponse is response type for nameservice params
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
 
 ### QueryRecordByBondIdRequest
-
 QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
@@ -2588,7 +2593,6 @@ QueryRecordByBondIdRequest is request type for get the records by bond-id
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
 
 ### QueryRecordByBondIdResponse
-
 QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
