@@ -25,7 +25,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the nameservice module's genesis state.
 type GenesisState struct {
-	// params defines all the nameservice of the module.
+	// params defines all the params of nameservice module.
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 	// records
 	Records []Record `protobuf:"bytes,2,rep,name=records,proto3" json:"records" json:"records" yaml:"records"`

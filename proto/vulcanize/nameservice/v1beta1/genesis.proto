@@ -8,7 +8,7 @@ option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
 
 // GenesisState defines the nameservice module's genesis state.
 message GenesisState {
-  // params defines all the nameservice of the module.
+  // params defines all the params of nameservice module.
   Params params = 1 [
     (gogoproto.nullable) = false
   ];

@@ -13,7 +13,7 @@ type Querier struct {
 
 var _ types.QueryServer = Querier{}
 
-func (q Querier) Params(c context.Context, _ *types.QueryParamRequest) (*types.QueryParamsResponse, error) {
+func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := q.Keeper.GetParams(ctx)
 	return &types.QueryParamsResponse{Params: &params}, nil
