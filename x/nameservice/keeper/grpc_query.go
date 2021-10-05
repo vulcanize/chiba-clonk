@@ -13,7 +13,7 @@ type Querier struct {
 
 var _ types.QueryServer = Querier{}
 
-func (q Querier) Params(c context.Context, _ *types.QueryParamRequest) (*types.QueryParamsResponse, error) {
+func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := q.Keeper.GetParams(ctx)
 	return &types.QueryParamsResponse{Params: &params}, nil
@@ -58,7 +58,7 @@ func (q Querier) ListNameRecords(c context.Context, _ *types.QueryListNameRecord
 func (q Querier) Whois(c context.Context, request *types.QueryWhoisRequest) (*types.QueryWhoisResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	nameAuthority := q.Keeper.GetNameAuthority(ctx, request.GetName())
-	return &types.QueryWhoisResponse{NameAuthority: *nameAuthority}, nil
+	return &types.QueryWhoisResponse{NameAuthority: nameAuthority}, nil
 }
 
 func (q Querier) LookupWrn(c context.Context, req *types.QueryLookupWrn) (*types.QueryLookupWrnResponse, error) {

@@ -176,9 +176,9 @@
     - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
     - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
     - [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn)
-    - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
-    - [QueryParamRequest](#vulcanize.nameservice.v1beta1.QueryParamRequest)
-    - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
+  - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
+  - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
+  - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
     - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
     - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
     - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
@@ -2493,7 +2493,8 @@ QueryListNameRecordsResponse is response type for nameservice names records
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest"></a>
 
 ### QueryListRecordsRequest
-QueryParamRequest is request type for nameservice params
+
+QueryListRecordsRequest is request type for nameservice params
 
 
 | Field | Type | Label | Description |
@@ -2508,7 +2509,8 @@ QueryParamRequest is request type for nameservice params
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
 
 ### QueryListRecordsResponse
-QueryParamsResponse is response type for nameservice params
+
+QueryListRecordsResponse is response type for nameservice params
 
 
 | Field | Type | Label | Description |
@@ -2546,14 +2548,9 @@ QueryLookupWrnResponse is response type for QueryLookupWrn
 | ----- | ---- | ----- | ----------- |
 | `name` | [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord) |  |  |
 
+<a name="vulcanize.nameservice.v1beta1.QueryParamsRequest"></a>
 
-
-
-
-
-<a name="vulcanize.nameservice.v1beta1.QueryParamRequest"></a>
-
-### QueryParamRequest
+### QueryParamsRequest
 QueryParamRequest is request type for nameservice params
 
 
@@ -2711,7 +2708,7 @@ Query defines the gRPC querier service for nameservice module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Params` | [QueryParamRequest](#vulcanize.nameservice.v1beta1.QueryParamRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/nameservice/v1/params|
+| `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/nameservice/v1/params|
 | `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/ethermint/nameservice/v1/records|
 | `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/ethermint/nameservice/v1/records/{id}|
 | `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/records-by-bond-id/{id}|

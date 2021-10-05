@@ -12,7 +12,7 @@ option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
 // Query defines the gRPC querier service for nameservice module
 service Query {
   // Bonds queries bonds list.
-  rpc Params(QueryParamRequest) returns (QueryParamsResponse) {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/ethermint/nameservice/v1/params";
   }
   // List records
@@ -58,20 +58,20 @@ service Query {
 }
 
 // QueryParamRequest is request type for nameservice params
-message QueryParamRequest{
+message QueryParamsRequest{
 }
 // QueryParamsResponse is response type for nameservice params
 message QueryParamsResponse{
   Params params = 1;
 }
 
-// QueryParamRequest is request type for nameservice params
+// QueryListRecordsRequest is request type for nameservice params
 message QueryListRecordsRequest{
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryParamsResponse is response type for nameservice params
+// QueryListRecordsResponse is response type for nameservice params
 message QueryListRecordsResponse{
   repeated Record records = 1 [
     (gogoproto.nullable) = false

@@ -55,21 +55,19 @@ func (k Keeper) RemoveAuctionToAuthorityMapping(ctx sdk.Context, auctionID strin
 }
 
 // GetNameAuthority - gets a name authority from the store.
-func GetNameAuthority(store sdk.KVStore, codec codec.BinaryCodec, name string) *types.NameAuthority {
+func GetNameAuthority(store sdk.KVStore, codec codec.BinaryCodec, name string) types.NameAuthority {
 	authorityKey := GetNameAuthorityIndexKey(name)
 	if !store.Has(authorityKey) {
-		return nil
+		return types.NameAuthority{}
 	}
-
 	bz := store.Get(authorityKey)
 	var obj types.NameAuthority
 	codec.MustUnmarshal(bz, &obj)
-
-	return &obj
+	return obj
 }
 
 // GetNameAuthority - gets a name authority from the store.
-func (k Keeper) GetNameAuthority(ctx sdk.Context, name string) *types.NameAuthority {
+func (k Keeper) GetNameAuthority(ctx sdk.Context, name string) types.NameAuthority {
 	return GetNameAuthority(ctx.KVStore(k.storeKey), k.cdc, name)
 }
 
@@ -115,12 +113,11 @@ func (k Keeper) getAuthority(ctx sdk.Context, wrn string) (string, *url.URL, *ty
 	}
 
 	name := parsedWRN.Host
-	authority := k.GetNameAuthority(ctx, name)
-	if authority == nil {
+	if !k.HasNameAuthority(ctx, name) {
 		return name, nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
 	}
-
-	return name, parsedWRN, authority, nil
+	authority := k.GetNameAuthority(ctx, name)
+	return name, parsedWRN, &authority, nil
 }
 
 func (k Keeper) checkWRNAccess(ctx sdk.Context, signer sdk.AccAddress, wrn string) error {
@@ -391,6 +388,7 @@ func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRo
 		authority.AuctionId = auction.Id
 		authority.ExpiryTime = auction.RevealsEndTime.Add(moduleParams.AuthorityGracePeriod)
 	}
+
 	k.SetNameAuthority(ctx, name, &authority)
 	k.InsertAuthorityExpiryQueue(ctx, name, authority.ExpiryTime)
 
@@ -421,10 +419,10 @@ func (k Keeper) ProcessReserveAuthority(ctx sdk.Context, msg types.MsgReserveAut
 func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthorityBond) error {
 	name := msg.GetName()
 	signer := msg.GetSigner()
-	authority := k.GetNameAuthority(ctx, name)
-	if authority == nil {
+	if !k.HasNameAuthority(ctx, name) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
 	}
+	authority := k.GetNameAuthority(ctx, name)
 	if authority.OwnerAddress != signer {
 		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied")
 	}
@@ -450,7 +448,7 @@ func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthori
 
 	// Update bond ID for authority.
 	authority.BondId = bond.Id
-	k.SetNameAuthority(ctx, name, authority)
+	k.SetNameAuthority(ctx, name, &authority)
 	// Add new bond ID mapping.
 	k.AddBondToAuthorityIndexEntry(ctx, authority.BondId, name)
 	return nil

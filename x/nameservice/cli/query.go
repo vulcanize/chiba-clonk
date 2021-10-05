@@ -120,7 +120,7 @@ $ %s query %s params
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.Params(cmd.Context(), &types.QueryParamRequest{})
+			res, err := queryClient.Params(cmd.Context(), &types.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
