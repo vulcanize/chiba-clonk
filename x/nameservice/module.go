@@ -12,7 +12,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tharsis/ethermint/x/nameservice/cli"
+	"github.com/tharsis/ethermint/x/nameservice/client/cli"
 	"github.com/tharsis/ethermint/x/nameservice/keeper"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 )

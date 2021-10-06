@@ -10,7 +10,9 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/stretchr/testify/suite"
 	"github.com/tharsis/ethermint/testutil/network"
+	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"testing"
+	"time"
 )
 
 type IntegrationTestSuite struct {
@@ -38,9 +40,21 @@ func TestIntegrationTestSuite(t *testing.T) {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
+	var genesisState = s.cfg.GenesisState
+	var nsData nameservicetypes.GenesisState
+	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[nameservicetypes.ModuleName], &nsData))
+
+	nsData.Params.RecordRent = sdk.NewCoin(s.cfg.BondDenom, nameservicetypes.DefaultRecordRent)
+	nsData.Params.RecordRentDuration = 5 * time.Second
+	nsData.Params.AuthorityGracePeriod = 5 * time.Second
+	nsDataBz, err := s.cfg.Codec.MarshalJSON(&nsData)
+	s.Require().NoError(err)
+	genesisState[nameservicetypes.ModuleName] = nsDataBz
+	s.cfg.GenesisState = genesisState
+
 	s.network = network.New(s.T(), s.cfg)
 
-	_, err := s.network.WaitForHeight(2)
+	_, err = s.network.WaitForHeight(2)
 	s.Require().NoError(err)
 
 	// setting up random account

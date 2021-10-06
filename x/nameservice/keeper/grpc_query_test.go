@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"context"
 	"fmt"
-	"github.com/tharsis/ethermint/x/nameservice/cli"
+	"github.com/tharsis/ethermint/x/nameservice/client/cli"
 	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"os"
 )

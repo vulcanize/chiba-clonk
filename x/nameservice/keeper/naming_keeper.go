@@ -203,7 +203,7 @@ func (k Keeper) GetNameRecord(ctx sdk.Context, wrn string) *types.NameRecord {
 }
 
 // RemoveRecordToNameMapping removes a name from the record ID -> []names index.
-func RemoveRecordToNameMapping(store sdk.KVStore, codec codec.BinaryCodec, id string, wrn string) {
+func RemoveRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(id)
 
 	names, _ := helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
@@ -246,7 +246,7 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 
 		// Update old CID -> []Name index.
 		if nameRecord.Latest.Id != "" || len(nameRecord.Latest.Id) != 0 {
-			RemoveRecordToNameMapping(store, codec, nameRecord.Latest.Id, wrn)
+			RemoveRecordToNameMapping(store, nameRecord.Latest.Id, wrn)
 		}
 	}
 
