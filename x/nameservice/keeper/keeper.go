@@ -242,7 +242,7 @@ func getRecordExpiryQueueTimeKey(timestamp time.Time) []byte {
 // SetRecordExpiryQueueTimeSlice sets a specific record expiry queue timeslice.
 func (k Keeper) SetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, cids []string) {
 	store := ctx.KVStore(k.storeKey)
-	bz, _ := json.Marshal(cids)
+	bz, _ := helpers.StrArrToBytesArr(cids)
 	store.Set(getRecordExpiryQueueTimeKey(timestamp), bz)
 }
 
@@ -254,14 +254,14 @@ func (k Keeper) DeleteRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time
 
 // GetRecordExpiryQueueTimeSlice gets a specific record queue timeslice.
 // A timeslice is a slice of CIDs corresponding to records that expire at a certain time.
-func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) (cids []string) {
+func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) []string {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(getRecordExpiryQueueTimeKey(timestamp))
 	if bz == nil {
 		return []string{}
 	}
-	err := json.Unmarshal(bz, &cids)
+	cids, err := helpers.BytesArrToStringArr(bz)
 	if err != nil {
 		return []string{}
 	}
