@@ -147,9 +147,9 @@
     - [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse)
     - [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond)
     - [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse)
-  
+
     - [Msg](#vulcanize.bond.v1beta1.Msg)
-  
+
 - [vulcanize/nameservice/v1beta1/nameservice.proto](#vulcanize/nameservice/v1beta1/nameservice.proto)
   - [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo)
   - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
@@ -161,24 +161,24 @@
   - [Params](#vulcanize.nameservice.v1beta1.Params)
   - [Record](#vulcanize.nameservice.v1beta1.Record)
   - [Signature](#vulcanize.nameservice.v1beta1.Signature)
-  
+
 - [vulcanize/nameservice/v1beta1/genesis.proto](#vulcanize/nameservice/v1beta1/genesis.proto)
-    - [GenesisState](#vulcanize.nameservice.v1beta1.GenesisState)
-  
+  - [GenesisState](#vulcanize.nameservice.v1beta1.GenesisState)
+
 - [vulcanize/nameservice/v1beta1/query.proto](#vulcanize/nameservice/v1beta1/query.proto)
   - [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance)
   - [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord)
   - [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest)
-    - [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse)
-    - [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue)
-    - [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse)
-    - [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue)
-    - [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse)
-    - [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest)
-    - [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse)
-    - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
-    - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
-    - [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn)
+  - [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse)
+  - [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue)
+  - [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse)
+  - [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue)
+  - [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse)
+  - [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest)
+  - [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse)
+  - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
+  - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
+  - [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn)
     - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
     - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
@@ -2162,6 +2162,8 @@ Msg defines the bond Msg service.
 
 ## vulcanize/nameservice/v1beta1/nameservice.proto
 
+
+
 <a name="vulcanize.nameservice.v1beta1.AuctionBidInfo"></a>
 
 ### AuctionBidInfo
@@ -2383,6 +2385,7 @@ GenesisState defines the nameservice module's genesis state.
 <a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
 
 ### AccountBalance
+
 AccountBalance is nameservice module account balance
 
 | Field | Type | Label | Description |
@@ -2531,8 +2534,8 @@ QueryListRecordsRequest is request type for nameservice records list
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
 
 ### QueryListRecordsResponse
-QueryListRecordsResponse is response type for nameservice records list
 
+QueryListRecordsResponse is response type for nameservice records list
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |

@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -60,9 +59,11 @@ func GetNameAuthority(store sdk.KVStore, codec codec.BinaryCodec, name string) t
 	if !store.Has(authorityKey) {
 		return types.NameAuthority{}
 	}
+
 	bz := store.Get(authorityKey)
 	var obj types.NameAuthority
 	codec.MustUnmarshal(bz, &obj)
+
 	return obj
 }
 
@@ -205,9 +206,7 @@ func (k Keeper) GetNameRecord(ctx sdk.Context, wrn string) *types.NameRecord {
 func RemoveRecordToNameMapping(store sdk.KVStore, codec codec.BinaryCodec, id string, wrn string) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(id)
 
-	var names []string
-	//codec.MustUnmarshalBinaryBare(store.Get(reverseNameIndexKey), &names)
-	json.Unmarshal(store.Get(reverseNameIndexKey), &names)
+	names, _ := helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
 	nameSet := helpers.SliceToSet(names)
 	nameSet.Remove(wrn)
 
@@ -215,7 +214,7 @@ func RemoveRecordToNameMapping(store sdk.KVStore, codec codec.BinaryCodec, id st
 		// Delete as storing empty slice throws error from baseapp.
 		store.Delete(reverseNameIndexKey)
 	} else {
-		data, _ := json.Marshal(helpers.SetToSlice(nameSet))
+		data, _ := helpers.StrArrToBytesArr(helpers.SetToSlice(nameSet))
 		store.Set(reverseNameIndexKey, data)
 	}
 }
@@ -226,15 +225,12 @@ func AddRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
 
 	var names []string
 	if store.Has(reverseNameIndexKey) {
-		err := json.Unmarshal(store.Get(reverseNameIndexKey), &names)
-		if err != nil {
-			return
-		}
+		names, _ = helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
 	}
 
 	nameSet := helpers.SliceToSet(names)
 	nameSet.Add(wrn)
-	bz, _ := json.Marshal(helpers.SetToSlice(nameSet))
+	bz, _ := helpers.StrArrToBytesArr(helpers.SetToSlice(nameSet))
 	store.Set(reverseNameIndexKey, bz)
 }
 
@@ -515,7 +511,7 @@ func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRec
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		var record []string
-		err := json.Unmarshal(itr.Value(), &record)
+		record, err := helpers.BytesArrToStringArr(itr.Value())
 		if err != nil {
 			return authorities
 		}
@@ -578,7 +574,7 @@ func (k Keeper) InsertAuthorityExpiryQueue(ctx sdk.Context, name string, expiryT
 	k.SetAuthorityExpiryQueueTimeSlice(ctx, expiryTime, timeSlice)
 }
 
-func (k Keeper) GetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) (names []string) {
+func (k Keeper) GetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) []string {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(getAuthorityExpiryQueueTimeKey(timestamp))
@@ -586,16 +582,17 @@ func (k Keeper) GetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time
 		return []string{}
 	}
 
-	err := json.Unmarshal(bz, &names)
+	names, err := helpers.BytesArrToStringArr(bz)
 	if err != nil {
 		return []string{}
 	}
+
 	return names
 }
 
 func (k Keeper) SetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time, names []string) {
 	store := ctx.KVStore(k.storeKey)
-	bz, _ := json.Marshal(names)
+	bz, _ := helpers.StrArrToBytesArr(names)
 	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
 }
 

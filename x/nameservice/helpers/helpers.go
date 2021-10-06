@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
 	set "github.com/deckarep/golang-set"
@@ -12,6 +13,34 @@ import (
 
 	"sort"
 )
+
+func StringToBytes(val string) []byte {
+	return []byte(val)
+}
+
+func BytesToString(val []byte) string {
+	return string(val)
+}
+
+func StrArrToBytesArr(val []string) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+
+	err := gob.NewEncoder(buffer).Encode(val)
+	if err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
+}
+
+func BytesArrToStringArr(val []byte) ([]string, error) {
+	buffer := bytes.NewReader(val)
+	var v []string
+	err := gob.NewDecoder(buffer).Decode(&v)
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
+}
 
 func Int64ToBytes(num int64) []byte {
 	buf := new(bytes.Buffer)
