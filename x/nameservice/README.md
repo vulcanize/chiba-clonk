@@ -316,3 +316,25 @@ tx: null
 txhash: A3FF4C46BAC7BD6E54BBB743A49830AE8C6F6FE59282384789CBA323C1FE540C
 
 ```
+
+## List of Authorities Expire Queue
+
+```bash
+$ ./build/ethermintd q nameservice authority-expiry  -o json | jq . 
+{
+  "authorities": [],
+  "pagination": null
+}
+
+```
+
+## List of Records Expire Queue
+
+```bash
+$  ./build/ethermintd q nameservice record-expiry -o json | jq .     
+{
+  "records": [],
+  "pagination": null
+}
+
+```

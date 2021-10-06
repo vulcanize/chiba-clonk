@@ -146,3 +146,25 @@ message Signature{
     (gogoproto.moretags) = "json:\"pubKey\" yaml:\"pubKey\""
   ];
 }
+
+// BlockChangeSet
+message BlockChangeSet{
+  int64 height = 1;
+  repeated string records = 2;
+  repeated string auctions = 3;
+  repeated AuctionBidInfo auction_bids = 4 [
+    (gogoproto.moretags) = "json:\"auctionBids\" yaml:\"auctionBids\""
+  ];
+  repeated string authorities = 5;
+  repeated string names = 6;
+}
+
+// AuctionBidInfo
+message AuctionBidInfo {
+  string auction_id = 1 [
+    (gogoproto.moretags) = "json:\"auctionID\" yaml:\"auctionID\""
+  ];
+  string bidder_address = 2 [
+    (gogoproto.moretags) = "json:\"bidderAddress\" yaml:\"bidderAddress\""
+  ];
+}

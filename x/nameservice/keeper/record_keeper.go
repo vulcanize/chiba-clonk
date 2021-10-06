@@ -16,7 +16,6 @@ type RecordKeeper struct {
 	auctionKeeper auctionkeeper.Keeper
 	storeKey      sdk.StoreKey      // Unexposed key to access store from sdk.Context
 	cdc           codec.BinaryCodec // The wire codec for binary encoding/decoding.
-	legacyCodec   codec.LegacyAmino
 }
 
 func (k RecordKeeper) UsesAuction(ctx sdk.Context, auctionID string) bool {
@@ -77,7 +76,7 @@ func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string)
 		}
 
 		authority.AuctionId = ""
-		SetNameAuthority(ctx, store, k.cdc, k.legacyCodec, name, &authority)
+		SetNameAuthority(ctx, store, k.cdc, name, &authority)
 
 		// Forget about this auction now, we no longer need it.
 		removeAuctionToAuthorityMapping(store, auctionID)
@@ -101,9 +100,7 @@ func (k RecordKeeper) GetAuctionToAuthorityMapping(ctx sdk.Context, auctionID st
 	auctionToAuthorityIndexKey := GetAuctionToAuthorityIndexKey(auctionID)
 	if store.Has(auctionToAuthorityIndexKey) {
 		bz := store.Get(auctionToAuthorityIndexKey)
-		var name string
-		k.legacyCodec.MustUnmarshal(bz, &name)
-		return name
+		return string(bz)
 	}
 	return ""
 }
@@ -124,12 +121,11 @@ func (k Keeper) RemoveBondToRecordIndexEntry(ctx sdk.Context, bondID string, id 
 }
 
 // NewRecordKeeper creates new instances of the nameservice RecordKeeper
-func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, legacyCodec codec.LegacyAmino) RecordKeeper {
+func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec) RecordKeeper {
 	return RecordKeeper{
 		auctionKeeper: auctionKeeper,
 		storeKey:      storeKey,
 		cdc:           cdc,
-		legacyCodec:   legacyCodec,
 	}
 }
 

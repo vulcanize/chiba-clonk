@@ -151,21 +151,24 @@
     - [Msg](#vulcanize.bond.v1beta1.Msg)
   
 - [vulcanize/nameservice/v1beta1/nameservice.proto](#vulcanize/nameservice/v1beta1/nameservice.proto)
-    - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
-    - [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority)
-    - [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry)
-    - [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord)
-    - [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry)
-    - [Params](#vulcanize.nameservice.v1beta1.Params)
-    - [Record](#vulcanize.nameservice.v1beta1.Record)
-    - [Signature](#vulcanize.nameservice.v1beta1.Signature)
+  - [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo)
+  - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
+  - [BlockChangeSet](#vulcanize.nameservice.v1beta1.BlockChangeSet)
+  - [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority)
+  - [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry)
+  - [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord)
+  - [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry)
+  - [Params](#vulcanize.nameservice.v1beta1.Params)
+  - [Record](#vulcanize.nameservice.v1beta1.Record)
+  - [Signature](#vulcanize.nameservice.v1beta1.Signature)
   
 - [vulcanize/nameservice/v1beta1/genesis.proto](#vulcanize/nameservice/v1beta1/genesis.proto)
     - [GenesisState](#vulcanize.nameservice.v1beta1.GenesisState)
   
 - [vulcanize/nameservice/v1beta1/query.proto](#vulcanize/nameservice/v1beta1/query.proto)
-    - [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance)
-    - [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest)
+  - [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance)
+  - [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord)
+  - [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest)
     - [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse)
     - [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue)
     - [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse)
@@ -2159,30 +2162,48 @@ Msg defines the bond Msg service.
 
 ## vulcanize/nameservice/v1beta1/nameservice.proto
 
+<a name="vulcanize.nameservice.v1beta1.AuctionBidInfo"></a>
 
+### AuctionBidInfo
+
+AuctionBidInfo
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  |  |
+| `bidder_address` | [string](#string) |  |  |
 
 <a name="vulcanize.nameservice.v1beta1.AuthorityEntry"></a>
 
 ### AuthorityEntry
-AuthorityEntry defines the nameservice module AuthorityEntries
 
+AuthorityEntry defines the nameservice module AuthorityEntries
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [string](#string) |  |  |
 | `entry` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
 
+<a name="vulcanize.nameservice.v1beta1.BlockChangeSet"></a>
 
+### BlockChangeSet
 
+BlockChangeSet
 
-
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `height` | [int64](#int64) |  |  |
+| `records` | [string](#string) | repeated |  |
+| `auctions` | [string](#string) | repeated |  |
+| `auction_bids` | [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo) | repeated |  |
+| `authorities` | [string](#string) | repeated |  |
+| `names` | [string](#string) | repeated |  |
 
 <a name="vulcanize.nameservice.v1beta1.NameAuthority"></a>
 
 ### NameAuthority
 
 NameAuthority
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2362,19 +2383,23 @@ GenesisState defines the nameservice module's genesis state.
 <a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
 
 ### AccountBalance
-
 AccountBalance is nameservice module account balance
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `account_name` | [string](#string) |  |  |
 | `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
 
+<a name="vulcanize.nameservice.v1beta1.ExpiryQueueRecord"></a>
 
+### ExpiryQueueRecord
 
+ExpiryQueueRecord
 
-
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `value` | [string](#string) | repeated |  |
 
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest"></a>
 
@@ -2387,7 +2412,6 @@ GetNameServiceModuleBalanceRequest is request type for nameservice module accoun
 ### GetNameServiceModuleBalanceResponse
 
 GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2418,10 +2442,10 @@ QueryGetAuthorityExpiryQueue
 ### QueryGetAuthorityExpiryQueueResponse
 QueryGetAuthorityExpiryQueueResponse
 
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | TODO(gsk967): add result record pagination defines the pagination in the response. |
+| `authorities` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
 
@@ -2448,10 +2472,10 @@ QueryGetRecordExpiryQueue
 ### QueryGetRecordExpiryQueueResponse
 QueryGetRecordExpiryQueueResponse
 
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | TODO(gsk967): add result record pagination defines the pagination in the response. |
+| `records` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
 
@@ -2492,7 +2516,6 @@ QueryListNameRecordsResponse is response type for nameservice names records
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest"></a>
 
 ### QueryListRecordsRequest
-
 QueryListRecordsRequest is request type for nameservice records list
 
 
@@ -2508,7 +2531,6 @@ QueryListRecordsRequest is request type for nameservice records list
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
 
 ### QueryListRecordsResponse
-
 QueryListRecordsResponse is response type for nameservice records list
 
 
@@ -2517,16 +2539,11 @@ QueryListRecordsResponse is response type for nameservice records list
 | `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrn"></a>
 
 ### QueryLookupWrn
-QueryLookupWrn is request type for LookupWrn
 
+QueryLookupWrn is request type for LookupWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2551,8 +2568,8 @@ QueryParamsRequest is request type for nameservice params
 <a name="vulcanize.nameservice.v1beta1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-QueryParamsResponse is response type for nameservice params
 
+QueryParamsResponse is response type for nameservice params
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2566,7 +2583,6 @@ QueryParamsResponse is response type for nameservice params
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
 
 ### QueryRecordByBondIdRequest
-
 QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
@@ -2583,7 +2599,6 @@ QueryRecordByBondIdRequest is request type for get the records by bond-id
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
 
 ### QueryRecordByBondIdResponse
-
 QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
