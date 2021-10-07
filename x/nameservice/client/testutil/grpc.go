@@ -168,9 +168,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 				tc.url = fmt.Sprintf(reqUrl, fmt.Sprintf("wrn://%s/", authorityName))
 			}
 			resp, _ := rest.GetRequest(tc.url)
-			require := s.Require()
 			if tc.expectErr {
-				require.Contains(string(resp), tc.errorMsg)
+				sr.Contains(string(resp), tc.errorMsg)
 			} else {
 				var response nstypes.QueryLookupWrnResponse
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
