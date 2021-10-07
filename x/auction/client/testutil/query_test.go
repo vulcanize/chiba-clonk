@@ -1,0 +1,289 @@
+package testutil
+
+import (
+	"fmt"
+
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"github.com/tharsis/ethermint/x/auction/client/cli"
+	"github.com/tharsis/ethermint/x/auction/types"
+)
+
+var queryJSONFlag = []string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
+
+func (suite *IntegrationTestSuite) TestGetCmdQueryParams() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+
+	testCases := []struct {
+		msg  string
+		args []string
+	}{
+		{
+			"fetch query params",
+			queryJSONFlag,
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdQueryParams(), test.args)
+			sr.NoError(err)
+			var params types.QueryParamsResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &params)
+			sr.NoError(err)
+			sr.Equal(types.DefaultParams(), *params.Params)
+		})
+	}
+}
+
+func (suite *IntegrationTestSuite) TestGetCmdBalance() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+
+	testCases := []struct {
+		msg                 string
+		createAuctionAndBid bool
+	}{
+		{
+			"fetch module balance without creating auction and bid",
+			false,
+		},
+		{
+			"fetch module balance with valid auction and bid",
+			true,
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			if test.createAuctionAndBid {
+				suite.createAuctionAndBid(true)
+			}
+
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdBalance(), queryJSONFlag)
+			sr.NoError(err)
+			var balance types.BalanceResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &balance)
+			sr.NoError(err)
+			if test.createAuctionAndBid {
+				sr.NotZero(len(balance.Balance))
+			} else {
+				sr.Zero(len(balance.Balance))
+			}
+		})
+	}
+}
+
+func (suite *IntegrationTestSuite) TestGetCmdList() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+
+	testCases := []struct {
+		msg           string
+		createAuction bool
+	}{
+		{
+			"list auctions when no auctions exist",
+			false,
+		},
+		{
+			"list auctions after creating an auction",
+			true,
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			if test.createAuction {
+				suite.createAuctionAndBid(false)
+			}
+
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdList(), queryJSONFlag)
+			sr.NoError(err)
+			var auctions types.AuctionsResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &auctions)
+			sr.NoError(err)
+			if test.createAuction {
+				sr.NotZero(len(auctions.Auctions.Auctions))
+			}
+		})
+	}
+}
+
+func (suite *IntegrationTestSuite) TestGetCmdGetBid() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+
+	testCases := []struct {
+		msg                 string
+		args                []string
+		createAuctionAndBid bool
+	}{
+		{
+			"get bid without creating auction",
+			[]string{},
+			false,
+		},
+		{
+			"get bid after creating auction and bid",
+			[]string{},
+			true,
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			if test.createAuctionAndBid {
+				auctionID := suite.createAuctionAndBid(true)
+				test.args = append(test.args, auctionID)
+				getBidsArgs := []string{auctionID, queryJSONFlag[0]}
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetBids(), getBidsArgs)
+				sr.NoError(err)
+				var bids types.BidsResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &bids)
+				sr.NoError(err)
+				test.args = append(test.args, bids.GetBids()[0].BidderAddress)
+			}
+
+			test.args = append(test.args, queryJSONFlag...)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetBid(), test.args)
+			if test.createAuctionAndBid {
+				sr.NoError(err)
+				var bid types.BidResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &bid)
+				sr.NoError(err)
+				sr.NotNil(bid.GetBid())
+			} else {
+				sr.Error(err)
+			}
+		})
+	}
+}
+
+func (suite *IntegrationTestSuite) TestGetCmdGetBids() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+
+	testCases := []struct {
+		msg                 string
+		args                []string
+		createAuctionAndBid bool
+	}{
+		{
+			"get bids without creating auction",
+			[]string{},
+			false,
+		},
+		{
+			"get bids after creating auction and bid",
+			[]string{},
+			true,
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			if test.createAuctionAndBid {
+				auctionID := suite.createAuctionAndBid(true)
+				test.args = append(test.args, auctionID)
+			}
+
+			test.args = append(test.args, queryJSONFlag...)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetBids(), test.args)
+			if test.createAuctionAndBid {
+				sr.NoError(err)
+				var bids types.BidsResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &bids)
+				sr.NoError(err)
+				sr.NotZero(len(bids.Bids))
+			} else {
+				sr.Error(err)
+			}
+		})
+	}
+}
+
+func (suite *IntegrationTestSuite) TestGetCmdGetAuction() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+
+	testCases := []struct {
+		msg           string
+		auctionID     string
+		createAuction bool
+	}{
+		{
+			"get auction with empty auction ID",
+			"",
+			false,
+		},
+		{
+			"get auction with valid auction ID",
+			"",
+			true,
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			if test.createAuction {
+				auctionID := suite.createAuctionAndBid(false)
+				test.auctionID = auctionID
+			}
+
+			args := []string{test.auctionID, queryJSONFlag[0]}
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetAuction(), args)
+			if test.createAuction {
+				sr.NoError(err)
+				var auction types.AuctionResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &auction)
+				sr.NoError(err)
+				sr.NotNil(auction.GetAuction())
+				sr.Equal(test.auctionID, auction.GetAuction().Id)
+			} else {
+				sr.Error(err)
+			}
+		})
+	}
+}
+
+// func (suite *IntegrationTestSuite) TestGetCmdAuctionsByBidder() {
+// 	val := suite.network.Validators[0]
+// 	sr := suite.Require()
+// }
+
+// func (suite *IntegrationTestSuite) TestGetCmdAuctionsByOwner() {
+// 	val := suite.network.Validators[0]
+// 	sr := suite.Require()
+// }
+
+func (suite IntegrationTestSuite) createAuctionAndBid(createBid bool) string {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
+	auctionArgs := []string{
+		sampleCommitTime, sampleRevealTime,
+		fmt.Sprintf("10%s", suite.cfg.BondDenom),
+		fmt.Sprintf("10%s", suite.cfg.BondDenom),
+		fmt.Sprintf("100%s", suite.cfg.BondDenom),
+	}
+
+	resp, err := suite.executeTx(cli.GetCmdCreateAuction(), auctionArgs, ownerAccount)
+	sr.NoError(err)
+	sr.Zero(resp.Code)
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdList(), queryJSONFlag)
+	sr.NoError(err)
+	var queryResponse types.AuctionsResponse
+	err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
+	sr.NoError(err)
+	auctionID := queryResponse.Auctions.Auctions[0].Id
+
+	if createBid {
+		bidArgs := []string{auctionID, fmt.Sprintf("200%s", suite.cfg.BondDenom)}
+		resp, err = suite.executeTx(cli.GetCmdCommitBid(), bidArgs, bidderAccount)
+		sr.NoError(err)
+		sr.Zero(resp.Code)
+	}
+
+	return auctionID
+}

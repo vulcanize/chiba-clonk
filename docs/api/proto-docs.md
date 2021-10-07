@@ -94,6 +94,8 @@
     - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
     - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
     - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
+    - [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest)
+    - [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse)
     - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
     - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
     - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
@@ -1402,6 +1404,36 @@ AuctionsByBidderResponse returns all auctions containing a bidder
 
 
 
+<a name="vulcanize.auction.v1beta1.AuctionsByOwnerRequest"></a>
+
+### AuctionsByOwnerRequest
+AuctionsByOwnerRequest is the format for querying all auctions created by an owner
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner_address` | [string](#string) |  | Address of the owner |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByOwnerResponse"></a>
+
+### AuctionsByOwnerResponse
+AuctionsByOwnerResponse returns all auctions created by an owner
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+
+
+
+
+
+
 <a name="vulcanize.auction.v1beta1.AuctionsRequest"></a>
 
 ### AuctionsRequest
@@ -1561,7 +1593,8 @@ Query defines the gRPC querier interface for the auction module
 | `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
 | `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
 | `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
-| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions/{bidder_address}|
+| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctionsbybidder/{bidder_address}|
+| `AuctionsByOwner` | [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest) | [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse) | AuctionsByOwner queries auctions by owner | GET|/vulcanize/auction/v1beta1/auctionsbyowner/{owner_address}|
 | `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
 | `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
 
@@ -1601,7 +1634,7 @@ MsgCommitBidResponse returns the state of the auction after the bid creation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Auction details |
 
 
 
