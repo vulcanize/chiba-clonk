@@ -127,61 +127,59 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	}
 }
 
-// TODO(gsk967): needs to figure out how to pass wrn to req url
-//
-//func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
-//	val := s.network.Validators[0]
-//	sr := s.Require()
-//	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup/%s"
-//	var authorityName = "QueryLookUp"
-//
-//	testCases := []struct {
-//		name      string
-//		url       string
-//		expectErr bool
-//		errorMsg  string
-//		preRun    func(authorityName string)
-//	}{
-//		{
-//			"invalid url",
-//			reqUrl + "/asdasd",
-//			true,
-//			"",
-//			func(authorityName string) {
-//
-//			},
-//		},
-//		{
-//			"Success",
-//			reqUrl,
-//			false,
-//			"",
-//			func(authorityName string) {
-//				// create name record
-//				createNameRecord(authorityName, s)
-//			},
-//		},
-//	}
-//
-//	for _, tc := range testCases {
-//		s.Run(tc.name, func() {
-//			if !tc.expectErr {
-//				tc.preRun(authorityName)
-//				tc.url = fmt.Sprintf(reqUrl, fmt.Sprintf("wrn://%s/test", authorityName))
-//			}
-//			resp, _ := rest.GetRequest(tc.url)
-//			require := s.Require()
-//			if tc.expectErr {
-//				require.Contains(string(resp), tc.errorMsg)
-//			} else {
-//				var response nstypes.QueryLookupWrnResponse
-//				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
-//				sr.NoError(err)
-//				sr.NotZero(len(response.Name.Latest.Id))
-//			}
-//		})
-//	}
-//}
+func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
+	val := s.network.Validators[0]
+	sr := s.Require()
+	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?wrn=%s"
+	var authorityName = "QueryLookUp"
+
+	testCases := []struct {
+		name      string
+		url       string
+		expectErr bool
+		errorMsg  string
+		preRun    func(authorityName string)
+	}{
+		{
+			"invalid url",
+			reqUrl + "/asdasd",
+			true,
+			"",
+			func(authorityName string) {
+
+			},
+		},
+		{
+			"Success",
+			reqUrl,
+			false,
+			"",
+			func(authorityName string) {
+				// create name record
+				createNameRecord(authorityName, s)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			if !tc.expectErr {
+				tc.preRun(authorityName)
+				tc.url = fmt.Sprintf(reqUrl, fmt.Sprintf("wrn://%s/", authorityName))
+			}
+			resp, _ := rest.GetRequest(tc.url)
+			require := s.Require()
+			if tc.expectErr {
+				require.Contains(string(resp), tc.errorMsg)
+			} else {
+				var response nstypes.QueryLookupWrnResponse
+				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
+				sr.NoError(err)
+				sr.NotZero(len(response.Name.Latest.Id))
+			}
+		})
+	}
+}
 
 func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	val := s.network.Validators[0]

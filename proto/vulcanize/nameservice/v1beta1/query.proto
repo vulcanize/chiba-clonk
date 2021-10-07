@@ -41,11 +41,11 @@ service Query {
   }
   // LookupWrn
   rpc LookupWrn(QueryLookupWrn) returns (QueryLookupWrnResponse){
-    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/lookup/{wrn}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/lookup";
   }
   // ResolveWrn
   rpc ResolveWrn(QueryResolveWrn) returns (QueryResolveWrnResponse){
-    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/resolve/{wrn}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/resolve";
   }
   // GetRecordExpiryQueue
   rpc GetRecordExpiryQueue(QueryGetRecordExpiryQueue) returns (QueryGetRecordExpiryQueueResponse){
