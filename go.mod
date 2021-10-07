@@ -8,7 +8,6 @@ require (
 	github.com/cosmos/cosmos-sdk v0.44.0
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go v1.2.0
-	github.com/deckarep/golang-set v1.7.1
 	github.com/ethereum/go-ethereum v1.10.3
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/gogo/protobuf v1.3.3
@@ -17,9 +16,9 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/improbable-eng/grpc-web v0.14.1
-	github.com/ipfs/go-ipld-cbor v0.0.4
+	github.com/ipfs/go-ipld-cbor v0.0.5
 	github.com/miguelmota/go-ethereum-hdwallet v0.0.1
-	github.com/multiformats/go-multihash v0.0.14
+	github.com/multiformats/go-multihash v0.0.10
 	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
@@ -42,12 +41,13 @@ require (
 	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200626160457-b38283118816 // indirect
+	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
 	github.com/DataDog/zstd v1.4.8 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
@@ -66,8 +66,9 @@ require (
 	github.com/cosmos/iavl v0.16.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
-	github.com/danieljoos/wincred v1.1.0 // indirect
+	github.com/danieljoos/wincred v1.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/dgraph-io/badger/v2 v2.2007.2 // indirect
 	github.com/dgraph-io/ristretto v0.0.3 // indirect
@@ -111,7 +112,7 @@ require (
 	github.com/ipfs/go-ipld-format v0.0.1 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2-0.20160603034137-1fa385a6f458 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
-	github.com/keybase/go-keychain v0.0.0-20200502122510-cda31fe0c86d // indirect
+	github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d // indirect
 	github.com/klauspost/compress v1.11.9 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
@@ -124,7 +125,7 @@ require (
 	github.com/minio/sha256-simd v0.1.1-0.20190913151208-6de447530771 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/mr-tron/base58 v1.1.3 // indirect
+	github.com/mr-tron/base58 v1.1.2 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/multiformats/go-base32 v0.0.3 // indirect
 	github.com/multiformats/go-multibase v0.0.1 // indirect
@@ -166,7 +167,6 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20200619000410-60c24ae608a6 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
