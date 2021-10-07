@@ -1,6 +1,7 @@
 package nameservice
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -54,7 +55,11 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEnc
 func (a AppModuleBasic) RegisterRESTRoutes(context client.Context, router *mux.Router) {
 }
 
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(context client.Context, mux *runtime.ServeMux) {
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {

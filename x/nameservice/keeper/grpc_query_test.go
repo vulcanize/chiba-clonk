@@ -217,6 +217,8 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 func (suite *KeeperTestSuite) TestGrpcQueryWhoIS() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
+	var authorityName = "TestGrpcQueryWhoIS"
+
 	testCases := []struct {
 		msg         string
 		req         *nameservicetypes.QueryWhoisRequest
@@ -243,11 +245,12 @@ func (suite *KeeperTestSuite) TestGrpcQueryWhoIS() {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createName {
 				err := suite.app.NameServiceKeeper.ProcessReserveAuthority(ctx, nameservicetypes.MsgReserveAuthority{
-					Name:   suite.bond.GetId(),
+					Name:   authorityName,
 					Signer: suite.accounts[0].String(),
 					Owner:  suite.accounts[0].String(),
 				})
 				sr.NoError(err)
+				test.req = &nameservicetypes.QueryWhoisRequest{Name: authorityName}
 			}
 			resp, err := grpcClient.Whois(context.Background(), test.req)
 			if test.expErr {
@@ -257,8 +260,8 @@ func (suite *KeeperTestSuite) TestGrpcQueryWhoIS() {
 				if test.createName {
 					nameAuth := resp.NameAuthority
 					sr.NotNil(nameAuth)
-					//TODO: needs to check
-					//sr.Equal(nameAuth.OwnerAddress, suite.accounts[0].String())
+					sr.Equal(nameAuth.OwnerAddress, suite.accounts[0].String())
+					sr.Equal(nameservicetypes.AuthorityActive, nameAuth.Status)
 				}
 			}
 		})

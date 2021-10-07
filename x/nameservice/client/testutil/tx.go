@@ -4,15 +4,95 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"github.com/tharsis/ethermint/testutil/network"
 	bondcli "github.com/tharsis/ethermint/x/bond/client/cli"
 	"github.com/tharsis/ethermint/x/bond/types"
 	"github.com/tharsis/ethermint/x/nameservice/client/cli"
 	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"os"
+	"time"
 )
+
+var (
+	accountName    = "accountName"
+	accountAddress string
+)
+
+type IntegrationTestSuite struct {
+	suite.Suite
+
+	cfg     network.Config
+	network *network.Network
+	bondId  string
+}
+
+func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
+	return &IntegrationTestSuite{cfg: cfg}
+}
+
+func (s *IntegrationTestSuite) SetupSuite() {
+	s.T().Log("setting up integration test suite")
+
+	var genesisState = s.cfg.GenesisState
+	var nsData nstypes.GenesisState
+	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[nstypes.ModuleName], &nsData))
+
+	nsData.Params.RecordRent = sdk.NewCoin(s.cfg.BondDenom, nstypes.DefaultRecordRent)
+	nsData.Params.RecordRentDuration = 5 * time.Second
+	nsData.Params.AuthorityGracePeriod = 5 * time.Second
+	nsDataBz, err := s.cfg.Codec.MarshalJSON(&nsData)
+	s.Require().NoError(err)
+	genesisState[nstypes.ModuleName] = nsDataBz
+	s.cfg.GenesisState = genesisState
+
+	s.network = network.New(s.T(), s.cfg)
+
+	_, err = s.network.WaitForHeight(2)
+	s.Require().NoError(err)
+
+	// setting up random account
+	s.createAccountWithBalance(accountName)
+	CreateBond(s)
+	s.bondId = GetBondId(s)
+}
+
+func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
+	val := s.network.Validators[0]
+	sr := s.Require()
+	consPrivKey := ed25519.GenPrivKey()
+	consPubKeyBz, err := s.cfg.Codec.MarshalInterfaceJSON(consPrivKey.PubKey())
+	sr.NoError(err)
+	sr.NotNil(consPubKeyBz)
+
+	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	sr.NoError(err)
+
+	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	_, err = banktestutil.MsgSendExec(
+		val.ClientCtx,
+		val.Address,
+		newAddr,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1000000000000000000))),
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	)
+	sr.NoError(err)
+	accountAddress = newAddr.String()
+}
+
+func (s *IntegrationTestSuite) TearDownSuite() {
+	s.T().Log("tearing down integration test suite")
+	s.network.Cleanup()
+}
 
 func CreateBond(s *IntegrationTestSuite) {
 	val := s.network.Validators[0]
@@ -429,7 +509,7 @@ func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 			},
 			false,
 			func(authorityName string, s *IntegrationTestSuite) {
-				setupForSetRecord(authorityName, s)
+				createNameRecord(authorityName, s)
 			},
 		},
 	}

@@ -990,27 +990,27 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "records"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "records"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetRecord_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "records", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetRecord_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "records", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetRecordByBondId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "records-by-bond-id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetRecordByBondId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "records-by-bond-id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetNameServiceModuleBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "balance"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetNameServiceModuleBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "balance"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListNameRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "names"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListNameRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "names"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Whois_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "whois", "name"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Whois_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "whois", "name"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_LookupWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "lookup", "wrn"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_LookupWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "lookup", "wrn"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ResolveWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "resolve", "wrn"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ResolveWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "resolve", "wrn"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetRecordExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "record-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetRecordExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "record-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetAuthorityExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "authority-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetAuthorityExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "authority-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

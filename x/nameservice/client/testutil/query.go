@@ -120,8 +120,6 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 				sr.Equal(tc.noOfRecords, len(records))
 				recordID = records[0].Id
 				bondId = GetBondId(s)
-				s.T().Log("bond id ", bondId)
-				s.T().Log("record id ", recordID)
 			}
 		})
 	}
@@ -331,7 +329,7 @@ func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
 			1,
 			func(authorityName string) {
 				// reserving the name
-				setupForSetRecord(authorityName, s)
+				createNameRecord(authorityName, s)
 			},
 		},
 	}
@@ -425,7 +423,7 @@ func (s *IntegrationTestSuite) GetRecordExpiryQueue() {
 			false,
 			1,
 			func(authorityName string, s *IntegrationTestSuite) {
-				setupForSetRecord(authorityName, s)
+				createNameRecord(authorityName, s)
 			},
 		},
 	}
@@ -458,17 +456,15 @@ func (s *IntegrationTestSuite) TestGetAuthorityExpiryQueue() {
 	var authorityName = "TestGetAuthorityExpiryQueue"
 
 	testCases := []struct {
-		name        string
-		args        []string
-		expErr      bool
-		noOfRecords int
-		preRun      func(authorityName string)
+		name   string
+		args   []string
+		expErr bool
+		preRun func(authorityName string)
 	}{
 		{
 			"invalid request without name",
 			[]string{"invalid", fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			true,
-			0,
 			func(authorityName string) {
 
 			},
@@ -477,7 +473,6 @@ func (s *IntegrationTestSuite) TestGetAuthorityExpiryQueue() {
 			"success query",
 			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
-			1,
 			func(authorityName string) {
 				// reserving the name
 				clientCtx := val.ClientCtx
@@ -518,13 +513,13 @@ func (s *IntegrationTestSuite) TestGetAuthorityExpiryQueue() {
 				var response types.QueryGetAuthorityExpiryQueueResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
 				sr.NoError(err)
-				sr.Equal(tc.noOfRecords, len(response.GetAuthorities()))
+				sr.NotZero(len(response.GetAuthorities()))
 			}
 		})
 	}
 }
 
-func setupForSetRecord(authorityName string, s *IntegrationTestSuite) {
+func createNameRecord(authorityName string, s *IntegrationTestSuite) {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	// reserving the name
