@@ -28,6 +28,39 @@ func (r *Resolver) Query() QueryResolver {
 
 type queryResolver struct{ *Resolver }
 
+func (q queryResolver) GetStatus(ctx context.Context) (*Status, error) {
+	nodeInfo, syncInfo, validatorInfo, err := getStatusInfo(q.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	numPeers, peers, err := getNetInfo(q.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	validatorSet, err := getValidatorSet(q.ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	diskUsage, err := GetDiskUsage(NodeDataPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Status{
+		Version:    NameServiceVersion,
+		Node:       nodeInfo,
+		Sync:       syncInfo,
+		Validator:  validatorInfo,
+		Validators: validatorSet,
+		NumPeers:   numPeers,
+		Peers:      peers,
+		DiskUsage:  diskUsage,
+	}, nil
+}
+
 func (q queryResolver) GetAccounts(ctx context.Context, addresses []string) ([]*Account, error) {
 	accounts := make([]*Account, len(addresses))
 	for index, address := range addresses {

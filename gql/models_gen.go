@@ -31,9 +31,21 @@ type KeyValueInput struct {
 	Value *ValueInput `json:"value"`
 }
 
+type NodeInfo struct {
+	ID      string `json:"id"`
+	Network string `json:"network"`
+	Moniker string `json:"moniker"`
+}
+
 type OwnerBonds struct {
 	Owner string  `json:"owner"`
 	Bonds []*Bond `json:"bonds"`
+}
+
+type PeerInfo struct {
+	Node       *NodeInfo `json:"node"`
+	IsOutbound bool      `json:"is_outbound"`
+	RemoteIP   string    `json:"remote_ip"`
 }
 
 type Reference struct {
@@ -42,6 +54,30 @@ type Reference struct {
 
 type ReferenceInput struct {
 	ID string `json:"id"`
+}
+
+type Status struct {
+	Version    string           `json:"version"`
+	Node       *NodeInfo        `json:"node"`
+	Sync       *SyncInfo        `json:"sync"`
+	Validator  *ValidatorInfo   `json:"validator"`
+	Validators []*ValidatorInfo `json:"validators"`
+	NumPeers   string           `json:"num_peers"`
+	Peers      []*PeerInfo      `json:"peers"`
+	DiskUsage  string           `json:"disk_usage"`
+}
+
+type SyncInfo struct {
+	LatestBlockHash   string `json:"latest_block_hash"`
+	LatestBlockHeight string `json:"latest_block_height"`
+	LatestBlockTime   string `json:"latest_block_time"`
+	CatchingUp        bool   `json:"catching_up"`
+}
+
+type ValidatorInfo struct {
+	Address          string  `json:"address"`
+	VotingPower      string  `json:"voting_power"`
+	ProposerPriority *string `json:"proposer_priority"`
 }
 
 type Value struct {

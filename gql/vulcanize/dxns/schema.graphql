@@ -65,7 +65,6 @@ input ValueInput {
     values:     [ValueInput]
 }
 
-
 # Key/value pair.
 type KeyValue {
     key:        String!
@@ -78,7 +77,52 @@ input KeyValueInput {
     value:      ValueInput!
 }
 
+# Status information about a node (https://docs.tendermint.com/master/rpc/#/Info/status).
+type NodeInfo {
+    id:         String!         # Tendermint Node ID.
+    network:    String!         # Name of the network/blockchain.
+    moniker:    String!         # Name of the node.
+}
+
+# Node sync status.
+type SyncInfo {
+    latest_block_hash:    String!
+    latest_block_height:  String!
+    latest_block_time:    String!
+    catching_up:          Boolean!
+}
+
+# Validator set info (https://docs.tendermint.com/master/rpc/#/Info/validators).
+type ValidatorInfo {
+    address:            String!
+    voting_power:       String!
+    proposer_priority:  String
+}
+
+# Network/peer info (https://docs.tendermint.com/master/rpc/#/Info/net_info).
+type PeerInfo {
+    node:           NodeInfo!
+    is_outbound:    Boolean!
+    remote_ip:      String!
+}
+
+# Vulcanize DXNS status.
+type Status {
+    version:    String!
+    node:       NodeInfo!
+    sync:       SyncInfo!
+    validator:  ValidatorInfo
+    validators: [ValidatorInfo]!
+    num_peers:  String!
+    peers:      [PeerInfo]
+    disk_usage: String!
+}
+
 type Query {
+    #
+    # Status API.
+    #
+    getStatus: Status!
 
     # Get blockchain accounts.
     getAccounts(
