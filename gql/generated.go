@@ -49,6 +49,33 @@ type ComplexityRoot struct {
 		Sequence func(childComplexity int) int
 	}
 
+	Auction struct {
+		Bids           func(childComplexity int) int
+		CommitFee      func(childComplexity int) int
+		CommitsEndTime func(childComplexity int) int
+		CreateTime     func(childComplexity int) int
+		ID             func(childComplexity int) int
+		MinimumBid     func(childComplexity int) int
+		OwnerAddress   func(childComplexity int) int
+		RevealFee      func(childComplexity int) int
+		RevealsEndTime func(childComplexity int) int
+		Status         func(childComplexity int) int
+		WinnerAddress  func(childComplexity int) int
+		WinnerBid      func(childComplexity int) int
+		WinnerPrice    func(childComplexity int) int
+	}
+
+	AuctionBid struct {
+		BidAmount     func(childComplexity int) int
+		BidderAddress func(childComplexity int) int
+		CommitFee     func(childComplexity int) int
+		CommitHash    func(childComplexity int) int
+		CommitTime    func(childComplexity int) int
+		RevealFee     func(childComplexity int) int
+		RevealTime    func(childComplexity int) int
+		Status        func(childComplexity int) int
+	}
+
 	Bond struct {
 		Balance func(childComplexity int) int
 		ID      func(childComplexity int) int
@@ -84,6 +111,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		GetAccounts       func(childComplexity int, addresses []string) int
+		GetAuctionsByIds  func(childComplexity int, ids []string) int
 		GetBondsByIds     func(childComplexity int, ids []string) int
 		GetStatus         func(childComplexity int) int
 		QueryBonds        func(childComplexity int, attributes []*KeyValueInput) int
@@ -136,6 +164,7 @@ type QueryResolver interface {
 	GetBondsByIds(ctx context.Context, ids []string) ([]*Bond, error)
 	QueryBonds(ctx context.Context, attributes []*KeyValueInput) ([]*Bond, error)
 	QueryBondsByOwner(ctx context.Context, ownerAddresses []string) ([]*OwnerBonds, error)
+	GetAuctionsByIds(ctx context.Context, ids []string) ([]*Auction, error)
 }
 
 type executableSchema struct {
@@ -187,6 +216,153 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Account.Sequence(childComplexity), true
+
+	case "Auction.bids":
+		if e.complexity.Auction.Bids == nil {
+			break
+		}
+
+		return e.complexity.Auction.Bids(childComplexity), true
+
+	case "Auction.commitFee":
+		if e.complexity.Auction.CommitFee == nil {
+			break
+		}
+
+		return e.complexity.Auction.CommitFee(childComplexity), true
+
+	case "Auction.commitsEndTime":
+		if e.complexity.Auction.CommitsEndTime == nil {
+			break
+		}
+
+		return e.complexity.Auction.CommitsEndTime(childComplexity), true
+
+	case "Auction.createTime":
+		if e.complexity.Auction.CreateTime == nil {
+			break
+		}
+
+		return e.complexity.Auction.CreateTime(childComplexity), true
+
+	case "Auction.id":
+		if e.complexity.Auction.ID == nil {
+			break
+		}
+
+		return e.complexity.Auction.ID(childComplexity), true
+
+	case "Auction.minimumBid":
+		if e.complexity.Auction.MinimumBid == nil {
+			break
+		}
+
+		return e.complexity.Auction.MinimumBid(childComplexity), true
+
+	case "Auction.ownerAddress":
+		if e.complexity.Auction.OwnerAddress == nil {
+			break
+		}
+
+		return e.complexity.Auction.OwnerAddress(childComplexity), true
+
+	case "Auction.revealFee":
+		if e.complexity.Auction.RevealFee == nil {
+			break
+		}
+
+		return e.complexity.Auction.RevealFee(childComplexity), true
+
+	case "Auction.revealsEndTime":
+		if e.complexity.Auction.RevealsEndTime == nil {
+			break
+		}
+
+		return e.complexity.Auction.RevealsEndTime(childComplexity), true
+
+	case "Auction.status":
+		if e.complexity.Auction.Status == nil {
+			break
+		}
+
+		return e.complexity.Auction.Status(childComplexity), true
+
+	case "Auction.winnerAddress":
+		if e.complexity.Auction.WinnerAddress == nil {
+			break
+		}
+
+		return e.complexity.Auction.WinnerAddress(childComplexity), true
+
+	case "Auction.winnerBid":
+		if e.complexity.Auction.WinnerBid == nil {
+			break
+		}
+
+		return e.complexity.Auction.WinnerBid(childComplexity), true
+
+	case "Auction.winnerPrice":
+		if e.complexity.Auction.WinnerPrice == nil {
+			break
+		}
+
+		return e.complexity.Auction.WinnerPrice(childComplexity), true
+
+	case "AuctionBid.bidAmount":
+		if e.complexity.AuctionBid.BidAmount == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.BidAmount(childComplexity), true
+
+	case "AuctionBid.bidderAddress":
+		if e.complexity.AuctionBid.BidderAddress == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.BidderAddress(childComplexity), true
+
+	case "AuctionBid.commitFee":
+		if e.complexity.AuctionBid.CommitFee == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.CommitFee(childComplexity), true
+
+	case "AuctionBid.commitHash":
+		if e.complexity.AuctionBid.CommitHash == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.CommitHash(childComplexity), true
+
+	case "AuctionBid.commitTime":
+		if e.complexity.AuctionBid.CommitTime == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.CommitTime(childComplexity), true
+
+	case "AuctionBid.revealFee":
+		if e.complexity.AuctionBid.RevealFee == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.RevealFee(childComplexity), true
+
+	case "AuctionBid.revealTime":
+		if e.complexity.AuctionBid.RevealTime == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.RevealTime(childComplexity), true
+
+	case "AuctionBid.status":
+		if e.complexity.AuctionBid.Status == nil {
+			break
+		}
+
+		return e.complexity.AuctionBid.Status(childComplexity), true
 
 	case "Bond.balance":
 		if e.complexity.Bond.Balance == nil {
@@ -304,6 +480,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetAccounts(childComplexity, args["addresses"].([]string)), true
+
+	case "Query.getAuctionsByIds":
+		if e.complexity.Query.GetAuctionsByIds == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getAuctionsByIds_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetAuctionsByIds(childComplexity, args["ids"].([]string)), true
 
 	case "Query.getBondsByIds":
 		if e.complexity.Query.GetBondsByIds == nil {
@@ -686,6 +874,36 @@ type Status {
     disk_usage: String!
 }
 
+
+# An auction bid.
+type AuctionBid {
+    bidderAddress:  String!
+    status:         String!
+    commitHash:     String!
+    commitTime:     String!
+    commitFee:      Coin!
+    revealTime:     String!
+    revealFee:      Coin!
+    bidAmount:      Coin!
+}
+
+# A sealed-bid, 2nd price auction.
+type Auction {
+    id:             String!             # Auction ID.
+    status:         String!             # Auction status (commit, reveal, expired).
+    ownerAddress:   String!             # Auction owner time.
+    createTime:     String!             # Create time.
+    commitsEndTime: String!             # Commit phase end time.
+    revealsEndTime: String!             # Reveal phase end time.
+    commitFee:      Coin!               # Fee required to bid/participate in the auction.
+    revealFee:      Coin!               # Reveal fee (paid back to bidders only if they unseal/reveal the bid).
+    minimumBid:     Coin!               # Minimum bid amount.
+    winnerAddress:  String!             # Winner address.
+    winnerBid:      Coin!               # The winning bid amount.
+    winnerPrice:    Coin!               # The price that the winner actually pays (2nd highest bid).
+    bids:           [AuctionBid]        # Bids make in the auction.
+}
+
 type Query {
     #
     # Status API.
@@ -711,6 +929,15 @@ type Query {
     queryBondsByOwner(
         ownerAddresses: [String!]
     ): [OwnerBonds]
+
+    #
+    # Auctions API.
+    #
+
+    # Get auctions by IDs.
+    getAuctionsByIds(
+        ids: [String!]
+    ): [Auction]
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -746,6 +973,21 @@ func (ec *executionContext) field_Query_getAccounts_args(ctx context.Context, ra
 		}
 	}
 	args["addresses"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getAuctionsByIds_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["ids"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["ids"] = arg0
 	return args, nil
 }
 
@@ -999,6 +1241,738 @@ func (ec *executionContext) _Account_balance(ctx context.Context, field graphql.
 	res := resTmp.([]*Coin)
 	fc.Result = res
 	return ec.marshalOCoin2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoinᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_id(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_status(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_ownerAddress(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OwnerAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_createTime(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreateTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_commitsEndTime(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommitsEndTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_revealsEndTime(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RevealsEndTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_commitFee(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommitFee, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_revealFee(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RevealFee, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_minimumBid(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MinimumBid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_winnerAddress(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WinnerAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_winnerBid(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WinnerBid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_winnerPrice(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WinnerPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Auction_bids(ctx context.Context, field graphql.CollectedField, obj *Auction) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Auction",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Bids, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*AuctionBid)
+	fc.Result = res
+	return ec.marshalOAuctionBid2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuctionBid(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_bidderAddress(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BidderAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_status(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_commitHash(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommitHash, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_commitTime(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommitTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_commitFee(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CommitFee, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_revealTime(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RevealTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_revealFee(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RevealFee, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuctionBid_bidAmount(ctx context.Context, field graphql.CollectedField, obj *AuctionBid) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuctionBid",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BidAmount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Coin)
+	fc.Result = res
+	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Bond_id(ctx context.Context, field graphql.CollectedField, obj *Bond) (ret graphql.Marshaler) {
@@ -1709,6 +2683,45 @@ func (ec *executionContext) _Query_queryBondsByOwner(ctx context.Context, field 
 	res := resTmp.([]*OwnerBonds)
 	fc.Result = res
 	return ec.marshalOOwnerBonds2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐOwnerBonds(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getAuctionsByIds(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getAuctionsByIds_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetAuctionsByIds(rctx, args["ids"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*Auction)
+	fc.Result = res
+	return ec.marshalOAuction2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuction(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3885,6 +4898,152 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var auctionImplementors = []string{"Auction"}
+
+func (ec *executionContext) _Auction(ctx context.Context, sel ast.SelectionSet, obj *Auction) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, auctionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Auction")
+		case "id":
+			out.Values[i] = ec._Auction_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+			out.Values[i] = ec._Auction_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "ownerAddress":
+			out.Values[i] = ec._Auction_ownerAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTime":
+			out.Values[i] = ec._Auction_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commitsEndTime":
+			out.Values[i] = ec._Auction_commitsEndTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "revealsEndTime":
+			out.Values[i] = ec._Auction_revealsEndTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commitFee":
+			out.Values[i] = ec._Auction_commitFee(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "revealFee":
+			out.Values[i] = ec._Auction_revealFee(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "minimumBid":
+			out.Values[i] = ec._Auction_minimumBid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "winnerAddress":
+			out.Values[i] = ec._Auction_winnerAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "winnerBid":
+			out.Values[i] = ec._Auction_winnerBid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "winnerPrice":
+			out.Values[i] = ec._Auction_winnerPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "bids":
+			out.Values[i] = ec._Auction_bids(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var auctionBidImplementors = []string{"AuctionBid"}
+
+func (ec *executionContext) _AuctionBid(ctx context.Context, sel ast.SelectionSet, obj *AuctionBid) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, auctionBidImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AuctionBid")
+		case "bidderAddress":
+			out.Values[i] = ec._AuctionBid_bidderAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+			out.Values[i] = ec._AuctionBid_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commitHash":
+			out.Values[i] = ec._AuctionBid_commitHash(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commitTime":
+			out.Values[i] = ec._AuctionBid_commitTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "commitFee":
+			out.Values[i] = ec._AuctionBid_commitFee(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "revealTime":
+			out.Values[i] = ec._AuctionBid_revealTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "revealFee":
+			out.Values[i] = ec._AuctionBid_revealFee(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "bidAmount":
+			out.Values[i] = ec._AuctionBid_bidAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var bondImplementors = []string{"Bond"}
 
 func (ec *executionContext) _Bond(ctx context.Context, sel ast.SelectionSet, obj *Bond) graphql.Marshaler {
@@ -4157,6 +5316,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_queryBondsByOwner(ctx, field)
+				return res
+			})
+		case "getAuctionsByIds":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getAuctionsByIds(ctx, field)
 				return res
 			})
 		case "__type":
@@ -5061,6 +6231,102 @@ func (ec *executionContext) marshalOAccount2ᚖgithubᚗcomᚋtharsisᚋethermin
 		return graphql.Null
 	}
 	return ec._Account(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAuction2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuction(ctx context.Context, sel ast.SelectionSet, v []*Auction) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAuction2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuction(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOAuction2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuction(ctx context.Context, sel ast.SelectionSet, v *Auction) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Auction(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAuctionBid2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuctionBid(ctx context.Context, sel ast.SelectionSet, v []*AuctionBid) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAuctionBid2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuctionBid(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOAuctionBid2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuctionBid(ctx context.Context, sel ast.SelectionSet, v *AuctionBid) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AuctionBid(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOBond2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐBond(ctx context.Context, sel ast.SelectionSet, v []*Bond) graphql.Marshaler {

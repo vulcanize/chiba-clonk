@@ -2,6 +2,7 @@ package gql
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	"strconv"
 )
@@ -64,4 +65,47 @@ func matchBondOnAttributes(bondObj *bondtypes.Bond, attributes []*KeyValueInput)
 	}
 
 	return true
+}
+
+func getAuctionBid(bid *auctiontypes.Bid) *AuctionBid {
+	return &AuctionBid{
+		BidderAddress: bid.BidderAddress,
+		Status:        bid.Status,
+		CommitHash:    bid.CommitHash,
+		CommitTime:    bid.GetCommitTime(),
+		RevealTime:    bid.GetRevealTime(),
+		CommitFee:     getGQLCoin(bid.CommitFee),
+		RevealFee:     getGQLCoin(bid.RevealFee),
+		BidAmount:     getGQLCoin(bid.BidAmount),
+	}
+}
+
+func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Auction, error) {
+	if auction == nil {
+		return nil, nil
+	}
+
+	gqlAuction := Auction{
+		ID:             auction.Id,
+		Status:         auction.Status,
+		OwnerAddress:   auction.OwnerAddress,
+		CreateTime:     auction.GetCreateTime(),
+		CommitsEndTime: auction.GetCommitsEndTime(),
+		RevealsEndTime: auction.GetRevealsEndTime(),
+		CommitFee:      getGQLCoin(auction.CommitFee),
+		RevealFee:      getGQLCoin(auction.RevealFee),
+		MinimumBid:     getGQLCoin(auction.MinimumBid),
+		WinnerAddress:  auction.WinnerAddress,
+		WinnerBid:      getGQLCoin(auction.WinningBid),
+		WinnerPrice:    getGQLCoin(auction.WinningPrice),
+	}
+
+	auctionBids := make([]*AuctionBid, len(bids))
+	for index, entry := range bids {
+		auctionBids[index] = getAuctionBid(entry)
+	}
+
+	gqlAuction.Bids = auctionBids
+
+	return &gqlAuction, nil
 }

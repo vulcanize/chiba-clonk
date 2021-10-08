@@ -76,37 +76,35 @@ Get account details:
         pubKey
         number
         sequence
-    balance {
-      type
-      quantity
+        balance {
+            type
+            quantity
+        }
     }
-  }
 }
 ```
-
 
 Query bonds:
 
 ```graphql
 {
-  queryBonds(
-    attributes: [
-      {
-        key: "owner"
-        value: { string: "cosmos1wh8vvd0ymc5nt37h29z8kk2g2ays45ct2qu094" }
-      }
-    ]
-  ) {
-    id
-    owner
-    balance {
-      type
-      quantity
+    queryBonds(
+        attributes: [
+            {
+                key: "owner"
+                value: { string: "cosmos1wh8vvd0ymc5nt37h29z8kk2g2ays45ct2qu094" }
+            }
+        ]
+    ) {
+        id
+        owner
+        balance {
+            type
+            quantity
+        }
     }
-  }
 }
 ```
-
 
 Get bonds by IDs.
 
@@ -128,7 +126,8 @@ Get bonds by IDs.
 }
 ```
 
-Query Bonds by Owner 
+Query Bonds by Owner
+
 ```graphql 
 {
   queryBondsByOwner(ownerAddresses: ["ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"])
@@ -146,4 +145,58 @@ Query Bonds by Owner
   }
 }
   
+```
+
+Query auctions by ids
+
+```graphql
+{
+    getAuctionsByIds(ids: ["be98f2073c246194276554eefdb4c95b682a35a0f06fbe619a6da57c10c93e90"]){
+        id
+        ownerAddress
+        createTime
+        minimumBid{
+            type
+            quantity
+        }
+        commitFee{
+            type
+            quantity
+        }
+        commitsEndTime
+        revealFee{
+            type
+            quantity
+        }
+        revealsEndTime
+        winnerBid{
+            type
+            quantity
+        }
+        winnerPrice{
+            type
+            quantity
+        }
+        winnerAddress
+        bids{
+            bidderAddress
+            commitHash
+            commitTime
+            commitFee{
+                type
+                quantity
+            }
+            revealFee{
+                type
+                quantity
+            }
+            revealTime
+            bidAmount{
+                type
+                quantity
+            }
+            status
+        }
+    }
+}
 ```

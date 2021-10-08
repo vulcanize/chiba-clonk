@@ -118,6 +118,36 @@ type Status {
     disk_usage: String!
 }
 
+
+# An auction bid.
+type AuctionBid {
+    bidderAddress:  String!
+    status:         String!
+    commitHash:     String!
+    commitTime:     String!
+    commitFee:      Coin!
+    revealTime:     String!
+    revealFee:      Coin!
+    bidAmount:      Coin!
+}
+
+# A sealed-bid, 2nd price auction.
+type Auction {
+    id:             String!             # Auction ID.
+    status:         String!             # Auction status (commit, reveal, expired).
+    ownerAddress:   String!             # Auction owner time.
+    createTime:     String!             # Create time.
+    commitsEndTime: String!             # Commit phase end time.
+    revealsEndTime: String!             # Reveal phase end time.
+    commitFee:      Coin!               # Fee required to bid/participate in the auction.
+    revealFee:      Coin!               # Reveal fee (paid back to bidders only if they unseal/reveal the bid).
+    minimumBid:     Coin!               # Minimum bid amount.
+    winnerAddress:  String!             # Winner address.
+    winnerBid:      Coin!               # The winning bid amount.
+    winnerPrice:    Coin!               # The price that the winner actually pays (2nd highest bid).
+    bids:           [AuctionBid]        # Bids make in the auction.
+}
+
 type Query {
     #
     # Status API.
@@ -143,4 +173,13 @@ type Query {
     queryBondsByOwner(
         ownerAddresses: [String!]
     ): [OwnerBonds]
+
+    #
+    # Auctions API.
+    #
+
+    # Get auctions by IDs.
+    getAuctionsByIds(
+        ids: [String!]
+    ): [Auction]
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	"strconv"
 )
@@ -183,4 +184,28 @@ func (q queryResolver) GetBondsByOwner(ctx context.Context, address string) (*Ow
 	}
 
 	return &OwnerBonds{Bonds: ownerBonds, Owner: address}, nil
+}
+
+func (q queryResolver) GetAuctionsByIds(ctx context.Context, ids []string) ([]*Auction, error) {
+	auctionQueryClient := auctiontypes.NewQueryClient(q.ctx)
+	gqlAuctionResponse := make([]*Auction, len(ids))
+	for i, id := range ids {
+		auctionObj, err := auctionQueryClient.GetAuction(context.Background(), &auctiontypes.AuctionRequest{Id: id})
+		if err != nil {
+			return nil, err
+		}
+		bidsObj, err := auctionQueryClient.GetBids(context.Background(), &auctiontypes.BidsRequest{AuctionId: id})
+		if err != nil {
+			return nil, err
+		}
+
+		gqlAuction, err := GetGQLAuction(auctionObj.GetAuction(), bidsObj.GetBids())
+		if err != nil {
+			return nil, err
+		}
+
+		gqlAuctionResponse[i] = gqlAuction
+	}
+
+	return gqlAuctionResponse, nil
 }

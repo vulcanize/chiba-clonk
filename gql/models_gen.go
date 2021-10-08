@@ -10,6 +10,33 @@ type Account struct {
 	Balance  []*Coin `json:"balance"`
 }
 
+type Auction struct {
+	ID             string        `json:"id"`
+	Status         string        `json:"status"`
+	OwnerAddress   string        `json:"ownerAddress"`
+	CreateTime     string        `json:"createTime"`
+	CommitsEndTime string        `json:"commitsEndTime"`
+	RevealsEndTime string        `json:"revealsEndTime"`
+	CommitFee      *Coin         `json:"commitFee"`
+	RevealFee      *Coin         `json:"revealFee"`
+	MinimumBid     *Coin         `json:"minimumBid"`
+	WinnerAddress  string        `json:"winnerAddress"`
+	WinnerBid      *Coin         `json:"winnerBid"`
+	WinnerPrice    *Coin         `json:"winnerPrice"`
+	Bids           []*AuctionBid `json:"bids"`
+}
+
+type AuctionBid struct {
+	BidderAddress string `json:"bidderAddress"`
+	Status        string `json:"status"`
+	CommitHash    string `json:"commitHash"`
+	CommitTime    string `json:"commitTime"`
+	CommitFee     *Coin  `json:"commitFee"`
+	RevealTime    string `json:"revealTime"`
+	RevealFee     *Coin  `json:"revealFee"`
+	BidAmount     *Coin  `json:"bidAmount"`
+}
+
 type Bond struct {
 	ID      string  `json:"id"`
 	Owner   string  `json:"owner"`
