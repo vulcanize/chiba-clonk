@@ -76,6 +76,16 @@ type ComplexityRoot struct {
 		Status        func(childComplexity int) int
 	}
 
+	AuthorityRecord struct {
+		Auction        func(childComplexity int) int
+		BondID         func(childComplexity int) int
+		ExpiryTime     func(childComplexity int) int
+		Height         func(childComplexity int) int
+		OwnerAddress   func(childComplexity int) int
+		OwnerPublicKey func(childComplexity int) int
+		Status         func(childComplexity int) int
+	}
+
 	Bond struct {
 		Balance func(childComplexity int) int
 		ID      func(childComplexity int) int
@@ -90,6 +100,16 @@ type ComplexityRoot struct {
 	KeyValue struct {
 		Key   func(childComplexity int) int
 		Value func(childComplexity int) int
+	}
+
+	NameRecord struct {
+		History func(childComplexity int) int
+		Latest  func(childComplexity int) int
+	}
+
+	NameRecordEntry struct {
+		Height func(childComplexity int) int
+		ID     func(childComplexity int) int
 	}
 
 	NodeInfo struct {
@@ -113,9 +133,25 @@ type ComplexityRoot struct {
 		GetAccounts       func(childComplexity int, addresses []string) int
 		GetAuctionsByIds  func(childComplexity int, ids []string) int
 		GetBondsByIds     func(childComplexity int, ids []string) int
+		GetRecordsByIds   func(childComplexity int, ids []string) int
 		GetStatus         func(childComplexity int) int
+		LookupAuthorities func(childComplexity int, names []string) int
+		LookupNames       func(childComplexity int, names []string) int
 		QueryBonds        func(childComplexity int, attributes []*KeyValueInput) int
 		QueryBondsByOwner func(childComplexity int, ownerAddresses []string) int
+		QueryRecords      func(childComplexity int, attributes []*KeyValueInput, all *bool) int
+		ResolveNames      func(childComplexity int, names []string) int
+	}
+
+	Record struct {
+		Attributes func(childComplexity int) int
+		BondID     func(childComplexity int) int
+		CreateTime func(childComplexity int) int
+		ExpiryTime func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Names      func(childComplexity int) int
+		Owners     func(childComplexity int) int
+		References func(childComplexity int) int
 	}
 
 	Reference struct {
@@ -164,6 +200,11 @@ type QueryResolver interface {
 	GetBondsByIds(ctx context.Context, ids []string) ([]*Bond, error)
 	QueryBonds(ctx context.Context, attributes []*KeyValueInput) ([]*Bond, error)
 	QueryBondsByOwner(ctx context.Context, ownerAddresses []string) ([]*OwnerBonds, error)
+	GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error)
+	QueryRecords(ctx context.Context, attributes []*KeyValueInput, all *bool) ([]*Record, error)
+	LookupAuthorities(ctx context.Context, names []string) ([]*AuthorityRecord, error)
+	LookupNames(ctx context.Context, names []string) ([]*NameRecord, error)
+	ResolveNames(ctx context.Context, names []string) ([]*Record, error)
 	GetAuctionsByIds(ctx context.Context, ids []string) ([]*Auction, error)
 }
 
@@ -364,6 +405,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuctionBid.Status(childComplexity), true
 
+	case "AuthorityRecord.auction":
+		if e.complexity.AuthorityRecord.Auction == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.Auction(childComplexity), true
+
+	case "AuthorityRecord.bondId":
+		if e.complexity.AuthorityRecord.BondID == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.BondID(childComplexity), true
+
+	case "AuthorityRecord.expiryTime":
+		if e.complexity.AuthorityRecord.ExpiryTime == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.ExpiryTime(childComplexity), true
+
+	case "AuthorityRecord.height":
+		if e.complexity.AuthorityRecord.Height == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.Height(childComplexity), true
+
+	case "AuthorityRecord.ownerAddress":
+		if e.complexity.AuthorityRecord.OwnerAddress == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.OwnerAddress(childComplexity), true
+
+	case "AuthorityRecord.ownerPublicKey":
+		if e.complexity.AuthorityRecord.OwnerPublicKey == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.OwnerPublicKey(childComplexity), true
+
+	case "AuthorityRecord.status":
+		if e.complexity.AuthorityRecord.Status == nil {
+			break
+		}
+
+		return e.complexity.AuthorityRecord.Status(childComplexity), true
+
 	case "Bond.balance":
 		if e.complexity.Bond.Balance == nil {
 			break
@@ -412,6 +502,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.KeyValue.Value(childComplexity), true
+
+	case "NameRecord.history":
+		if e.complexity.NameRecord.History == nil {
+			break
+		}
+
+		return e.complexity.NameRecord.History(childComplexity), true
+
+	case "NameRecord.latest":
+		if e.complexity.NameRecord.Latest == nil {
+			break
+		}
+
+		return e.complexity.NameRecord.Latest(childComplexity), true
+
+	case "NameRecordEntry.height":
+		if e.complexity.NameRecordEntry.Height == nil {
+			break
+		}
+
+		return e.complexity.NameRecordEntry.Height(childComplexity), true
+
+	case "NameRecordEntry.id":
+		if e.complexity.NameRecordEntry.ID == nil {
+			break
+		}
+
+		return e.complexity.NameRecordEntry.ID(childComplexity), true
 
 	case "NodeInfo.id":
 		if e.complexity.NodeInfo.ID == nil {
@@ -505,12 +623,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetBondsByIds(childComplexity, args["ids"].([]string)), true
 
+	case "Query.getRecordsByIds":
+		if e.complexity.Query.GetRecordsByIds == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getRecordsByIds_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetRecordsByIds(childComplexity, args["ids"].([]string)), true
+
 	case "Query.getStatus":
 		if e.complexity.Query.GetStatus == nil {
 			break
 		}
 
 		return e.complexity.Query.GetStatus(childComplexity), true
+
+	case "Query.lookupAuthorities":
+		if e.complexity.Query.LookupAuthorities == nil {
+			break
+		}
+
+		args, err := ec.field_Query_lookupAuthorities_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.LookupAuthorities(childComplexity, args["names"].([]string)), true
+
+	case "Query.lookupNames":
+		if e.complexity.Query.LookupNames == nil {
+			break
+		}
+
+		args, err := ec.field_Query_lookupNames_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.LookupNames(childComplexity, args["names"].([]string)), true
 
 	case "Query.queryBonds":
 		if e.complexity.Query.QueryBonds == nil {
@@ -535,6 +689,86 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.QueryBondsByOwner(childComplexity, args["ownerAddresses"].([]string)), true
+
+	case "Query.queryRecords":
+		if e.complexity.Query.QueryRecords == nil {
+			break
+		}
+
+		args, err := ec.field_Query_queryRecords_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.QueryRecords(childComplexity, args["attributes"].([]*KeyValueInput), args["all"].(*bool)), true
+
+	case "Query.resolveNames":
+		if e.complexity.Query.ResolveNames == nil {
+			break
+		}
+
+		args, err := ec.field_Query_resolveNames_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ResolveNames(childComplexity, args["names"].([]string)), true
+
+	case "Record.attributes":
+		if e.complexity.Record.Attributes == nil {
+			break
+		}
+
+		return e.complexity.Record.Attributes(childComplexity), true
+
+	case "Record.bondId":
+		if e.complexity.Record.BondID == nil {
+			break
+		}
+
+		return e.complexity.Record.BondID(childComplexity), true
+
+	case "Record.createTime":
+		if e.complexity.Record.CreateTime == nil {
+			break
+		}
+
+		return e.complexity.Record.CreateTime(childComplexity), true
+
+	case "Record.expiryTime":
+		if e.complexity.Record.ExpiryTime == nil {
+			break
+		}
+
+		return e.complexity.Record.ExpiryTime(childComplexity), true
+
+	case "Record.id":
+		if e.complexity.Record.ID == nil {
+			break
+		}
+
+		return e.complexity.Record.ID(childComplexity), true
+
+	case "Record.names":
+		if e.complexity.Record.Names == nil {
+			break
+		}
+
+		return e.complexity.Record.Names(childComplexity), true
+
+	case "Record.owners":
+		if e.complexity.Record.Owners == nil {
+			break
+		}
+
+		return e.complexity.Record.Owners(childComplexity), true
+
+	case "Record.references":
+		if e.complexity.Record.References == nil {
+			break
+		}
+
+		return e.complexity.Record.References(childComplexity), true
 
 	case "Reference.id":
 		if e.complexity.Reference.ID == nil {
@@ -904,6 +1138,44 @@ type Auction {
     bids:           [AuctionBid]        # Bids make in the auction.
 }
 
+
+# Record defines the basic properties of an entity in the graph database.
+type Record {
+    id:         String!         # Computed attribute: Multibase encoded content hash (https://github.com/multiformats/multibase).
+    names:      [String!]       # Names pointing to this CID (reverse lookup).
+
+    bondId:     String!         # Associated bond ID.
+    createTime: String!         # Record create time.
+    expiryTime: String!         # Record expiry time.
+
+    owners:     [String!]      # Addresses of record owners.
+    attributes: [KeyValue]      # Record attributes.
+    references: [Record]        # Record references.
+}
+
+# Name authority record.
+type AuthorityRecord {
+    ownerAddress:     String!   # Owner address.
+    ownerPublicKey:   String!   # Owner public key.
+    height:           String!   # Height at which record was created.
+    status:           String!   # Status (active, auction, expired).
+    bondId:           String!   # Associated bond ID.
+    expiryTime:       String!   # Authority expiry time.
+    auction:          Auction   # Authority auction.
+}
+
+# Name record entry, created at a particular height.
+type NameRecordEntry {
+    id:         String!         # Target record ID.
+    height:     String!         # Height at which record was created.
+}
+
+# Name record stores the latest and historical name -> record ID mappings.
+type NameRecord {
+    latest:     NameRecordEntry!     # Latest mame record entry.
+    history:    [NameRecordEntry]    # Historical name record entries.
+}
+
 type Query {
     #
     # Status API.
@@ -929,6 +1201,43 @@ type Query {
     queryBondsByOwner(
         ownerAddresses: [String!]
     ): [OwnerBonds]
+
+    #
+    # GraphDB API.
+    #
+
+    # Get records by IDs.
+    getRecordsByIds(
+        ids: [String!]
+    ): [Record]
+
+    # Query records.
+    queryRecords(
+        # Multiple attribute conditions are in a logical AND.
+        attributes: [KeyValueInput]
+
+        # Whether to query all records, not just named ones (false by default).
+        all: Boolean
+    ): [Record]
+
+    #
+    # Naming API.
+    #
+
+    # Lookup authority information.
+    lookupAuthorities(
+        names: [String!]
+    ): [AuthorityRecord]!
+
+    # Lookup name to record mapping information.
+    lookupNames(
+        names: [String!]
+    ): [NameRecord]!
+
+    # Resolve names to records.
+    resolveNames(
+        names: [String!]
+    ): [Record]!
 
     #
     # Auctions API.
@@ -1006,6 +1315,51 @@ func (ec *executionContext) field_Query_getBondsByIds_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_getRecordsByIds_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["ids"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["ids"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_lookupAuthorities_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["names"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("names"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["names"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_lookupNames_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["names"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("names"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["names"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_queryBondsByOwner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1033,6 +1387,45 @@ func (ec *executionContext) field_Query_queryBonds_args(ctx context.Context, raw
 		}
 	}
 	args["attributes"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_queryRecords_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []*KeyValueInput
+	if tmp, ok := rawArgs["attributes"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+		arg0, err = ec.unmarshalOKeyValueInput2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐKeyValueInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["attributes"] = arg0
+	var arg1 *bool
+	if tmp, ok := rawArgs["all"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("all"))
+		arg1, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["all"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_resolveNames_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["names"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("names"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["names"] = arg0
 	return args, nil
 }
 
@@ -1975,6 +2368,248 @@ func (ec *executionContext) _AuctionBid_bidAmount(ctx context.Context, field gra
 	return ec.marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐCoin(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _AuthorityRecord_ownerAddress(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OwnerAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthorityRecord_ownerPublicKey(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OwnerPublicKey, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthorityRecord_height(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Height, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthorityRecord_status(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthorityRecord_bondId(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BondID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthorityRecord_expiryTime(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpiryTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthorityRecord_auction(ctx context.Context, field graphql.CollectedField, obj *AuthorityRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthorityRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Auction, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Auction)
+	fc.Result = res
+	return ec.marshalOAuction2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuction(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Bond_id(ctx context.Context, field graphql.CollectedField, obj *Bond) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2215,6 +2850,143 @@ func (ec *executionContext) _KeyValue_value(ctx context.Context, field graphql.C
 	res := resTmp.(*Value)
 	fc.Result = res
 	return ec.marshalNValue2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐValue(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NameRecord_latest(ctx context.Context, field graphql.CollectedField, obj *NameRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NameRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Latest, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*NameRecordEntry)
+	fc.Result = res
+	return ec.marshalNNameRecordEntry2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecordEntry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NameRecord_history(ctx context.Context, field graphql.CollectedField, obj *NameRecord) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NameRecord",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.History, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*NameRecordEntry)
+	fc.Result = res
+	return ec.marshalONameRecordEntry2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecordEntry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NameRecordEntry_id(ctx context.Context, field graphql.CollectedField, obj *NameRecordEntry) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NameRecordEntry",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NameRecordEntry_height(ctx context.Context, field graphql.CollectedField, obj *NameRecordEntry) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NameRecordEntry",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Height, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _NodeInfo_id(ctx context.Context, field graphql.CollectedField, obj *NodeInfo) (ret graphql.Marshaler) {
@@ -2685,6 +3457,210 @@ func (ec *executionContext) _Query_queryBondsByOwner(ctx context.Context, field 
 	return ec.marshalOOwnerBonds2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐOwnerBonds(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_getRecordsByIds(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getRecordsByIds_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetRecordsByIds(rctx, args["ids"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*Record)
+	fc.Result = res
+	return ec.marshalORecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_queryRecords(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_queryRecords_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().QueryRecords(rctx, args["attributes"].([]*KeyValueInput), args["all"].(*bool))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*Record)
+	fc.Result = res
+	return ec.marshalORecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_lookupAuthorities(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_lookupAuthorities_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().LookupAuthorities(rctx, args["names"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*AuthorityRecord)
+	fc.Result = res
+	return ec.marshalNAuthorityRecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuthorityRecord(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_lookupNames(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_lookupNames_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().LookupNames(rctx, args["names"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*NameRecord)
+	fc.Result = res
+	return ec.marshalNNameRecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecord(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_resolveNames(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_resolveNames_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ResolveNames(rctx, args["names"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Record)
+	fc.Result = res
+	return ec.marshalNRecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_getAuctionsByIds(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2793,6 +3769,274 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_id(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_names(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Names, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_bondId(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BondID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_createTime(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreateTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_expiryTime(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpiryTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_owners(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Owners, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_attributes(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*KeyValue)
+	fc.Result = res
+	return ec.marshalOKeyValue2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐKeyValue(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Record_references(ctx context.Context, field graphql.CollectedField, obj *Record) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Record",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.References, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*Record)
+	fc.Result = res
+	return ec.marshalORecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Reference_id(ctx context.Context, field graphql.CollectedField, obj *Reference) (ret graphql.Marshaler) {
@@ -5044,6 +6288,60 @@ func (ec *executionContext) _AuctionBid(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
+var authorityRecordImplementors = []string{"AuthorityRecord"}
+
+func (ec *executionContext) _AuthorityRecord(ctx context.Context, sel ast.SelectionSet, obj *AuthorityRecord) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authorityRecordImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AuthorityRecord")
+		case "ownerAddress":
+			out.Values[i] = ec._AuthorityRecord_ownerAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "ownerPublicKey":
+			out.Values[i] = ec._AuthorityRecord_ownerPublicKey(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "height":
+			out.Values[i] = ec._AuthorityRecord_height(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+			out.Values[i] = ec._AuthorityRecord_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "bondId":
+			out.Values[i] = ec._AuthorityRecord_bondId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expiryTime":
+			out.Values[i] = ec._AuthorityRecord_expiryTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "auction":
+			out.Values[i] = ec._AuthorityRecord_auction(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var bondImplementors = []string{"Bond"}
 
 func (ec *executionContext) _Bond(ctx context.Context, sel ast.SelectionSet, obj *Bond) graphql.Marshaler {
@@ -5128,6 +6426,67 @@ func (ec *executionContext) _KeyValue(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "value":
 			out.Values[i] = ec._KeyValue_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var nameRecordImplementors = []string{"NameRecord"}
+
+func (ec *executionContext) _NameRecord(ctx context.Context, sel ast.SelectionSet, obj *NameRecord) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nameRecordImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NameRecord")
+		case "latest":
+			out.Values[i] = ec._NameRecord_latest(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "history":
+			out.Values[i] = ec._NameRecord_history(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var nameRecordEntryImplementors = []string{"NameRecordEntry"}
+
+func (ec *executionContext) _NameRecordEntry(ctx context.Context, sel ast.SelectionSet, obj *NameRecordEntry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nameRecordEntryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NameRecordEntry")
+		case "id":
+			out.Values[i] = ec._NameRecordEntry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "height":
+			out.Values[i] = ec._NameRecordEntry_height(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5318,6 +6677,70 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_queryBondsByOwner(ctx, field)
 				return res
 			})
+		case "getRecordsByIds":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getRecordsByIds(ctx, field)
+				return res
+			})
+		case "queryRecords":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_queryRecords(ctx, field)
+				return res
+			})
+		case "lookupAuthorities":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_lookupAuthorities(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "lookupNames":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_lookupNames(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "resolveNames":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_resolveNames(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "getAuctionsByIds":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -5333,6 +6756,56 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var recordImplementors = []string{"Record"}
+
+func (ec *executionContext) _Record(ctx context.Context, sel ast.SelectionSet, obj *Record) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, recordImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Record")
+		case "id":
+			out.Values[i] = ec._Record_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "names":
+			out.Values[i] = ec._Record_names(ctx, field, obj)
+		case "bondId":
+			out.Values[i] = ec._Record_bondId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTime":
+			out.Values[i] = ec._Record_createTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expiryTime":
+			out.Values[i] = ec._Record_expiryTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "owners":
+			out.Values[i] = ec._Record_owners(ctx, field, obj)
+		case "attributes":
+			out.Values[i] = ec._Record_attributes(ctx, field, obj)
+		case "references":
+			out.Values[i] = ec._Record_references(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5791,6 +7264,44 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAuthorityRecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuthorityRecord(ctx context.Context, sel ast.SelectionSet, v []*AuthorityRecord) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAuthorityRecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuthorityRecord(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
 func (ec *executionContext) marshalNBond2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐBond(ctx context.Context, sel ast.SelectionSet, v *Bond) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -5826,6 +7337,54 @@ func (ec *executionContext) marshalNCoin2ᚖgithubᚗcomᚋtharsisᚋethermint�
 	return ec._Coin(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNNameRecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecord(ctx context.Context, sel ast.SelectionSet, v []*NameRecord) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalONameRecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecord(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNNameRecordEntry2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecordEntry(ctx context.Context, sel ast.SelectionSet, v *NameRecordEntry) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NameRecordEntry(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNNodeInfo2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNodeInfo(ctx context.Context, sel ast.SelectionSet, v *NodeInfo) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -5834,6 +7393,44 @@ func (ec *executionContext) marshalNNodeInfo2ᚖgithubᚗcomᚋtharsisᚋethermi
 		return graphql.Null
 	}
 	return ec._NodeInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx context.Context, sel ast.SelectionSet, v []*Record) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalORecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) marshalNStatus2githubᚗcomᚋtharsisᚋethermintᚋgqlᚐStatus(ctx context.Context, sel ast.SelectionSet, v Status) graphql.Marshaler {
@@ -6329,6 +7926,13 @@ func (ec *executionContext) marshalOAuctionBid2ᚖgithubᚗcomᚋtharsisᚋether
 	return ec._AuctionBid(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOAuthorityRecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐAuthorityRecord(ctx context.Context, sel ast.SelectionSet, v *AuthorityRecord) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AuthorityRecord(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOBond2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐBond(ctx context.Context, sel ast.SelectionSet, v []*Bond) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -6525,6 +8129,54 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return graphql.MarshalInt(*v)
 }
 
+func (ec *executionContext) marshalOKeyValue2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v []*KeyValue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOKeyValue2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐKeyValue(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOKeyValue2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v *KeyValue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._KeyValue(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOKeyValueInput2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐKeyValueInput(ctx context.Context, v interface{}) ([]*KeyValueInput, error) {
 	if v == nil {
 		return nil, nil
@@ -6555,6 +8207,61 @@ func (ec *executionContext) unmarshalOKeyValueInput2ᚖgithubᚗcomᚋtharsisᚋ
 	}
 	res, err := ec.unmarshalInputKeyValueInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONameRecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecord(ctx context.Context, sel ast.SelectionSet, v *NameRecord) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NameRecord(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONameRecordEntry2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecordEntry(ctx context.Context, sel ast.SelectionSet, v []*NameRecordEntry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalONameRecordEntry2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecordEntry(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalONameRecordEntry2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐNameRecordEntry(ctx context.Context, sel ast.SelectionSet, v *NameRecordEntry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NameRecordEntry(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOOwnerBonds2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐOwnerBonds(ctx context.Context, sel ast.SelectionSet, v []*OwnerBonds) graphql.Marshaler {
@@ -6651,6 +8358,54 @@ func (ec *executionContext) marshalOPeerInfo2ᚖgithubᚗcomᚋtharsisᚋethermi
 		return graphql.Null
 	}
 	return ec._PeerInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalORecord2ᚕᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx context.Context, sel ast.SelectionSet, v []*Record) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalORecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalORecord2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐRecord(ctx context.Context, sel ast.SelectionSet, v *Record) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Record(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOReference2ᚖgithubᚗcomᚋtharsisᚋethermintᚋgqlᚐReference(ctx context.Context, sel ast.SelectionSet, v *Reference) graphql.Marshaler {

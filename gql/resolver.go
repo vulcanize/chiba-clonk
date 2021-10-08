@@ -8,6 +8,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
+	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
 	"strconv"
 )
 
@@ -28,6 +29,129 @@ func (r *Resolver) Query() QueryResolver {
 }
 
 type queryResolver struct{ *Resolver }
+
+func (q queryResolver) LookupAuthorities(ctx context.Context, names []string) ([]*AuthorityRecord, error) {
+	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	auctionQueryClient := auctiontypes.NewQueryClient(q.ctx)
+	var gqlResponse []*AuthorityRecord
+
+	for _, name := range names {
+		res, err := nsQueryClient.Whois(context.Background(), &nstypes.QueryWhoisRequest{Name: name})
+		if err != nil {
+			return nil, err
+		}
+
+		nameAuthority := res.GetNameAuthority()
+		gqlNameAuthorityRecord, err := GetGQLNameAuthorityRecord(&nameAuthority)
+		if err != nil {
+			return nil, err
+		}
+
+		if nameAuthority.AuctionId == "" {
+			auctionResp, err := auctionQueryClient.GetAuction(context.Background(), &auctiontypes.AuctionRequest{Id: nameAuthority.GetAuctionId()})
+			if err != nil {
+				return nil, err
+			}
+			bidsResp, err := auctionQueryClient.GetBids(context.Background(), &auctiontypes.BidsRequest{AuctionId: nameAuthority.GetAuctionId()})
+			if err != nil {
+				return nil, err
+			}
+
+			gqlAuctionRecord, err := GetGQLAuction(auctionResp.GetAuction(), bidsResp.GetBids())
+			if err != nil {
+				return nil, err
+			}
+
+			gqlNameAuthorityRecord.Auction = gqlAuctionRecord
+		}
+
+		gqlResponse = append(gqlResponse, gqlNameAuthorityRecord)
+	}
+
+	return gqlResponse, nil
+}
+
+func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Record, error) {
+	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	var gqlResponse []*Record
+	for _, name := range names {
+		res, err := nsQueryClient.ResolveWrn(context.Background(), &nstypes.QueryResolveWrn{Wrn: name})
+		if err != nil {
+			return nil, err
+		}
+
+		gqlRecord, err := getGQLRecord(context.Background(), q, *res.GetRecord())
+		if err != nil {
+			return nil, err
+		}
+
+		gqlResponse = append(gqlResponse, gqlRecord)
+	}
+
+	return gqlResponse, nil
+}
+
+func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*NameRecord, error) {
+	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	var gqlResponse []*NameRecord
+
+	for _, name := range names {
+		res, err := nsQueryClient.LookupWrn(context.Background(), &nstypes.QueryLookupWrn{Wrn: name})
+		if err != nil {
+			return nil, err
+		}
+
+		gqlRecord, err := getGQLNameRecord(res.GetName())
+		if err != nil {
+			return nil, err
+		}
+
+		gqlResponse = append(gqlResponse, gqlRecord)
+	}
+
+	return gqlResponse, nil
+}
+
+func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueInput, all *bool) ([]*Record, error) {
+	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	res, err := nsQueryClient.ListRecords(context.Background(), &nstypes.QueryListRecordsRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	records := res.GetRecords()
+	gqlResponse := make([]*Record, len(records))
+
+	for i, record := range records {
+		gqlRecord, err := getGQLRecord(context.Background(), q, record)
+		if err != nil {
+			return nil, err
+		}
+		gqlResponse[i] = gqlRecord
+	}
+
+	return gqlResponse, nil
+
+}
+
+func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error) {
+	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	gqlResponse := make([]*Record, len(ids))
+
+	for i, id := range ids {
+		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIdRequest{Id: id})
+		if err != nil {
+			return nil, err
+		}
+		record, err := getGQLRecord(context.Background(), q, res.GetRecord())
+		if err != nil {
+			return nil, err
+		}
+		gqlResponse[i] = record
+	}
+
+	return gqlResponse, nil
+}
 
 func (q queryResolver) GetStatus(ctx context.Context) (*Status, error) {
 	nodeInfo, syncInfo, validatorInfo, err := getStatusInfo(q.ctx)

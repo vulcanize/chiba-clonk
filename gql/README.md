@@ -67,6 +67,48 @@ Full node status:
 }
 ```
 
+Get records by IDs.
+
+```graphql
+{
+    getRecordsByIds(ids: ["QmYDtNCKtTu6u6jaHaFAC5PWZXcj7fAmry6NoWwMaixFHz"]) {
+        id
+        names
+        bondId
+        createTime
+        expiryTime
+        owners
+        attributes {
+            key
+            value {
+                string
+            }
+        }
+    }
+}
+```
+
+Query records.
+
+```graphql
+{
+    queryRecords(attributes: [{ key: "type", value: { string: "wrn:bot" } }]) {
+        id
+        names
+        bondId
+        createTime
+        expiryTime
+        owners
+        attributes {
+            key
+            value {
+                string
+            }
+        }
+    }
+}
+```
+
 Get account details:
 
 ```graphql
@@ -144,7 +186,6 @@ Query Bonds by Owner
     }
   }
 }
-  
 ```
 
 Query auctions by ids
@@ -196,6 +237,102 @@ Query auctions by ids
                 quantity
             }
             status
+        }
+    }
+}
+```
+
+LookUp Authorities
+
+```graphql
+query {
+    lookupAuthorities(names: []){
+        ownerAddress
+        ownerAddress
+        height
+        bondId
+        status
+        expiryTime
+        auction {
+            id
+            ownerAddress
+            createTime
+            minimumBid{
+                type
+                quantity
+            }
+            commitFee{
+                type
+                quantity
+            }
+            commitsEndTime
+            revealFee{
+                type
+                quantity
+            }
+            revealsEndTime
+            winnerBid{
+                type
+                quantity
+            }
+            winnerPrice{
+                type
+                quantity
+            }
+            winnerAddress
+            bids{
+                bidderAddress
+                commitHash
+                commitTime
+                commitFee{
+                    type
+                    quantity
+                }
+                revealFee{
+                    type
+                    quantity
+                }
+                revealTime
+                bidAmount{
+                    type
+                    quantity
+                }
+                status
+            }
+        }
+    }
+}
+```
+
+LookUp Names
+
+```graphql
+query {
+    lookupNames(names: ["asd"]){
+        history{
+            id
+            height
+        }
+    }
+}
+```
+
+Resolve Names
+
+```graphql
+query {
+    resolveNames(names: ["asd"]){
+        id
+        names
+        bondId
+        createTime
+        expiryTime
+        owners
+        attributes {
+            key
+            value {
+                string
+            }
         }
     }
 }

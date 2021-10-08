@@ -37,6 +37,16 @@ type AuctionBid struct {
 	BidAmount     *Coin  `json:"bidAmount"`
 }
 
+type AuthorityRecord struct {
+	OwnerAddress   string   `json:"ownerAddress"`
+	OwnerPublicKey string   `json:"ownerPublicKey"`
+	Height         string   `json:"height"`
+	Status         string   `json:"status"`
+	BondID         string   `json:"bondId"`
+	ExpiryTime     string   `json:"expiryTime"`
+	Auction        *Auction `json:"auction"`
+}
+
 type Bond struct {
 	ID      string  `json:"id"`
 	Owner   string  `json:"owner"`
@@ -58,6 +68,16 @@ type KeyValueInput struct {
 	Value *ValueInput `json:"value"`
 }
 
+type NameRecord struct {
+	Latest  *NameRecordEntry   `json:"latest"`
+	History []*NameRecordEntry `json:"history"`
+}
+
+type NameRecordEntry struct {
+	ID     string `json:"id"`
+	Height string `json:"height"`
+}
+
 type NodeInfo struct {
 	ID      string `json:"id"`
 	Network string `json:"network"`
@@ -73,6 +93,17 @@ type PeerInfo struct {
 	Node       *NodeInfo `json:"node"`
 	IsOutbound bool      `json:"is_outbound"`
 	RemoteIP   string    `json:"remote_ip"`
+}
+
+type Record struct {
+	ID         string      `json:"id"`
+	Names      []string    `json:"names"`
+	BondID     string      `json:"bondId"`
+	CreateTime string      `json:"createTime"`
+	ExpiryTime string      `json:"expiryTime"`
+	Owners     []string    `json:"owners"`
+	Attributes []*KeyValue `json:"attributes"`
+	References []*Record   `json:"references"`
 }
 
 type Reference struct {

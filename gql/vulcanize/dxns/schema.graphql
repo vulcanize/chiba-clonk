@@ -148,6 +148,44 @@ type Auction {
     bids:           [AuctionBid]        # Bids make in the auction.
 }
 
+
+# Record defines the basic properties of an entity in the graph database.
+type Record {
+    id:         String!         # Computed attribute: Multibase encoded content hash (https://github.com/multiformats/multibase).
+    names:      [String!]       # Names pointing to this CID (reverse lookup).
+
+    bondId:     String!         # Associated bond ID.
+    createTime: String!         # Record create time.
+    expiryTime: String!         # Record expiry time.
+
+    owners:     [String!]      # Addresses of record owners.
+    attributes: [KeyValue]      # Record attributes.
+    references: [Record]        # Record references.
+}
+
+# Name authority record.
+type AuthorityRecord {
+    ownerAddress:     String!   # Owner address.
+    ownerPublicKey:   String!   # Owner public key.
+    height:           String!   # Height at which record was created.
+    status:           String!   # Status (active, auction, expired).
+    bondId:           String!   # Associated bond ID.
+    expiryTime:       String!   # Authority expiry time.
+    auction:          Auction   # Authority auction.
+}
+
+# Name record entry, created at a particular height.
+type NameRecordEntry {
+    id:         String!         # Target record ID.
+    height:     String!         # Height at which record was created.
+}
+
+# Name record stores the latest and historical name -> record ID mappings.
+type NameRecord {
+    latest:     NameRecordEntry!     # Latest mame record entry.
+    history:    [NameRecordEntry]    # Historical name record entries.
+}
+
 type Query {
     #
     # Status API.
@@ -173,6 +211,43 @@ type Query {
     queryBondsByOwner(
         ownerAddresses: [String!]
     ): [OwnerBonds]
+
+    #
+    # GraphDB API.
+    #
+
+    # Get records by IDs.
+    getRecordsByIds(
+        ids: [String!]
+    ): [Record]
+
+    # Query records.
+    queryRecords(
+        # Multiple attribute conditions are in a logical AND.
+        attributes: [KeyValueInput]
+
+        # Whether to query all records, not just named ones (false by default).
+        all: Boolean
+    ): [Record]
+
+    #
+    # Naming API.
+    #
+
+    # Lookup authority information.
+    lookupAuthorities(
+        names: [String!]
+    ): [AuthorityRecord]!
+
+    # Lookup name to record mapping information.
+    lookupNames(
+        names: [String!]
+    ): [NameRecord]!
+
+    # Resolve names to records.
+    resolveNames(
+        names: [String!]
+    ): [Record]!
 
     #
     # Auctions API.
