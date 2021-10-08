@@ -68,8 +68,6 @@ func (suite *IntegrationTestSuite) TestGetCmdBalance() {
 			sr.NoError(err)
 			if test.createAuctionAndBid {
 				sr.NotZero(len(balance.Balance))
-			} else {
-				sr.Zero(len(balance.Balance))
 			}
 		})
 	}
@@ -248,15 +246,50 @@ func (suite *IntegrationTestSuite) TestGetCmdGetAuction() {
 	}
 }
 
-// func (suite *IntegrationTestSuite) TestGetCmdAuctionsByBidder() {
-// 	val := suite.network.Validators[0]
-// 	sr := suite.Require()
-// }
+func (suite *IntegrationTestSuite) TestGetCmdAuctionsByBidder() {
+	val := suite.network.Validators[0]
+	sr := suite.Require()
 
-// func (suite *IntegrationTestSuite) TestGetCmdAuctionsByOwner() {
-// 	val := suite.network.Validators[0]
-// 	sr := suite.Require()
-// }
+	testCases := []struct {
+		msg                 string
+		createAuctionAndBid bool
+		bidderAddress       string
+	}{
+		{
+			"get auctions by bidder without creating auctions",
+			false,
+			"",
+		},
+		{
+			"get auctions by bidder for valid bidder address",
+			true,
+			"",
+		},
+	}
+
+	for _, test := range testCases {
+		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
+			if test.createAuctionAndBid {
+				auctionID := suite.createAuctionAndBid(true)
+				args := []string{auctionID, queryJSONFlag[0]}
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetBids(), args)
+				sr.NoError(err)
+				var bids types.BidsResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &bids)
+				sr.NoError(err)
+				test.bidderAddress = bids.Bids[0].BidderAddress
+			}
+
+			getByBidderArgs := []string{test.bidderAddress, queryJSONFlag[0]}
+			_, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdAuctionsByBidder(), getByBidderArgs)
+			if test.createAuctionAndBid {
+				sr.NoError(err)
+			} else {
+				sr.Error(err)
+			}
+		})
+	}
+}
 
 func (suite IntegrationTestSuite) createAuctionAndBid(createBid bool) string {
 	val := suite.network.Validators[0]

@@ -3,8 +3,6 @@ package testutil
 import (
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/testutil"
-	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 )
@@ -18,44 +16,41 @@ const (
 func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions", val.APIAddress)
+
 	testCases := []struct {
 		msg             string
 		url             string
-		headers         map[string]string
-		respObjCount    int
+		errorMsg        string
 		isErrorExpected bool
+		preRun          func()
 	}{
 		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions", val.APIAddress),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
+			"invalid request to get all auctions",
+			reqUrl + randomAuctionID,
+			"",
 			true,
+			func() {},
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions", val.APIAddress),
-			map[string]string{},
-			0,
+			"valid request to get all auctions",
+			reqUrl,
+			"",
 			false,
+			func() { suite.createAuctionAndBid(false) },
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
-
-			var auctions auctiontypes.AuctionsResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auctions)
-
+			tc.preRun()
+			resp, err := rest.GetRequest(tc.url)
 			if tc.isErrorExpected {
-				//sr.Empty(auctions.GetAuctions().Auctions)
-				sr.NotNil(err)
+				sr.Contains(string(resp), tc.errorMsg)
 			} else {
 				sr.NoError(err)
-				sr.Len(auctions.GetAuctions(), tc.respObjCount)
+				var auctions auctiontypes.AuctionsResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auctions)
+				sr.NotZero(len(auctions.Auctions.Auctions))
 			}
 		})
 	}
@@ -64,78 +59,59 @@ func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 func (suite *IntegrationTestSuite) TestQueryParamsGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	testCases := []struct {
-		msg             string
-		url             string
-		respObjCount    int
-		isErrorExpected bool
-	}{
-		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/params", val.APIAddress),
-			0,
-			false,
-		},
-	}
-	for _, tc := range testCases {
-		suite.Run(tc.msg, func() {
-			resp, err := rest.GetRequest(tc.url)
-			sr.NoError(err)
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/params", val.APIAddress)
 
-			var params auctiontypes.QueryParamsResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &params)
+	suite.Run("valid request to get auction params", func() {
+		resp, err := rest.GetRequest(reqUrl)
+		suite.Require().NoError(err)
 
-			if tc.isErrorExpected {
-				//sr.Empty(params.Params)
-				sr.NotNil(err)
-			} else {
-				sr.NoError(err)
-				sr.Equal(auctiontypes.DefaultParams(), *(params.Params))
-			}
-		})
-	}
+		var params auctiontypes.QueryParamsResponse
+		err = val.ClientCtx.Codec.UnmarshalJSON(resp, &params)
+
+		sr.NoError(err)
+		sr.Equal(*params.GetParams(), auctiontypes.DefaultParams())
+	})
 }
 
 func (suite *IntegrationTestSuite) TestGetAuctionGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions/", val.APIAddress)
+
 	testCases := []struct {
 		msg             string
 		url             string
-		headers         map[string]string
-		respObjCount    int
+		errorMsg        string
 		isErrorExpected bool
+		preRun          func() string
 	}{
 		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions/%s", val.APIAddress, randomAuctionID),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
+			"invalid request to get an auction",
+			reqUrl + randomAuctionID,
+			"",
 			true,
+			func() string { return "" },
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions/%s", val.APIAddress, randomAuctionID),
-			map[string]string{},
-			0,
+			"valid request to get an auction",
+			reqUrl,
+			"",
 			false,
+			func() string { return suite.createAuctionAndBid(false) },
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
-
-			var auction auctiontypes.AuctionResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auction)
-
+			auctionID := tc.preRun()
+			resp, err := rest.GetRequest(tc.url + auctionID)
 			if tc.isErrorExpected {
-				//sr.Empty(auction.Auction)
-				sr.NotNil(err)
+				sr.Contains(string(resp), tc.errorMsg)
 			} else {
 				sr.NoError(err)
+				var auction auctiontypes.AuctionResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auction)
+				sr.NoError(err)
+				sr.Equal(auctionID, auction.Auction.Id)
 			}
 		})
 	}
@@ -144,44 +120,43 @@ func (suite *IntegrationTestSuite) TestGetAuctionGrpc() {
 func (suite *IntegrationTestSuite) TestGetBidsGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
-		headers         map[string]string
-		respObjCount    int
+		errorMsg        string
 		isErrorExpected bool
+		preRun          func() string
 	}{
 		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/%s", val.APIAddress, randomAuctionID),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
+			"invalid request to get all bids",
+			reqUrl,
+			"",
 			true,
+			func() string { return "" },
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/%s", val.APIAddress, randomAuctionID),
-			map[string]string{},
-			0,
+			"valid request to get all bids",
+			reqUrl,
+			"",
 			false,
+			func() string { return suite.createAuctionAndBid(true) },
 		},
 	}
+
 	for _, tc := range testCases {
 		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
-
-			var bids auctiontypes.BidsResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &bids)
-
+			auctionID := tc.preRun()
+			tc.url += auctionID
+			resp, err := rest.GetRequest(tc.url)
 			if tc.isErrorExpected {
-				//sr.Empty(bids.GetBids())
-				sr.NotNil(err)
+				sr.Contains(string(resp), tc.errorMsg)
 			} else {
 				sr.NoError(err)
-				sr.Len(bids.GetBids(), tc.respObjCount)
+				var bids auctiontypes.BidsResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(resp, &bids)
+				sr.NoError(err)
+				sr.Equal(auctionID, bids.Bids[0].AuctionId)
 			}
 		})
 	}
@@ -190,90 +165,36 @@ func (suite *IntegrationTestSuite) TestGetBidsGrpc() {
 func (suite *IntegrationTestSuite) TestGetBidGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
-		headers         map[string]string
-		respObjCount    int
+		errorMsg        string
 		isErrorExpected bool
 	}{
 		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/%s/%s", val.APIAddress, randomAuctionID, randomBidderAddress),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
+			"invalid request to get bid",
+			fmt.Sprintf("%s/%s/", reqUrl, randomAuctionID),
+			"",
 			true,
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/%s/%s", val.APIAddress, randomAuctionID, randomBidderAddress),
-			map[string]string{},
-			0,
+			"valid request to get bid",
+			fmt.Sprintf("%s/%s/%s", reqUrl, randomAuctionID, randomBidderAddress),
+			"",
 			false,
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
-
-			var bid auctiontypes.BidResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &bid)
-
+			resp, err := rest.GetRequest(tc.url)
 			if tc.isErrorExpected {
-				//sr.Empty(bid.GetBid())
-				sr.NotNil(err)
+				sr.Contains(string(resp), tc.errorMsg)
 			} else {
 				sr.NoError(err)
-				sr.Len(bid.GetBid(), tc.respObjCount)
-			}
-		})
-	}
-}
-
-func (suite *IntegrationTestSuite) TestGetAuctionsByBidderGrpc() {
-	val := suite.network.Validators[0]
-	sr := suite.Require()
-	testCases := []struct {
-		msg             string
-		url             string
-		headers         map[string]string
-		respObjCount    int
-		isErrorExpected bool
-	}{
-		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctionsbybidder/%s", val.APIAddress, randomBidderAddress),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
-			true,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctionsbybidder/%s", val.APIAddress, randomBidderAddress),
-			map[string]string{},
-			0,
-			false,
-		},
-	}
-	for _, tc := range testCases {
-		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
-
-			var auctions auctiontypes.AuctionsByBidderResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auctions)
-
-			if tc.isErrorExpected {
-				//sr.Empty(auctions.GetAuctions())
-				sr.NotNil(err)
-			} else {
+				var bid auctiontypes.BidResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(resp, &bid)
 				sr.NoError(err)
-				sr.Len(auctions.GetAuctions(), tc.respObjCount)
 			}
 		})
 	}
@@ -282,44 +203,36 @@ func (suite *IntegrationTestSuite) TestGetAuctionsByBidderGrpc() {
 func (suite *IntegrationTestSuite) TestGetAuctionsByOwnerGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctionsbyowner/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
-		headers         map[string]string
-		respObjCount    int
+		errorMsg        string
 		isErrorExpected bool
 	}{
 		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctionsbyowner/%s", val.APIAddress, randomOwnerAddress),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
+			"invalid request to get auctions by owner",
+			reqUrl,
+			"",
 			true,
 		},
 		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctionsbyowner/%s", val.APIAddress, randomOwnerAddress),
-			map[string]string{},
-			0,
+			"valid request to get auctions by owner",
+			fmt.Sprintf("%s/%s", reqUrl, randomOwnerAddress),
+			"",
 			false,
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
-
-			var auctions auctiontypes.AuctionsByOwnerResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auctions)
-
+			resp, err := rest.GetRequest(tc.url)
 			if tc.isErrorExpected {
-				sr.Empty(auctions.GetAuctions())
-				sr.NotNil(err)
+				sr.Contains(string(resp), tc.errorMsg)
 			} else {
 				sr.NoError(err)
-				sr.Len(auctions.GetAuctions(), tc.respObjCount)
+				var auctions auctiontypes.AuctionsResponse
+				err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auctions)
+				sr.NoError(err)
 			}
 		})
 	}
@@ -328,44 +241,19 @@ func (suite *IntegrationTestSuite) TestGetAuctionsByOwnerGrpc() {
 func (suite *IntegrationTestSuite) TestQueryBalanceGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	testCases := []struct {
-		msg             string
-		url             string
-		headers         map[string]string
-		respObjCount    int
-		isErrorExpected bool
-	}{
-		{
-			"invalid request with headers",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/balance", val.APIAddress),
-			map[string]string{
-				grpctypes.GRPCBlockHeightHeader: "1",
-			},
-			0,
-			true,
-		},
-		{
-			"valid request",
-			fmt.Sprintf("%s/vulcanize/auction/v1beta1/balance", val.APIAddress),
-			map[string]string{},
-			0,
-			false,
-		},
-	}
-	for _, tc := range testCases {
-		suite.Run(tc.msg, func() {
-			resp, err := testutil.GetRequestWithHeaders(tc.url, tc.headers)
-			sr.NoError(err)
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/balance", val.APIAddress)
+	msg := "valid request to get the auction module balance"
 
-			var balance auctiontypes.BalanceResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &balance)
+	suite.createAuctionAndBid(true)
 
-			sr.Empty(balance.GetBalance())
-			if tc.isErrorExpected {
-				sr.NotNil(err)
-			} else {
-				sr.NoError(err)
-			}
-		})
-	}
+	suite.Run(msg, func() {
+		resp, err := rest.GetRequest(reqUrl)
+		sr.NoError(err)
+
+		var response auctiontypes.BalanceResponse
+		err = val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
+
+		sr.NoError(err)
+		sr.NotZero(len(response.GetBalance()))
+	})
 }
