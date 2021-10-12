@@ -15,26 +15,14 @@ func (suite *IntegrationTestSuite) TestGetCmdQueryParams() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
 
-	testCases := []struct {
-		msg  string
-		args []string
-	}{
-		{
-			"fetch query params",
-			queryJSONFlag,
-		},
-	}
-
-	for _, test := range testCases {
-		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdQueryParams(), test.args)
-			sr.NoError(err)
-			var params types.QueryParamsResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &params)
-			sr.NoError(err)
-			sr.Equal(types.DefaultParams(), *params.Params)
-		})
-	}
+	suite.Run(fmt.Sprintf("Case %s", "fetch query params"), func() {
+		out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdQueryParams(), queryJSONFlag)
+		sr.NoError(err)
+		var params types.QueryParamsResponse
+		err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &params)
+		sr.NoError(err)
+		sr.Equal(types.DefaultParams(), *params.Params)
+	})
 }
 
 func (suite *IntegrationTestSuite) TestGetCmdBalance() {

@@ -192,8 +192,8 @@
     - [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
     - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
-
-      - [Query](#vulcanize.nameservice.v1beta1.Query)
+  
+    - [Query](#vulcanize.nameservice.v1beta1.Query)
   
 - [vulcanize/nameservice/v1beta1/tx.proto](#vulcanize/nameservice/v1beta1/tx.proto)
     - [MsgAssociateBond](#vulcanize.nameservice.v1beta1.MsgAssociateBond)
@@ -1661,8 +1661,8 @@ Query defines the gRPC querier interface for the auction module
 | `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
 | `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
 | `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
-| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctionsbybidder/{bidder_address}|
-| `AuctionsByOwner` | [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest) | [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse) | AuctionsByOwner queries auctions by owner | GET|/vulcanize/auction/v1beta1/auctionsbyowner/{owner_address}|
+| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions-by-bidder/{bidder_address}|
+| `AuctionsByOwner` | [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest) | [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse) | AuctionsByOwner queries auctions by owner | GET|/vulcanize/auction/v1beta1/auctions-by-owner/{owner_address}|
 | `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
 | `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
 
@@ -2200,30 +2200,40 @@ Msg defines the bond Msg service.
 <a name="vulcanize.nameservice.v1beta1.AuctionBidInfo"></a>
 
 ### AuctionBidInfo
-
 AuctionBidInfo
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction_id` | [string](#string) |  |  |
 | `bidder_address` | [string](#string) |  |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.AuthorityEntry"></a>
 
 ### AuthorityEntry
-
 AuthorityEntry defines the nameservice module AuthorityEntries
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [string](#string) |  |  |
 | `entry` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.BlockChangeSet"></a>
 
 ### BlockChangeSet
-
 BlockChangeSet
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2234,11 +2244,16 @@ BlockChangeSet
 | `authorities` | [string](#string) | repeated |  |
 | `names` | [string](#string) | repeated |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.NameAuthority"></a>
 
 ### NameAuthority
-
 NameAuthority
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2418,36 +2433,50 @@ GenesisState defines the nameservice module's genesis state.
 <a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
 
 ### AccountBalance
-
 AccountBalance is nameservice module account balance
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `account_name` | [string](#string) |  |  |
 | `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.ExpiryQueueRecord"></a>
 
 ### ExpiryQueueRecord
-
 ExpiryQueueRecord
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `value` | [string](#string) | repeated |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest"></a>
 
 ### GetNameServiceModuleBalanceRequest
-
 GetNameServiceModuleBalanceRequest is request type for nameservice module accounts balance
+
+
+
+
+
 
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse"></a>
 
 ### GetNameServiceModuleBalanceResponse
-
 GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2478,6 +2507,7 @@ QueryGetAuthorityExpiryQueue
 ### QueryGetAuthorityExpiryQueueResponse
 QueryGetAuthorityExpiryQueueResponse
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `authorities` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
@@ -2507,6 +2537,7 @@ QueryGetRecordExpiryQueue
 
 ### QueryGetRecordExpiryQueueResponse
 QueryGetRecordExpiryQueueResponse
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2575,37 +2606,56 @@ QueryListRecordsResponse is response type for nameservice records list
 | `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrn"></a>
 
 ### QueryLookupWrn
-
 QueryLookupWrn is request type for LookupWrn
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `wrn` | [string](#string) |  |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrnResponse"></a>
 
 ### QueryLookupWrnResponse
-
 QueryLookupWrnResponse is response type for QueryLookupWrn
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord) |  |  |
 
+
+
+
+
+
 <a name="vulcanize.nameservice.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
-
 QueryParamsRequest is request type for nameservice params
+
+
+
+
+
 
 <a name="vulcanize.nameservice.v1beta1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-
 QueryParamsResponse is response type for nameservice params
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |

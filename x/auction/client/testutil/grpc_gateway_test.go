@@ -203,7 +203,7 @@ func (suite *IntegrationTestSuite) TestGetBidGrpc() {
 func (suite *IntegrationTestSuite) TestGetAuctionsByOwnerGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctionsbyowner/", val.APIAddress)
+	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions-by-owner/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
