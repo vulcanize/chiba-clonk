@@ -129,12 +129,12 @@ service Query {
 
     // AuctionsByBidder queries auctions by bidder
     rpc AuctionsByBidder(AuctionsByBidderRequest) returns (AuctionsByBidderResponse) {
-        option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions-by-bidder/{bidder_address}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/by-bidder/{bidder_address}";
     }
 
     // AuctionsByOwner queries auctions by owner
     rpc AuctionsByOwner(AuctionsByOwnerRequest) returns (AuctionsByOwnerResponse) {
-        option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions-by-owner/{owner_address}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/by-owner/{owner_address}";
     }
 
     // QueryParams implements the params query command
