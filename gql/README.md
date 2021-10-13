@@ -1,4 +1,12 @@
-# Vulcanize dxns
+# Vulcanize dxns gql
+
+> Browser : http://localhost:9473 for gql
+
+## Start server
+
+```shell
+./build/ethermintd start --gql-playground --gql-server           
+```
 
 Basic node status:
 
@@ -170,21 +178,21 @@ Get bonds by IDs.
 
 Query Bonds by Owner
 
-```graphql 
+```graphql
 {
-  queryBondsByOwner(ownerAddresses: ["ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"])
-  {
-    owner
-    bonds{
-      id
-      owner
-      balance
-    	{
-        type
-        quantity
-      }
+    queryBondsByOwner(ownerAddresses: ["ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"])
+    {
+        owner
+        bonds{
+            id
+            owner
+            balance
+            {
+                type
+                quantity
+            }
+        }
     }
-  }
 }
 ```
 
@@ -245,7 +253,7 @@ Query auctions by ids
 LookUp Authorities
 
 ```graphql
-query {
+{
     lookupAuthorities(names: []){
         ownerAddress
         ownerAddress
@@ -307,8 +315,12 @@ query {
 LookUp Names
 
 ```graphql
-query {
-    lookupNames(names: ["asd"]){
+{
+    lookupNames(names: ["wrn://hello/test"]){
+        latest{
+            id
+            height
+        }
         history{
             id
             height
@@ -320,7 +332,7 @@ query {
 Resolve Names
 
 ```graphql
-query {
+{
     resolveNames(names: ["asd"]){
         id
         names
