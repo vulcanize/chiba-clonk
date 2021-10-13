@@ -23,26 +23,22 @@ func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 		url             string
 		errorMsg        string
 		isErrorExpected bool
-		preRun          func()
 	}{
 		{
 			"invalid request to get all auctions",
 			reqUrl + randomAuctionID,
 			"",
 			true,
-			func() {},
 		},
 		{
 			"valid request to get all auctions",
 			reqUrl,
 			"",
 			false,
-			func() { suite.createAuctionAndBid(false) },
 		},
 	}
 	for _, tc := range testCases {
 		suite.Run(tc.msg, func() {
-			tc.preRun()
 			resp, err := rest.GetRequest(tc.url)
 			if tc.isErrorExpected {
 				sr.Contains(string(resp), tc.errorMsg)
@@ -97,7 +93,7 @@ func (suite *IntegrationTestSuite) TestGetAuctionGrpc() {
 			reqUrl,
 			"",
 			false,
-			func() string { return suite.createAuctionAndBid(false) },
+			func() string { return suite.defaultAuctionID },
 		},
 	}
 	for _, tc := range testCases {
@@ -140,7 +136,7 @@ func (suite *IntegrationTestSuite) TestGetBidsGrpc() {
 			reqUrl,
 			"",
 			false,
-			func() string { return suite.createAuctionAndBid(true) },
+			func() string { return suite.createAuctionAndBid(false, true) },
 		},
 	}
 
@@ -244,7 +240,7 @@ func (suite *IntegrationTestSuite) TestQueryBalanceGrpc() {
 	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/balance", val.APIAddress)
 	msg := "valid request to get the auction module balance"
 
-	suite.createAuctionAndBid(true)
+	suite.createAuctionAndBid(false, true)
 
 	suite.Run(msg, func() {
 		resp, err := rest.GetRequest(reqUrl)

@@ -16,8 +16,9 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg     network.Config
-	network *network.Network
+	cfg              network.Config
+	network          *network.Network
+	defaultAuctionID string
 }
 
 var (
@@ -42,6 +43,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// setting up random owner and bidder accounts
 	s.createAccountWithBalance(ownerAccount, &ownerAddress)
 	s.createAccountWithBalance(bidderAccount, &bidderAddress)
+
+	s.defaultAuctionID = s.createAuctionAndBid(true, false)
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

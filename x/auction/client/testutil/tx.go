@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	sampleCommitTime     = "30s"
+	sampleCommitTime     = "90s"
 	sampleRevealTime     = "5s"
 	placeholderAuctionID = "placeholder_auction_id"
 )

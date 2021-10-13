@@ -46,7 +46,7 @@ func (suite *IntegrationTestSuite) TestGetCmdBalance() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuctionAndBid {
-				suite.createAuctionAndBid(true)
+				suite.createAuctionAndBid(false, true)
 			}
 
 			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdBalance(), queryJSONFlag)
@@ -81,10 +81,6 @@ func (suite *IntegrationTestSuite) TestGetCmdList() {
 
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
-			if test.createAuction {
-				suite.createAuctionAndBid(false)
-			}
-
 			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdList(), queryJSONFlag)
 			sr.NoError(err)
 			var auctions types.AuctionsResponse
@@ -121,7 +117,7 @@ func (suite *IntegrationTestSuite) TestGetCmdGetBid() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuctionAndBid {
-				auctionID := suite.createAuctionAndBid(true)
+				auctionID := suite.createAuctionAndBid(false, true)
 				test.args = append(test.args, auctionID)
 				getBidsArgs := []string{auctionID, queryJSONFlag[0]}
 				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetBids(), getBidsArgs)
@@ -171,7 +167,7 @@ func (suite *IntegrationTestSuite) TestGetCmdGetBids() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuctionAndBid {
-				auctionID := suite.createAuctionAndBid(true)
+				auctionID := suite.createAuctionAndBid(false, true)
 				test.args = append(test.args, auctionID)
 			}
 
@@ -214,8 +210,7 @@ func (suite *IntegrationTestSuite) TestGetCmdGetAuction() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuction {
-				auctionID := suite.createAuctionAndBid(false)
-				test.auctionID = auctionID
+				test.auctionID = suite.defaultAuctionID
 			}
 
 			args := []string{test.auctionID, queryJSONFlag[0]}
@@ -258,7 +253,7 @@ func (suite *IntegrationTestSuite) TestGetCmdAuctionsByBidder() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuctionAndBid {
-				auctionID := suite.createAuctionAndBid(true)
+				auctionID := suite.createAuctionAndBid(false, true)
 				args := []string{auctionID, queryJSONFlag[0]}
 				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdGetBids(), args)
 				sr.NoError(err)
@@ -279,29 +274,35 @@ func (suite *IntegrationTestSuite) TestGetCmdAuctionsByBidder() {
 	}
 }
 
-func (suite IntegrationTestSuite) createAuctionAndBid(createBid bool) string {
+func (suite IntegrationTestSuite) createAuctionAndBid(createAuction, createBid bool) string {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	auctionArgs := []string{
-		sampleCommitTime, sampleRevealTime,
-		fmt.Sprintf("10%s", suite.cfg.BondDenom),
-		fmt.Sprintf("10%s", suite.cfg.BondDenom),
-		fmt.Sprintf("100%s", suite.cfg.BondDenom),
-	}
+	auctionID := ""
 
-	resp, err := suite.executeTx(cli.GetCmdCreateAuction(), auctionArgs, ownerAccount)
-	sr.NoError(err)
-	sr.Zero(resp.Code)
-	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdList(), queryJSONFlag)
-	sr.NoError(err)
-	var queryResponse types.AuctionsResponse
-	err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
-	sr.NoError(err)
-	auctionID := queryResponse.Auctions.Auctions[0].Id
+	if createAuction {
+		auctionArgs := []string{
+			sampleCommitTime, sampleRevealTime,
+			fmt.Sprintf("10%s", suite.cfg.BondDenom),
+			fmt.Sprintf("10%s", suite.cfg.BondDenom),
+			fmt.Sprintf("100%s", suite.cfg.BondDenom),
+		}
+
+		resp, err := suite.executeTx(cli.GetCmdCreateAuction(), auctionArgs, ownerAccount)
+		sr.NoError(err)
+		sr.Zero(resp.Code)
+		out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.GetCmdList(), queryJSONFlag)
+		sr.NoError(err)
+		var queryResponse types.AuctionsResponse
+		err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
+		sr.NoError(err)
+		auctionID = queryResponse.Auctions.Auctions[0].Id
+	} else {
+		auctionID = suite.defaultAuctionID
+	}
 
 	if createBid {
 		bidArgs := []string{auctionID, fmt.Sprintf("200%s", suite.cfg.BondDenom)}
-		resp, err = suite.executeTx(cli.GetCmdCommitBid(), bidArgs, bidderAccount)
+		resp, err := suite.executeTx(cli.GetCmdCommitBid(), bidArgs, bidderAccount)
 		sr.NoError(err)
 		sr.Zero(resp.Code)
 	}
