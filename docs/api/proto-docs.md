@@ -90,22 +90,24 @@
     - [GenesisState](#vulcanize.auction.v1beta1.GenesisState)
 
 - [vulcanize/auction/v1beta1/query.proto](#vulcanize/auction/v1beta1/query.proto)
-    - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
-    - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
-    - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
-    - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
-    - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
-    - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
-    - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
-    - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
-    - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
-    - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
-    - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
-    - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
-    - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
-    - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
+  - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
+  - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
+  - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
+  - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
+  - [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest)
+  - [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse)
+  - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
+  - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
+  - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
+  - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
+  - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
+  - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
+  - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
+  - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
+  - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
+  - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
 
-    - [Query](#vulcanize.auction.v1beta1.Query)
+  - [Query](#vulcanize.auction.v1beta1.Query)
 
 - [vulcanize/auction/v1beta1/tx.proto](#vulcanize/auction/v1beta1/tx.proto)
     - [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid)
@@ -1250,8 +1252,6 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 
 ### ExtensionOptionsWeb3Tx
 
-
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `typed_data_chain_id` | [uint64](#uint64) |  | typed data chain id used only in EIP712 Domain and should match Ethereum network ID in a Web3 provider (e.g. Metamask). |
@@ -1273,11 +1273,13 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 
 ## vulcanize/auction/v1beta1/types.proto
 
+
+
 <a name="vulcanize.auction.v1beta1.Auction"></a>
 
 ### Auction
-
 Auction represents a sealed-bid on-chain auction
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1349,6 +1351,8 @@ Params defines the auction module parameters
 
 ## vulcanize/auction/v1beta1/genesis.proto
 
+
+
 <a name="vulcanize.auction.v1beta1.GenesisState"></a>
 
 ### GenesisState
@@ -1410,6 +1414,26 @@ AuctionsByBidderRequest is the format for querying all auctions containing a bid
 ### AuctionsByBidderResponse
 
 AuctionsByBidderResponse returns all auctions containing a bidder
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+
+<a name="vulcanize.auction.v1beta1.AuctionsByOwnerRequest"></a>
+
+### AuctionsByOwnerRequest
+
+AuctionsByOwnerRequest is the format for querying all auctions created by an owner
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner_address` | [string](#string) |  | Address of the owner |
+
+<a name="vulcanize.auction.v1beta1.AuctionsByOwnerResponse"></a>
+
+### AuctionsByOwnerResponse
+
+AuctionsByOwnerResponse returns all auctions created by an owner
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1517,7 +1541,6 @@ QueryParamsResponse returns parameters of the auction module
 <a name="vulcanize.auction.v1beta1.Query"></a>
 
 ### Query
-
 Query defines the gRPC querier interface for the auction module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
@@ -1526,7 +1549,8 @@ Query defines the gRPC querier interface for the auction module
 | `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
 | `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
 | `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
-| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions/{bidder_address}|
+| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/by-bidder/{bidder_address}|
+| `AuctionsByOwner` | [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest) | [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse) | AuctionsByOwner queries auctions by owner | GET|/vulcanize/auction/v1beta1/by-owner/{owner_address}|
 | `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
 | `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
 
@@ -1538,6 +1562,8 @@ Query defines the gRPC querier interface for the auction module
 <p align="right"><a href="#top">Top</a></p>
 
 ## vulcanize/auction/v1beta1/tx.proto
+
+
 
 <a name="vulcanize.auction.v1beta1.MsgCommitBid"></a>
 
@@ -1559,7 +1585,7 @@ MsgCommitBidResponse returns the state of the auction after the bid creation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Auction details |
 
 <a name="vulcanize.auction.v1beta1.MsgCreateAuction"></a>
 
@@ -1618,7 +1644,6 @@ MsgRevealBidResponse returns the state of the auction after the bid reveal
 <a name="vulcanize.auction.v1beta1.Msg"></a>
 
 ### Msg
-
 Tx defines the gRPC tx interface
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
@@ -1635,6 +1660,8 @@ Tx defines the gRPC tx interface
 <p align="right"><a href="#top">Top</a></p>
 
 ## vulcanize/bond/v1beta1/bond.proto
+
+
 
 <a name="vulcanize.bond.v1beta1.Bond"></a>
 
@@ -2453,7 +2480,6 @@ QueryWhoisResponse is response type for whois request
 <a name="vulcanize.nameservice.v1beta1.Query"></a>
 
 ### Query
-
 Query defines the gRPC querier service for nameservice module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
@@ -2676,7 +2702,6 @@ Payload
 <a name="vulcanize.nameservice.v1beta1.Msg"></a>
 
 ### Msg
-
 Msg
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
@@ -2704,15 +2729,19 @@ values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum
 | <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is
 likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
 | <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer |
-Bignum or Fixnum (as required) |
-| <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) |
-| <a name="sint32" /> sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
-| <a name="sint64" /> sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="fixed32" /> fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or Fixnum (as required) |
-| <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum |
-| <a name="sfixed32" /> sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
-| <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
-| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
-| <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
+Bignum or Fixnum (as required) | | <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long |
+int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) | | <a name="sint32" /> sint32 | Uses
+variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32
+| int | int | int32 | int | integer | Bignum or Fixnum (as required) | | <a name="sint64" /> sint64 | Uses
+variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64
+| long | int/long | int64 | long | integer/string | Bignum | | <a name="fixed32" /> fixed32 | Always four bytes. More
+efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or
+Fixnum (as required) | | <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are
+often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum | | <a name="sfixed32" />
+sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string |
+Bignum | | <a name="bool" /> bool | | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
+| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String |
+str/unicode | string | string | string | String (UTF-8) | | <a name="bytes" /> bytes | May contain any arbitrary
+sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
 
