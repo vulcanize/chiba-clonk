@@ -30,7 +30,7 @@ sudo rm -rf /usr/local/go
 1.2) Install latest/required Go version (installing `go1.17.2`)
 
 ```
-curl https://golang.org/dl/go1.17.2.linux-amd64.tar.gz
+curl -O https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.17.2.linux-amd64.tar.gz
 ```
 
@@ -56,7 +56,7 @@ go version
 ### 2) Install required software packages
 
 ```
-sudo apt-get install git curl build-essential make jq -y
+sudo apt-get update && sudo apt-get install git curl build-essential make jq -y
 ```
 
 ### 3) Install `ethermint`
@@ -94,7 +94,7 @@ ethermintd init <your-node-moniker> --chain-id ethermint_81337-1
 On running the above command, node will be initialized with default configuration. (config files will be saved in node's
 default home directory (~/.ethermintd/config)
 
-NOTE: Backup node and validator keys . You will need to use these keys at a later point in time.
+NOTE: Backup node and validator keys. You will need to use these keys at a later point in time.
 
 ---
 
@@ -106,7 +106,7 @@ Use `curl` to download the genesis file
 **Replace your **genesis** file with published genesis file**
 
 ```shell
-curl http://167.172.173.94:26657/genesis | jq .result.genesis > ~/.ethermintd/config/genesis.json
+curl http://146.71.79.179:26657/genesis | jq .result.genesis > ~/.ethermintd/config/genesis.json
 ```
 
 Verify sha256 hash of genesis file with the below command
@@ -124,7 +124,7 @@ genesis sha256 hash should be
 ## 2) Update Peers & Seeds in config.toml
 
 ```
-peers="5ad2e6c35f2c84ff3ee31d89a95b34d92cb6afb1@157.230.101.237:26656,defc95b08547b6ef254723ad9621967a7e819020@161.35.223.44:26656"
+peers="5ad2e6c35f2c84ff3ee31d89a95b34d92cb6afb1@45.61.53.19:26656,defc95b08547b6ef254723ad9621967a7e819020@45.61.53.123:26656"
 sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.ethermintd/config/config.toml
 ```
 

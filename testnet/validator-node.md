@@ -19,7 +19,7 @@ recover accounts at a later point in time.
 
 ##### Get Test tokens from faucet
 
-- Open this link : http://167.172.173.94:1314/ and paste your account
+- Open this link : http://146.71.79.179:1314/ and paste your account address
 - 1 gnt = 10^18 agnt
 - Each Transaction you will get 500gnt
 - Total Tokens 5000gnt for account
@@ -52,5 +52,6 @@ ethermintd tx staking create-validator \
   --gas="auto" \
   --gas-adjustment="1.2" \
   --gas-prices="0.025agnt" \
-  --from=<key_name>
+  --from=<key_name> \
+  --keyring-backend test
 ```
