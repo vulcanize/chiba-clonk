@@ -1,4 +1,4 @@
-This document describes the Laconic Name Service (LNS) and is intended for people who wish install and operate the application, or interact with it via the CLI tool (ethermintd).
+This document describes the Laconic Name Service (LNS).
 
 # The Laconic Name Service (LNS)
 
@@ -34,21 +34,16 @@ When registering names or storing data, a time-based fee is charged, and that is
 4. Payments for #2 & #3 are drawn from the bond.
 5. If bond runs out, data is not served, and name registration (after grace period) is lost
 
-
 ### How an Auction works
-
 
 Bidders have accounts on the LNS chain. Bidders bid to reserve an Authority. Auctions occur in two phases: Commit and Reveal.
 
 1. In the Commit phase, bidders send hash of their bid soas to not reveal the sum of the bid to others who are bidding. The Commit phase is timeboxed. 
-2. In the Reveal phase, when bidding is over, bidders send their bids to be proven against the hash that was previously submitted.
-
-Some further details govern auctions:
-
-    a. There's a minimum bid.
-    b. Revealing is optional.
-    c. Bidders pay a fee to bid. The first component of this fee is returned if bidder reveals during the Reveal phase.
-    d. Bidders who don't reveal lose the second fee component.
+2. In the Reveal phase, when bidding is over, bidders send their bids to be proven against the hash that was previously submitted. Some further details govern auctions:
+    - There's a minimum bid.
+    - Revealing is optional.
+    - Bidders pay a fee to bid. The first component of this fee is returned if bidder reveals during the Reveal phase.
+    - Bidders who don't reveal lose the second fee component.
 
 3. The blockchain then picks winner (the highest bidder) at the end of the Reveal phase.
 4. The winning bid then pays the sum represented by the next highest bid to secure the auction.
@@ -62,7 +57,6 @@ What are these actions, specifically?
 - Cancel bond
 - Associate/Disassociate/Reassociate bond with records
 
-
 # Installation instructions
 
 ## Build the Chain
@@ -73,7 +67,6 @@ The following command builds the Ethermint daemon and places the binary in the `
 
 ```
 make build
-
 ```
 
 ## Setup the Chain
@@ -113,4 +106,3 @@ The chain can now be started using:
 Example queries in the form of GraphQL can be seen in the [registry client](https://github.com/vulcanize/dxns-registry-client/blob/main/src/registry_client.js). 
 
 Test cases for the bond, auction, and nameservice modules can be found in the corresponding [*.test.js](https://github.com/vulcanize/dxns-registry-client/tree/main/src) files for the registry client.
-
