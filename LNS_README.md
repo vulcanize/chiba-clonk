@@ -2,7 +2,7 @@ This document describes the Laconic Name Service (LNS).
 
 # The Laconic Name Service (LNS)
 
-Laconic Name Service (LNS) is an Ethermint-based, permissionless blockchain that serves the purpose of mapping human readable names to content addressable resources in the Laconic Network, including:
+Laconic Name Service (LNS) is a permissionless blockchain that serves the purpose of mapping human readable names to content addressable resources in the Laconic Network, including:
 
 * Watchers 
 * Validators
