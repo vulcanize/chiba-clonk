@@ -45,10 +45,11 @@ In the **Reveal** phase, when bidding is over, bidders send their bids to be pro
 The winning bidder then pays the sum represented by the next highest bid to secure the auction.
 
 Some further details govern auctions:
-    - There is a minimum bid.
-    - Revealing is optional.
-    - Bidders pay a fee to bid. The first component of this fee is returned if the bidder reveals during the Reveal phase.
-    - Bidders who don't reveal lose the second fee component.
+
+- There is a minimum bid.
+- Revealing is optional.
+- Bidders pay a fee to bid. The first component of this fee is returned if the bidder reveals during the Reveal phase.
+- Bidders who don't reveal lose the second fee component.
 
 ## How do Bonds work?
 
