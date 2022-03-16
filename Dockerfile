@@ -1,30 +1,33 @@
 FROM golang:alpine AS build-env
 
+# Install minimum necessary dependencies,
+ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
+RUN apk add --no-cache $PACKAGES
+
 # Set up dependencies
 ENV PACKAGES git build-base
 
 # Set working directory for the build
-WORKDIR /go/src/github.com/tharsis/ethermint
-
-# Install dependencies
-RUN apk add --update $PACKAGES
-RUN apk add linux-headers
+WORKDIR /go/src/github.com/vulcanize/chiba-clonk
 
 # Add source files
 COPY . .
 
-# Make the binary
-RUN make build
+# build binary
+RUN make build-linux
+
 
 # Final image
-FROM alpine
+FROM alpine:edge
 
 # Install ca-certificates
 RUN apk add --update ca-certificates jq
 WORKDIR /
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/src/github.com/tharsis/ethermint/build/ethermintd /usr/bin/ethermintd
+COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/ethermintd /usr/bin/ethermintd
+
+EXPOSE 26656 26657 1317 9090 8545 8546
 
 # Run ethermintd by default
-CMD ["ethermintd"]
+CMD ["ethermintd","start","--gql-playground","--gql-server","--home","/ethermint"]

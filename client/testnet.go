@@ -5,7 +5,6 @@ package client
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -51,7 +50,7 @@ var (
 	flagOutputDir      = "output-dir"
 	flagNodeDaemonHome = "node-daemon-home"
 	flagCoinDenom      = "coin-denom"
-	flagIPAddrs        = "ip-addresses"
+	flagStartingIPAddress = "starting-ip-address"
 )
 
 const nodeDirPerm = 0o755
@@ -81,32 +80,29 @@ Note, strict routability for addresses is turned off in the config file.`,
 			minGasPrices, _ := cmd.Flags().GetString(server.FlagMinGasPrices)
 			nodeDirPrefix, _ := cmd.Flags().GetString(flagNodeDirPrefix)
 			nodeDaemonHome, _ := cmd.Flags().GetString(flagNodeDaemonHome)
-			ipAddresses, _ := cmd.Flags().GetStringSlice(flagIPAddrs)
+			startingIPAddress, _ := cmd.Flags().GetString(flagStartingIPAddress)
+
 			numValidators, _ := cmd.Flags().GetInt(flagNumValidators)
 			algo, _ := cmd.Flags().GetString(flags.FlagKeyAlgorithm)
 			coinDenom, _ := cmd.Flags().GetString(flagCoinDenom)
 
-			if len(ipAddresses) == 0 {
-				return errors.New("IP address list cannot be empty")
-			}
-
 			return InitTestnet(
 				clientCtx, cmd, config, mbm, genBalancesIterator, outputDir, chainID, coinDenom, minGasPrices,
-				nodeDirPrefix, nodeDaemonHome, keyringBackend, algo, ipAddresses, numValidators,
+				nodeDirPrefix, nodeDaemonHome, keyringBackend, algo, startingIPAddress, numValidators,
 			)
 		},
 	}
 
 	cmd.Flags().Int(flagNumValidators, 4, "Number of validators to initialize the testnet with")
-	cmd.Flags().StringP(flagOutputDir, "o", "./mytestnet", "Directory to store initialization data for the testnet")
+	cmd.Flags().StringP(flagOutputDir, "o", "./localnet-setup", "Directory to store initialization data for the testnet")
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
 	cmd.Flags().String(flagNodeDaemonHome, "ethermintd", "Home directory of the node's daemon configuration")
-	cmd.Flags().StringSlice(flagIPAddrs, []string{"192.168.0.1"}, "List of IP addresses to use (i.e. `192.168.0.1,172.168.0.1` results in persistent peers list ID0@192.168.0.1:46656, ID1@172.168.0.1)")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String(server.FlagMinGasPrices, "", "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01inj,0.001stake)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
 	cmd.Flags().String(flags.FlagKeyAlgorithm, string(hd.EthSecp256k1Type), "Key signing algorithm to generate keys for")
 	cmd.Flags().String(flagCoinDenom, ethermint.AttoPhoton, "Coin denomination used for staking, governance, mint, crisis and evm parameters")
+	cmd.Flags().String(flagStartingIPAddress, "192.168.10.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	return cmd
 }
 
@@ -125,7 +121,7 @@ func InitTestnet(
 	nodeDaemonHome,
 	keyringBackend,
 	algoStr string,
-	ipAddresses []string,
+	startingIPAddress string,
 	numValidators int,
 ) error {
 	if chainID == "" {
@@ -138,10 +134,6 @@ func InitTestnet(
 
 	if err := sdk.ValidateDenom(coinDenom); err != nil {
 		return err
-	}
-
-	if len(ipAddresses) != 0 {
-		numValidators = len(ipAddresses)
 	}
 
 	nodeIDs := make([]string, numValidators)
@@ -178,19 +170,10 @@ func InitTestnet(
 
 		nodeConfig.Moniker = nodeDirName
 
-		var (
-			ip  string
-			err error
-		)
-
-		if len(ipAddresses) == 1 {
-			ip, err = getIP(i, ipAddresses[0])
-			if err != nil {
-				_ = os.RemoveAll(outputDir)
-				return err
-			}
-		} else {
-			ip = ipAddresses[i]
+		ip, err := getIP(i, startingIPAddress)
+		if err != nil {
+			_ = os.RemoveAll(outputDir)
+			return err
 		}
 
 		nodeIDs[i], valPubKeys[i], err = genutil.InitializeNodeValidatorFiles(nodeConfig)
