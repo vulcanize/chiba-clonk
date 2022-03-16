@@ -1,8 +1,8 @@
 version: "3"
 
 services:
-  ethermintdnode0:
-    container_name: ethermintdnode0
+  chibanode0:
+    container_name: chibanode0
     image: "vulcanize/chiba-clonk:latest"
     ports:
       - "26656-26657:26656-26657"
@@ -20,8 +20,8 @@ services:
       localnet:
         ipv4_address: 192.168.10.1
 
-  ethermintdnode1:
-    container_name: ethermintdnode1
+  chibanode1:
+    container_name: chibanode1
     image: "vulcanize/chiba-clonk:latest"
     ports:
       - "26666-26667:26656-26657"
@@ -39,8 +39,8 @@ services:
       localnet:
         ipv4_address: 192.168.10.2
 
-  ethermintdnode2:
-    container_name: ethermintdnode2
+  chibanode2:
+    container_name: chibanode2
     image: "vulcanize/chiba-clonk:latest"
     environment:
       - ID=2
@@ -58,8 +58,8 @@ services:
       localnet:
         ipv4_address: 192.168.10.3
 
-  ethermintdnode3:
-    container_name: ethermintdnode3
+  chibanode3:
+    container_name: chibanode3
     image: "vulcanize/chiba-clonk:latest"
     environment:
       - ID=3
