@@ -9,7 +9,7 @@ const DefaultConfigTemplate = `
 [evm]
 
 # Tracer defines the 'vm.Tracer' type that the EVM will use when the node is run in
-# debug mode. To enable tracing use the '--trace' flag when starting your node.
+# debug mode. To enable tracing use the '--evm.tracer' flag when starting your node.
 # Valid types are: json|struct|access_list|markdown
 tracer = "{{ .EVM.Tracer }}"
 
@@ -34,4 +34,34 @@ api = "{{range $index, $elmt := .JSONRPC.API}}{{if $index}},{{$elmt}}{{else}}{{$
 
 # GasCap sets a cap on gas that can be used in eth_call/estimateGas (0=infinite). Default: 25,000,000.
 gas-cap = {{ .JSONRPC.GasCap }}
+
+# EVMTimeout is the global timeout for eth_call. Default: 5s.
+evm-timeout = "{{ .JSONRPC.EVMTimeout }}"
+
+# TxFeeCap is the global tx-fee cap for send transaction. Default: 1eth.
+txfee-cap = {{ .JSONRPC.TxFeeCap }}
+
+# FilterCap sets the global cap for total number of filters that can be created
+filter-cap = {{ .JSONRPC.FilterCap }}
+
+# FeeHistoryCap sets the global cap for total number of blocks that can be fetched
+feehistory-cap = {{ .JSONRPC.FeeHistoryCap }}
+
+# LogsCap defines the max number of results can be returned from single 'eth_getLogs' query.
+logs-cap = {{ .JSONRPC.LogsCap }}
+
+# BlockRangeCap defines the max block range allowed for 'eth_getLogs' query.
+block-range-cap = {{ .JSONRPC.BlockRangeCap }}
+
+###############################################################################
+###                             TLS Configuration                           ###
+###############################################################################
+
+[tls]
+
+# Certificate path defines the cert.pem file path for the TLS configuration.
+certificate-path = "{{ .TLS.CertificatePath }}"
+
+# Key path defines the key.pem file path for the TLS configuration.
+key-path = "{{ .TLS.KeyPath }}"
 `
