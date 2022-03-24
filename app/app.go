@@ -524,12 +524,18 @@ func NewEthermintApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		// DXNS modules
+		auctiontypes.ModuleName,
+		bondtypes.ModuleName,
+		nameservicetypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
 	app.mm.SetOrderEndBlockers(
-		nameservicetypes.ModuleName,
+		// DXNS modules
 		auctiontypes.ModuleName,
+		bondtypes.ModuleName,
+		nameservicetypes.ModuleName,
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
