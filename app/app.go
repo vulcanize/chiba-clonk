@@ -336,6 +336,11 @@ func NewEthermintApp(
 	}
 
 	baseAppOptions = append(baseAppOptions, baseapp.StoreOption(setNamespaces))
+	// set the governance module account as the authority for conducting upgrades
+	upgradeKeeper := upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, nil, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	if upgradeOpt := GetUpgradeStoreOption(upgradeKeeper); upgradeOpt != nil {
+		baseAppOptions = append(baseAppOptions, upgradeOpt)
+	}
 
 	// NOTE we use custom transaction decoder that supports the sdk.Tx interface instead of sdk.StdTx
 	bApp := baseapp.NewBaseApp(
@@ -383,6 +388,8 @@ func NewEthermintApp(
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
 
+	upgradeKeeper.SetVersionSetter(app.BaseApp)
+
 	// use custom Ethermint account for contracts
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec, keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), ethermint.ProtoAccount, maccPerms, sdk.Bech32MainPrefix,
@@ -408,8 +415,6 @@ func NewEthermintApp(
 		app.GetSubspace(crisistypes.ModuleName), invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp, authtypes.NewModuleAddress(govtypes.ModuleName).String())
-	app.registerUpgrade()
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -482,6 +487,8 @@ func NewEthermintApp(
 		// register the governance hooks
 		),
 	)
+
+	app.UpgradeKeeper = upgradeKeeper
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -648,6 +655,10 @@ func NewEthermintApp(
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+
+	// RegisterUpgradeHandlers is used for registering any on-chain upgrades.
+	// Make sure it's called after `app.mm` and `app.configurator` are set.
+	app.registerUpgrade()
 
 	// add test gRPC service for testing gRPC queries in isolation
 	// testdata.RegisterTestServiceServer(app.GRPCQueryRouter(), testdata.TestServiceImpl{})
