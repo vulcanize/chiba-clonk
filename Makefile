@@ -76,6 +76,7 @@ endif
 ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
 endif
+ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
 # handle rocksdb
 ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
   CGO_ENABLED=1
@@ -87,6 +88,9 @@ ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
   BUILD_TAGS += boltdb
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
 endif
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 

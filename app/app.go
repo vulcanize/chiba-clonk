@@ -388,8 +388,6 @@ func NewEthermintApp(
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	app.CapabilityKeeper.Seal()
 
-	upgradeKeeper.SetVersionSetter(app.BaseApp)
-
 	// use custom Ethermint account for contracts
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec, keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), ethermint.ProtoAccount, maccPerms, sdk.Bech32MainPrefix,
@@ -458,6 +456,9 @@ func NewEthermintApp(
 		tracer,
 	)
 
+	upgradeKeeper.SetVersionSetter(app.BaseApp)
+	app.UpgradeKeeper = upgradeKeeper
+
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
@@ -487,8 +488,6 @@ func NewEthermintApp(
 		// register the governance hooks
 		),
 	)
-
-	app.UpgradeKeeper = upgradeKeeper
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
