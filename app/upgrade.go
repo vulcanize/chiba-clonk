@@ -1,11 +1,7 @@
 package app
 
 import (
-	"path/filepath"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	v1rootmultistore "github.com/cosmos/cosmos-sdk/store/rootmulti"
-	"github.com/cosmos/cosmos-sdk/store/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2alpha1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -13,48 +9,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/nft"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tdbm "github.com/tendermint/tm-db"
 )
-
-func (app *EthermintApp) registerUpgradeHandlers(keys map[string]*storetypes.KVStoreKey) {
-	// mount the v1 store
-	rootDir := "/home/vitwit/.chibaclonkd"
-	dataDir := filepath.Join(rootDir, "data")
-
-	db, err := tdbm.NewGoLevelDB("application", dataDir)
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := db.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	cms := v1rootmultistore.NewStore(db, log.NewNopLogger())
-	for _, key := range keys {
-		cms.MountStoreWithDB(key, types.StoreTypeIAVL, nil)
-	}
-
-	// mainnet upgrade handler
-	const upgradeName = "smt-upgrade"
-	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// store upgrade from iavl to smt
-		// _ , err := v2multi.MigrateFromV1(cms,app)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	})
-}
 
 // UpgradeName defines the on-chain upgrade name for the sample simap upgrade from v045 to v046.
 //
 // NOTE: This upgrade defines a reference implementation of what an upgrade could look like
 // when an application is migrating from Cosmos SDK version v0.45.x to v0.46.x.
-const UpgradeName = "smt-upgrade"
+const UpgradeName = "v045-to-v046"
 
 func GetUpgradeStoreOption(keeper upgradekeeper.Keeper) baseapp.StoreOption {
 	upgradeInfo, err := keeper.ReadUpgradeInfoFromDisk()

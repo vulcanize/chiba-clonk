@@ -39,7 +39,6 @@ require (
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969
 	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.35.6
-	github.com/tendermint/tm-db v0.6.7
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/vektah/gqlparser/v2 v2.4.1
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
@@ -178,6 +177,7 @@ require (
 	github.com/tendermint/btcd v0.1.1 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
+	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
@@ -209,8 +209,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 
 	// replace cosmos
-	// github.com/cosmos/cosmos-sdk => github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.3-alpha.0.20220602081401-1a6a5a00241b
-	github.com/cosmos/cosmos-sdk => /home/vitwit/Projects/vulcanize/cosmos-sdk
+	github.com/cosmos/cosmos-sdk => github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.3-alpha.0.20220602081401-1a6a5a00241b
 
 	github.com/cosmos/cosmos-sdk/db => github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

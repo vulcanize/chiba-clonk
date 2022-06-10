@@ -1529,6 +1529,8 @@ github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYp
 github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df/go.mod h1:JP3t17pCcGlemwknint6hfoeCVQrEMVwxRLRjXpq+BU=
 github.com/vmihailenco/msgpack/v5 v5.3.5/go.mod h1:7xyJ9e+0+9SaZT0Wt1RGleJXzli6Q/V5KbhBonMG9jc=
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
+github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.3-alpha.0.20220602081401-1a6a5a00241b h1:1zQvhyY/hxwLIIThlTw+4HdUZryEg45UmIdf3YZA1ZU=
+github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.3-alpha.0.20220602081401-1a6a5a00241b/go.mod h1:HlS/JEese/e+gfrlv6QjsSLJgQ0iCPlsODFiwDcbdYw=
 github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1 h1:fLVdRk/JEWN5SGdOERhjHWU/zq3Efxeofu3VmJsrk90=
 github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1/go.mod h1:n79xAGrkFZLzudBwLIgQCa62PTHx9mCymwC+lSvoR2s=
 github.com/warpfork/go-testmark v0.3.0/go.mod h1:jhEf8FVxd+F17juRubpmut64NEG6I2rgkUhlcqqXwE0=
