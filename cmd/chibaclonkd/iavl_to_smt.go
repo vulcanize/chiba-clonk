@@ -23,7 +23,7 @@ func StateMigrationFromIAVLtoSMT(keys map[string]*storetypes.KVStoreKey) *cobra.
 		Use:     "iavl-to-smt [old-data-home-dir] [new-data-home-dir]",
 		Short:   "State migraiton from iavl to smt",
 		Example: fmt.Sprint("%s iavl-to-smt", version.AppName),
-		Args:    cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			home := args[0]
 			if _, err := os.Stat(home); err != nil {

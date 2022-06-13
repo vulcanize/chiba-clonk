@@ -15,7 +15,7 @@ import (
 //
 // NOTE: This upgrade defines a reference implementation of what an upgrade could look like
 // when an application is migrating from Cosmos SDK version v0.45.x to v0.46.x.
-const UpgradeName = "v045-to-v046"
+const UpgradeName = "smt-upgrade"
 
 func GetUpgradeStoreOption(keeper upgradekeeper.Keeper) baseapp.StoreOption {
 	upgradeInfo, err := keeper.ReadUpgradeInfoFromDisk()
