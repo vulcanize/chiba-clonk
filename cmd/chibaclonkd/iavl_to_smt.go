@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2alpha1"
 	v2multistore "github.com/cosmos/cosmos-sdk/store/v2alpha1/multi"
+	"github.com/google/orderedcode"
 
 	dbm "github.com/cosmos/cosmos-sdk/db"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -72,5 +73,33 @@ func iavlToSmt(keys map[string]*storetypes.KVStoreKey, dataDir, newDataDir strin
 	}
 	fmt.Println("badgerdb initial succeed")
 	v2multistore.MigrateFromV1(cms, ndb, opts)
+
+	// state migration of tm-db
+	stateDB, err := tmdb.NewGoLevelDB("state", dataDir)
+	if err != nil {
+		return err
+	}
+
+	// tm key
+	prefixState := int64(8)
+	tmStateKey, err := orderedcode.Append(nil, prefixState)
+	if err != nil {
+		panic(err)
+	}
+	ss, err := stateDB.Get(tmStateKey)
+	if err != nil {
+		panic(err)
+	}
+
+	bStateDB, err := tmdb.NewDB("state", tmdb.BackendType(dbm.BadgerDBBackend), newDataDir)
+	if err != nil {
+		return err
+	}
+
+	err = bStateDB.Set(tmStateKey, ss)
+	if err != nil {
+		return err
+	}
+	fmt.Println("state tendetmint migration is done.")
 	return nil
 }
