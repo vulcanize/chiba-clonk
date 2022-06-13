@@ -74,7 +74,7 @@ func iavlToSmt(keys map[string]*storetypes.KVStoreKey, dataDir, newDataDir strin
 	v2multistore.MigrateFromV1(cms, ndb, opts)
 
 	// state migration of tm-db
-	stateDB, err := tmdb.NewGoLevelDB("state.db", dataDir)
+	stateDB, err := tmdb.NewGoLevelDB("state", dataDir)
 	if err != nil {
 		return err
 	}
@@ -89,12 +89,14 @@ func iavlToSmt(keys map[string]*storetypes.KVStoreKey, dataDir, newDataDir strin
 		return err
 	}
 	for ; iter.Valid(); iter.Next() {
-		err := bStateDB.Set(iter.Key(), iter.Value())
-		fmt.Println(" tm key => ", string(iter.Key()))
+		key := iter.Key()
+		fmt.Println(" tm key => ", string(key))
+		err := bStateDB.Set(key, iter.Value())
 		if err != nil {
 			return err
 		}
 	}
+
 	fmt.Println("state tendetmint migration is done.")
 	err = iter.Close()
 	if err != nil {
