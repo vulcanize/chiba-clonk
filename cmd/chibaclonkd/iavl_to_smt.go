@@ -79,7 +79,7 @@ func iavlToSmt(keys map[string]*storetypes.KVStoreKey, dataDir, newDataDir strin
 		return err
 	}
 	// get the tm state and save them back
-	bStateDB, err := tmdb.NewDB("state", tmdb.BackendType(dbm.BadgerDBBackend), newDataDir)
+	bStateDB, err := dbm.NewDB("state", dbm.BadgerDBBackend, newDataDir)
 	if err != nil {
 		return err
 	}
@@ -91,16 +91,42 @@ func iavlToSmt(keys map[string]*storetypes.KVStoreKey, dataDir, newDataDir strin
 	for ; iter.Valid(); iter.Next() {
 		key := iter.Key()
 		fmt.Println(" tm key => ", string(key))
-		err := bStateDB.Set(key, iter.Value())
+		err := bStateDB.Writer().Set(key, iter.Value())
 		if err != nil {
 			return err
 		}
 	}
 
-	fmt.Println("state tendetmint migration is done.")
-	err = iter.Close()
+	// update the blockstore
+	lbsDB, err := tmdb.NewGoLevelDB("blockstore", dataDir)
 	if err != nil {
 		return err
 	}
+	// get the tm state and save them back
+	bsDB, err := dbm.NewDB("blockstore", dbm.BadgerDBBackend, newDataDir)
+	if err != nil {
+		return err
+	}
+
+	biter, err := lbsDB.Iterator(nil, nil)
+	if err != nil {
+		return err
+	}
+	for ; biter.Valid(); biter.Next() {
+		key := biter.Key()
+		fmt.Println(" blockstore key => ", string(key))
+		err := bsDB.Writer().Set(key, biter.Value())
+		if err != nil {
+			return err
+		}
+	}
+
+	err = biter.Close()
+	if err != nil {
+		return err
+	}
+	fmt.Println("blockstore migration is done.")
+
+	fmt.Println("state tendetmint migration is done.")
 	return nil
 }
