@@ -133,6 +133,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	// Add flags for GQL server.
 	rootCmd = srvflags.AddGQLFlags(rootCmd)
 
+	// Add State migraiton from iavl to smt
+	rootCmd.AddCommand(StateMigrationFromIAVLtoSMT(app.Keys))
+
 	return rootCmd, encodingConfig
 }
 

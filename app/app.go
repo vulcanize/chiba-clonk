@@ -115,7 +115,6 @@ import (
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	// Force-load the tracer engines to trigger registration due to Go-Ethereum v1.10.15 changes
-	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
 	"github.com/tharsis/ethermint/x/auction"
@@ -141,6 +140,9 @@ func init() {
 const appName = "chibaclonkd"
 
 var (
+	// Keys
+	Keys map[string]*storetypes.KVStoreKey
+
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
@@ -282,7 +284,7 @@ func NewEthermintApp(
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
-	keys := sdk.NewKVStoreKeys(
+	Keys = sdk.NewKVStoreKeys(
 		// SDK keys
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
@@ -300,6 +302,7 @@ func NewEthermintApp(
 	)
 
 	// Add the EVM transient store key
+	keys := Keys
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
