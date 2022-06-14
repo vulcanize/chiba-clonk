@@ -17,6 +17,7 @@ require (
 	github.com/gibson042/canonicaljson-go v1.0.3
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
+	github.com/google/orderedcode v0.0.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -85,10 +86,8 @@ require (
 	github.com/danieljoos/wincred v1.0.2 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
-	github.com/dgraph-io/badger/v2 v2.2007.4 // indirect
 	github.com/dgraph-io/badger/v3 v3.2103.2 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
-	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/dvsekhvalnov/jose2go v0.0.0-20200901110807-248326c1351b // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
@@ -107,7 +106,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
-	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
@@ -208,8 +206,11 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 
 	// replace cosmos
-	github.com/cosmos/cosmos-sdk => github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.3-alpha.0.20220602081401-1a6a5a00241b
+	github.com/cosmos/cosmos-sdk => /home/vitwit/Office/Projects/vulcanize/cosmos-sdk
 	github.com/cosmos/cosmos-sdk/db => github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/tendermint/tendermint => /home/vitwit/Office/Projects/tendermint/tendermint
+	github.com/tendermint/tm-db => /home/vitwit/Office/Projects/tendermint/tm-db
 	google.golang.org/grpc => google.golang.org/grpc v1.44.0
+
 )

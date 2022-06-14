@@ -10,11 +10,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2alpha1"
 	v2multistore "github.com/cosmos/cosmos-sdk/store/v2alpha1/multi"
+	"github.com/google/orderedcode"
 
 	dbm "github.com/cosmos/cosmos-sdk/db"
-	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
 	tmlog "github.com/tendermint/tendermint/libs/log"
+	tmstate "github.com/tendermint/tendermint/proto/tendermint/state"
+	"github.com/tendermint/tendermint/version"
 	tmdb "github.com/tendermint/tm-db"
 )
 
@@ -22,7 +25,7 @@ func StateMigrationFromIAVLtoSMT(keys map[string]*storetypes.KVStoreKey) *cobra.
 	cmd := &cobra.Command{
 		Use:     "iavl-to-smt [old-data-home-dir] [new-data-home-dir]",
 		Short:   "State migraiton from iavl to smt",
-		Example: fmt.Sprint("%s iavl-to-smt", version.AppName),
+		Example: fmt.Sprint("%s iavl-to-smt"),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			home := args[0]
@@ -71,62 +74,94 @@ func iavlToSmt(keys map[string]*storetypes.KVStoreKey, dataDir, newDataDir strin
 		return err
 	}
 	fmt.Println("badgerdb initial succeed")
-	v2multistore.MigrateFromV1(cms, ndb, opts)
-
-	// state migration of tm-db
-	stateDB, err := tmdb.NewGoLevelDB("state", dataDir)
-	if err != nil {
-		return err
-	}
-	// get the tm state and save them back
-	bStateDB, err := dbm.NewDB("state", dbm.BadgerDBBackend, newDataDir)
+	lcd, ss, err := v2multistore.MigrateFromV1(cms, ndb, opts)
 	if err != nil {
 		return err
 	}
 
-	iter, err := stateDB.Iterator(nil, nil)
-	if err != nil {
-		return err
+	fmt.Println("Commit hash", string(ss.Commit().Hash))
+	stores := [...]string{
+		"blockstore",
+		"state",
+		"peerstore",
+		"tx_index",
+		"evidence",
+		"light",
 	}
-	for ; iter.Valid(); iter.Next() {
-		key := iter.Key()
-		fmt.Println(" tm key => ", string(key))
-		err := bStateDB.Writer().Set(key, iter.Value())
+
+	for _, s := range stores {
+		t, err := tmdb.NewGoLevelDB(s, dataDir)
 		if err != nil {
 			return err
 		}
-	}
-
-	// update the blockstore
-	lbsDB, err := tmdb.NewGoLevelDB("blockstore", dataDir)
-	if err != nil {
-		return err
-	}
-	// get the tm state and save them back
-	bsDB, err := dbm.NewDB("blockstore", dbm.BadgerDBBackend, newDataDir)
-	if err != nil {
-		return err
-	}
-
-	biter, err := lbsDB.Iterator(nil, nil)
-	if err != nil {
-		return err
-	}
-	for ; biter.Valid(); biter.Next() {
-		key := biter.Key()
-		fmt.Println(" blockstore key => ", string(key))
-		err := bsDB.Writer().Set(key, biter.Value())
+		// new badgerdb
+		b, err := dbm.NewDB(s, dbm.BadgerDBBackend, newDataDir)
 		if err != nil {
 			return err
 		}
+		r := b.ReadWriter()
+		iter, err := t.Iterator(nil, nil)
+		if err != nil {
+			return err
+		}
+		for ; iter.Valid(); iter.Next() {
+			r.Set(iter.Key(), iter.Value())
+		}
+		err = r.Commit()
+		if err != nil {
+			return err
+		}
+		b.Close()
+		t.Close()
 	}
-
-	err = biter.Close()
-	if err != nil {
-		return err
-	}
-	fmt.Println("blockstore migration is done.")
 
 	fmt.Println("state tendetmint migration is done.")
+	// access state db
+
+	sdb, err := dbm.NewDB("state", dbm.BadgerDBBackend, newDataDir)
+	if err != nil {
+		return err
+	}
+
+	type Version struct {
+		Consensus version.Consensus ` json:"consensus"`
+		Software  string            ` json:"software"`
+	}
+
+	fmt.Println("state db init done")
+	prefixState := int64(8)
+	stateKey, err := orderedcode.Append(nil, prefixState)
+	if err != nil {
+		panic(err)
+	}
+
+	rat := sdb.ReadWriter()
+	buf, err := rat.Get(stateKey)
+	if err != nil {
+		panic(err)
+	}
+
+	sp := new(tmstate.State)
+	err = proto.Unmarshal(buf, sp)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		fmt.Sprintf(`LoadState: Data has been corrupted or its spec has changed:%v\n`, err)
+	}
+
+	fmt.Println("last hash form state ", sp.AppHash)
+	fmt.Print("new hash from badger ", lcd.Hash)
+	sp.AppHash = lcd.Hash
+	b, err := proto.Marshal(sp)
+	if err != nil {
+		panic(err)
+	}
+	err = rat.Set(stateKey, b)
+	if err != nil {
+		panic(err)
+	}
+	err = rat.Commit()
+	if err != nil {
+		panic(err)
+	}
 	return nil
 }

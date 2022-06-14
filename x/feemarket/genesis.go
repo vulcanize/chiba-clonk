@@ -1,6 +1,8 @@
 package feemarket
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -14,6 +16,7 @@ func InitGenesis(
 	k keeper.Keeper,
 	data types.GenesisState,
 ) []abci.ValidatorUpdate {
+	fmt.Printf("data %+v\n", data)
 	k.SetParams(ctx, data.Params)
 	k.SetBlockGasUsed(ctx, data.BlockGas)
 
